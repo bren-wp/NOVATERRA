@@ -77,6 +77,28 @@ jobs:
           if ($process.ExitCode -ne 0) {
             throw "NOVATERRA launcher failed with exit code $($process.ExitCode)"
           }
+      - name: Build self-contained portable single EXE with bundled game
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          Compress-Archive -Path 'build/staging/NOVATERRA/*' -DestinationPath 'windows/NOVATERRA.Portable/GameBundle.zip' -CompressionLevel Optimal
+          if (!(Test-Path 'windows/NOVATERRA.Portable/GameBundle.zip')) { throw "Bundled engine and game ZIP missing" }
+          dotnet publish windows/NOVATERRA.Portable/NOVATERRA.Portable.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -o build/portable
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $portableExe = 'build/portable/NOVATERRA-Portable.exe'
+          if (!(Test-Path $portableExe)) { throw "Standalone portable EXE missing" }
+          Copy-Item -LiteralPath $portableExe -Destination artifacts/NOVATERRA-Windows-Portable-v1.2.0-dev.exe -Force
+      - name: Smoke-launch embedded portable EXE
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath (Resolve-Path 'artifacts/NOVATERRA-Windows-Portable-v1.2.0-dev.exe').Path -ArgumentList '--version' -PassThru
+          if (!$process.WaitForExit(120000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            throw "Standalone portable executable did not finish --version test"
+          }
+          if ($process.ExitCode -ne 0) {
+            throw "Standalone portable executable startup failed: $($process.ExitCode)"
+          }
       - name: Compile Windows Setup installer
         shell: pwsh
         run: |
@@ -100,7 +122,9 @@ jobs:
           if ($zip.Length -lt 1000000) { throw "Windows game archive is unexpectedly small" }
           $setup = Get-Item artifacts/NOVATERRA-Windows-Setup-v1.2.0-dev.exe
           if ($setup.Length -lt 1000000) { throw "Windows installer is unexpectedly small" }
-          $packages = @($zip, $setup)
+          $portable = Get-Item artifacts/NOVATERRA-Windows-Portable-v1.2.0-dev.exe
+          if ($portable.Length -lt 1000000) { throw "Standalone portable executable unexpectedly small" }
+          $packages = @($zip, $setup, $portable)
           $sums = @($packages | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             Write-Host "NOVATERRA Windows package: $($_.Name) $($_.Length) bytes SHA256=$hash"
