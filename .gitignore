@@ -7,3 +7,6 @@ dist/
 *.apk
 *.aab
 *.exe
+
+# Generated only inside Windows CI; embedded into the signed-off portable EXE.
+windows/NOVATERRA.Portable/GameBundle.zip
