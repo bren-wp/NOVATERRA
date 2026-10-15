@@ -59,6 +59,11 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
         copy {
             from "${projRoot}/games/novaterra" into "${assetsFolder}/games/novaterra"
         }
+        copy {
+            from "${projRoot}/android/novaterra-mobile.conf"
+            into "${assetsFolder}"
+            rename { "minetest.conf" }
+        }
 """
     gradle = replace_once(
         gradle, marker, game_assets_copy + "\n\t\t" + marker,
