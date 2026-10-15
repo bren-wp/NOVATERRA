@@ -64,6 +64,18 @@ jobs:
           Write-Host $output
           if (-not $output.Contains('Luanti 5.17.0 (Windows)')) { throw "Native engine version or platform could not be verified" }
           if ($LASTEXITCODE -notin @(0, 1)) { throw "Native engine terminated unexpectedly: $LASTEXITCODE" }
+      - name: Launch NOVATERRA.exe and verify engine process startup
+        shell: pwsh
+        run: |
+          $launcher = (Resolve-Path 'build/staging/NOVATERRA/NOVATERRA.exe').Path
+          $process = Start-Process -FilePath $launcher -ArgumentList '--version' -PassThru
+          if (!$process.WaitForExit(30000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            throw "NOVATERRA launcher failed to finish startup self-check"
+          }
+          if ($process.ExitCode -ne 0) {
+            throw "NOVATERRA launcher failed with exit code $($process.ExitCode)"
+          }
       - name: Compile Windows Setup installer
         shell: pwsh
         run: |
