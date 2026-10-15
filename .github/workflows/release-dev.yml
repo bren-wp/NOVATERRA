@@ -99,11 +99,14 @@ jobs:
               echo "Removing incomplete draft $draft_id for $RELEASE_TAG"
               gh api -X DELETE "repos/$GH_REPO/releases/$draft_id"
             fi
-            if gh release create "$RELEASE_TAG" release/upload/* --target "$TARGET_SHA" --title "NOVATERRA $RELEASE_TAG" --notes-file release/notes.md --prerelease; then
+            if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+              gh release create "$RELEASE_TAG" --target "$TARGET_SHA" --title "NOVATERRA $RELEASE_TAG" --notes-file release/notes.md --prerelease || true
+            fi
+            if gh release view "$RELEASE_TAG" >/dev/null 2>&1 && gh release upload "$RELEASE_TAG" release/upload/* --clobber; then
               break
             fi
             echo "GitHub release upload failed on attempt $attempt; retrying"
             sleep 15
           done
-          test "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 4)')" = "true"
+          test "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 5)')" = "true"
           echo "Published verified release $RELEASE_TAG with Android and Windows artifacts"
