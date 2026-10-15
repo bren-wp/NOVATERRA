@@ -23,6 +23,7 @@ jobs:
           test -s games/novaterra/mods/nv_world/furnace.lua
           find games/novaterra -name '*.lua' -print0 | xargs -0 -r -n1 luac5.1 -p
           lua5.1 tests/test_mobile_ui.lua
+          lua5.1 tests/test_survival_hud.lua
       - name: Validate Windows launcher PowerShell syntax
         shell: pwsh
         run: |
