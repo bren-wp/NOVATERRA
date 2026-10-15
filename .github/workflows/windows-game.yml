@@ -24,7 +24,7 @@ jobs:
         run: |
           ./windows/Check-NOVATERRA.ps1
           $textures = @(Get-ChildItem -Path games/novaterra -Recurse -Filter '*.png')
-          if ($textures.Count -ne 17) { throw "Expected 17 original PNG assets; got $($textures.Count)" }
+          if ($textures.Count -ne 21) { throw "Expected 21 game PNG assets; got $($textures.Count)" }
       - name: Download and verify Luanti 5.17.0 64-bit portable engine
         shell: pwsh
         run: |
@@ -57,7 +57,7 @@ jobs:
           if (!(Test-Path build/staging/NOVATERRA/engine/bin/luanti.exe)) { throw "Engine binary was not packaged" }
           if (!(Test-Path build/staging/NOVATERRA/games/novaterra/game.conf)) { throw "Game config was not packaged" }
           $packagedTextures = @(Get-ChildItem build/staging/NOVATERRA/games/novaterra -Recurse -Filter '*.png')
-          if ($packagedTextures.Count -ne 17) { throw "Packaged textures missing" }
+          if ($packagedTextures.Count -ne 21) { throw "Packaged textures missing" }
       - name: Smoke-check native Luanti engine
         shell: pwsh
         run: |
