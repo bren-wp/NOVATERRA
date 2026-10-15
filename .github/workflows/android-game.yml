@@ -1,0 +1,63 @@
+name: Android NOVATERRA game build
+on:
+  push:
+    paths:
+      - 'android/**'
+      - 'games/novaterra/**'
+      - '.github/workflows/android-game.yml'
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-android-arm64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install native Android build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gettext ninja-build cmake unzip
+      - name: Check out pinned Luanti native engine 5.17.0
+        run: git clone --branch 5.17.0 --depth 1 https://github.com/luanti-org/luanti.git build/luanti
+      - name: Brand Android client and bundle the full NOVATERRA game
+        run: python3 android/prepare-luanti.py --luanti build/luanti --project .
+      - name: Compile arm64 native Android debug APK and test AAB
+        shell: bash
+        working-directory: build/luanti/android
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug :app:bundleDebug --no-daemon --stacktrace
+      - name: Inspect APK, bundled game assets and Android manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          APK=$(find build/luanti/android/app/build/outputs/apk -name '*arm64-v8a*debug.apk' -type f | head -1)
+          test -n "$APK"
+          unzip -t "$APK" >/dev/null
+          unzip -p "$APK" assets/assets.zip > artifacts/novaterra-game-assets.zip
+          unzip -t artifacts/novaterra-game-assets.zip >/dev/null
+          unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/game.conf'
+          unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_core/textures/nv_stone.png'
+          unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_world/textures/nv_coal_overlay.png'
+          cp "$APK" artifacts/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk
+          AAB=$(find build/luanti/android/app/build/outputs/bundle -type f -name '*debug.aab' | head -1)
+          test -n "$AAB"
+          unzip -t "$AAB" >/dev/null
+          cp "$AAB" artifacts/NOVATERRA-Android-v1.2.0-dev-debug.aab
+          rm artifacts/novaterra-game-assets.zip
+          (cd artifacts && sha256sum '*.apk' '*.aab' > SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NOVATERRA-Android-arm64-v1.2.0-dev-debug
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
