@@ -69,6 +69,25 @@ local function settings(player)
     'button_exit[5.3,4.8;3,0.85;close;ZATVORI]',
   })
 end
+-- Mobile layouts share the same server-side callbacks as desktop formspecs.
+local classic_hub, classic_guide, classic_controls, classic_settings = hub, guide, controls, settings
+local touch = dofile(core.get_modpath('nv_ui') .. '/mobile.lua')
+local function touch_enabled(player)
+  return player and player:get_meta():get_int('nv_classic_ui') ~= 1
+end
+hub = function(player)
+  return touch_enabled(player) and touch.hub(player) or classic_hub()
+end
+guide = function()
+  return touch.guide()
+end
+controls = function()
+  return touch.controls()
+end
+settings = function(player)
+  return touch_enabled(player) and touch.settings(player) or classic_settings(player)
+end
+
 local function show(player, name, spec)
   if player and player:is_player() then core.show_formspec(player:get_player_name(), name, spec) end
 end
@@ -76,7 +95,7 @@ local function show_inventory(player)
   -- Server-side inventory formspec: all lists are bound to the current player.
   show(player, INVENTORY, player:get_inventory_formspec())
 end
-local function show_hub(player) show(player, FORM, hub()) end
+local function show_hub(player) show(player, FORM, hub(player)) end
 core.register_chatcommand('novaterra', {
   description='Open the NOVATERRA in-game menu',
   func=function(name)
@@ -97,6 +116,10 @@ core.register_chatcommand('guide', {
 })
 core.register_on_player_receive_fields(function(player, formname, fields)
   if not player or not player:is_player() then return end
+  if (formname == '' or formname == INVENTORY) and fields.nv_menu then
+    show_hub(player)
+    return
+  end
   if (formname == '' or formname == INVENTORY) and fields.nv_quests then
     if novaterra_rpg and novaterra_rpg.show then novaterra_rpg.show(player) end
     return
@@ -107,6 +130,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
   end
   if formname ~= FORM and formname ~= GUIDE and formname ~= 'nv_ui:controls' and formname ~= INVENTORY and formname ~= SETTINGS then return end
   if fields.quit or fields.close or fields.resume then return end
+  if formname == SETTINGS and fields.mobile_interface then
+    player:get_meta():set_int('nv_classic_ui', fields.mobile_interface == 'true' and 0 or 1)
+    show(player, SETTINGS, settings(player))
+    return
+  end
   if formname == SETTINGS and fields.coordinates_visible then
     if novaterra_survival and novaterra_survival.set_coordinates_visible then
       novaterra_survival.set_coordinates_visible(player, fields.coordinates_visible == 'true')
@@ -136,8 +164,35 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     show_inventory(player)
   end
 end)
+-- A useable inventory tool is a reliable touch-screen entry point.
+-- Unlike a decorative HUD image, tapping this item really opens the menu.
+core.register_craftitem('nv_ui:field_manual', {
+  description = 'NOVATERRA / Main Menu',
+  inventory_image = 'nv_glass.png^[colorize:#59C7AE:140',
+  stack_max = 1,
+  on_use = function(itemstack, user)
+    if user and user:is_player() then show_hub(user) end
+    return itemstack
+  end,
+})
+core.register_craft({output = 'nv_ui:field_manual',
+  recipe = {{'nv_core:glass', 'nv_core:wood'}}})
 core.register_on_joinplayer(function(player)
-  core.chat_send_player(player:get_player_name(), 'NOVATERRA: type /novaterra to open the in-game menu, or /guide for survival help.')
+  local name = player:get_player_name()
+  core.chat_send_player(name, 'NOVATERRA: tap the Main Menu item or type /novaterra to open the game menu.')
+  local meta = player:get_meta()
+  if meta:get_int('nv_mobile_intro_shown') == 0 then
+    meta:set_int('nv_mobile_intro_shown', 1)
+    local inventory = player:get_inventory()
+    if not inventory:contains_item('main', 'nv_ui:field_manual') then
+      inventory:add_item('main', 'nv_ui:field_manual')
+    end
+    -- Delay until other modules have finished their join callbacks.
+    core.after(0.7, function()
+      local current = core.get_player_by_name(name)
+      if current and current:is_player() then show_hub(current) end
+    end)
+  end
 end)
 
 -- Lightweight cross-platform world status: no extra touch buttons or UI overlap.
