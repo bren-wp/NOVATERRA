@@ -19,7 +19,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      - name: Use preinstalled Android SDK
+        shell: bash
+        run: |
+          test -d "$ANDROID_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -d "$ANDROID_HOME"/cmdline-tools/*
       - name: Install native Android build dependencies
         run: |
           sudo apt-get update -qq
