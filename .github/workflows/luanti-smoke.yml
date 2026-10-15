@@ -36,7 +36,7 @@ jobs:
           fi
           echo "Using $ENGINE"
           set +e
-          timeout --signal=TERM --kill-after=5 22s "$ENGINE" --gameid novaterra --world "$GITHUB_WORKSPACE/smoke/world" --config "$GITHUB_WORKSPACE/smoke/minetest.conf" > smoke/server.log 2>&1
+          timeout --signal=TERM --kill-after=5 22s "$ENGINE" --gameid novaterra --world "$GITHUB_WORKSPACE/smoke/world" --config "$GITHUB_WORKSPACE/smoke/minetest.conf" --logfile "$GITHUB_WORKSPACE/smoke/engine.log" > smoke/server.log 2>&1
           CODE=$?
           set -e
           cat smoke/server.log
