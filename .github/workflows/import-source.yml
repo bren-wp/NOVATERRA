@@ -4,6 +4,7 @@ on:
     paths:
       - 'imports/novaterra-v1.1.0-source.tar.xz.b64'
       - 'scripts/import_source.py'
+      - 'tests/test_repository_integrity.py'
       - '.github/workflows/import-source.yml'
   workflow_dispatch:
 permissions:
