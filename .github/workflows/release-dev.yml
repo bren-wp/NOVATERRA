@@ -1,0 +1,65 @@
+name: NOVATERRA development release
+on:
+  workflow_run:
+    workflows: ["Android NOVATERRA game build"]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-v1-2-0-dev:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate tested Android and Windows build artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            ANDROID_RUN="${{ github.event.workflow_run.id }}"
+          else
+            ANDROID_RUN=$(gh run list --workflow android-game.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          fi
+          WIN_RUN=$(gh run list --workflow windows-game.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          test -n "$ANDROID_RUN"
+          test -n "$WIN_RUN"
+          mkdir -p release/android release/windows
+          gh run download "$ANDROID_RUN" -n NOVATERRA-Android-arm64-v1.2.0-dev-debug -D release/android
+          gh run download "$WIN_RUN" -n NOVATERRA-Windows-x64-v1.2.0-dev -D release/windows
+          (cd release/android && sha256sum --check SHA256SUMS.txt)
+          (cd release/windows && sha256sum --check SHA256SUMS.txt)
+          test -s release/windows/NOVATERRA-Windows-x64-v1.2.0-dev.zip
+          test -s release/android/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk
+          test -s release/android/NOVATERRA-Android-v1.2.0-dev-debug.aab
+      - name: Publish a truthful development prerelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v1.2.0-dev >/dev/null 2>&1; then
+            echo 'Release v1.2.0-dev already exists; no overwrite'
+            exit 0
+          fi
+          mkdir -p release/upload
+          cp release/windows/*.zip release/android/*.apk release/android/*.aab release/upload/
+          (cd release/upload && sha256sum ./* > SHA256SUMS.txt)
+          cat > release/notes.md <<'EOF'
+          # NOVATERRA v1.2.0-dev
+
+          First source-complete development preview of the NOVATERRA voxel-survival game.
+
+          - Windows x64 portable archive includes a compiled native Windows launcher, Luanti 5.17.0 and NOVATERRA game data.
+          - Android arm64 debug APK and test AAB embed NOVATERRA and a compiled Android Luanti client.
+          - 17/17 original PNG textures and all imported game source files verified.
+          - Automated source syntax, tests, package and binary-integrity checks.
+
+          **Development build:** Android artifacts are debug-signed, not Play Store-ready.
+          Full gameplay runtime, device compatibility, screenshots and 1:1 visual parity are not yet certified.
+          See issue #1 for remaining acceptance criteria.
+          EOF
+          gh release create v1.2.0-dev release/upload/* --target main --title 'NOVATERRA v1.2.0-dev' --notes-file release/notes.md --prerelease
