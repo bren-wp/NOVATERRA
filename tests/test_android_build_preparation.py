@@ -22,6 +22,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.project = root / "project"
         self.engine = root / "luanti"
         shutil.copytree(ROOT / "games" / "novaterra", self.project / "games" / "novaterra")
+        shutil.copytree(ROOT / "android" / "res", self.project / "android" / "res")
         gradle = self.engine / "android/app/build.gradle"
         gradle.parent.mkdir(parents=True)
         version = 'versionName "' + '$' + '{versionMajor}.' + '$' + '{versionMinor}.' + '$' + '{versionPatch}"'
@@ -35,11 +36,11 @@ class AndroidPrepTest(unittest.TestCase):
         main = self.engine / "android/app/src/main"
         main.mkdir(parents=True)
         (main / "AndroidManifest.xml").write_text(
-            '"net.minetest.minetest.fileprovider" "net.minetest.minetest.documents"',
+            'android:icon="@mipmap/ic_launcher" "net.minetest.minetest.fileprovider" "net.minetest.minetest.documents"',
             encoding="utf-8")
         java = main / "java/net/minetest/minetest/GameActivity.java"
         java.parent.mkdir(parents=True)
-        java.write_text('"net.minetest.minetest.fileprovider"', encoding="utf-8")
+        java.write_text('"net.minetest.minetest.fileprovider" setSmallIcon(R.mipmap.ic_launcher)', encoding="utf-8")
         strings = main / "res/values/strings.xml"
         strings.parent.mkdir(parents=True)
         strings.write_text('<string name="label">Luanti</string>', encoding="utf-8")
@@ -70,6 +71,14 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("com.brendigo.novaterra.documents", (main / "AndroidManifest.xml").read_text())
         self.assertIn("com.brendigo.novaterra.fileprovider", (main / "java/net/minetest/minetest/GameActivity.java").read_text())
         self.assertIn('<string name="label">NOVATERRA</string>', (main / "res/values/strings.xml").read_text())
+        self.assertIn('android:icon="@drawable/novaterra_mark"', (main / "AndroidManifest.xml").read_text())
+        self.assertIn('setSmallIcon(R.drawable.novaterra_mark)',
+                      (main / "java/net/minetest/minetest/GameActivity.java").read_text())
+        self.assertIn("NOVATERRA", (main / "res/layout/activity_main.xml").read_text())
+        self.assertIn("@+id/progressBar", (main / "res/layout/activity_main.xml").read_text())
+        self.assertIn("@+id/textView", (main / "res/layout/activity_main.xml").read_text())
+        self.assertTrue((main / "res/drawable/novaterra_mark.xml").is_file())
+
 
 if __name__ == "__main__":
     unittest.main()
