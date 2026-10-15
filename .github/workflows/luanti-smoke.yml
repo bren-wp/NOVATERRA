@@ -1,0 +1,60 @@
+name: Luanti runtime smoke test
+on:
+  push:
+    paths:
+      - 'games/novaterra/**'
+      - '.github/workflows/luanti-smoke.yml'
+  pull_request:
+  workflow_dispatch:
+jobs:
+  headless-world-start:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install headless Luanti server engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          if ! sudo apt-get install -y -qq luanti-server; then
+            sudo apt-get install -y -qq minetest-server
+          fi
+      - name: Start NOVATERRA world in a real server
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p smoke/world
+          printf 'gameid = novaterra\nbackend = sqlite3\nauth_backend = sqlite3\n' > smoke/world/world.mt
+          printf 'server_name = NOVATERRA Smoke Test\nport = 30491\nmax_users = 1\n' > smoke/minetest.conf
+          export LUANTI_GAME_PATH="$GITHUB_WORKSPACE/games"
+          export MINETEST_GAME_PATH="$GITHUB_WORKSPACE/games"
+          ENGINE=$(command -v luantiserver || command -v minetestserver || command -v minetest-server || true)
+          if [[ -z "$ENGINE" ]]; then
+            echo "No headless Luanti executable after package installation" >&2
+            exit 1
+          fi
+          echo "Using $ENGINE"
+          set +e
+          timeout --signal=TERM --kill-after=5 22s "$ENGINE" --server --gameid novaterra --world "$GITHUB_WORKSPACE/smoke/world" --config "$GITHUB_WORKSPACE/smoke/minetest.conf" > smoke/server.log 2>&1
+          CODE=$?
+          set -e
+          cat smoke/server.log
+          if [[ "$CODE" != "0" && "$CODE" != "124" ]]; then
+            echo "Luanti server terminated unexpectedly with $CODE"
+            exit 1
+          fi
+          if grep -Eiq 'ServerError|ModError|ERROR\[Main\]|FATAL|Cannot load game|failed to start' smoke/server.log; then
+            echo "NOVATERRA runtime errors found"
+            exit 1
+          fi
+          if ! grep -Eiq 'Server|port|listening' smoke/server.log; then
+            echo "No startup evidence found"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: NOVATERRA-Luanti-server-smoke-log
+          path: smoke/server.log
+          if-no-files-found: warn
