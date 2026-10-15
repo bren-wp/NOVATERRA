@@ -4,6 +4,7 @@ Run with: python -m unittest discover -s tests -p 'test*.py'
 """
 from pathlib import Path
 import struct
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,7 +26,7 @@ class RepositoryIntegrity(unittest.TestCase):
 
     def test_furnace_exists(self):
         source = (MODS / "nv_world" / "furnace.lua").read_text(encoding="utf-8")
-        self.assertIn('register_node("nv_world:furnace"', source)
+        self.assertRegex(source, r"register_node\\(\\s*['\\\"]nv_world:furnace['\\\"]")
         self.assertIn("on_timer", source)
         self.assertIn("can_dig", source)
 
