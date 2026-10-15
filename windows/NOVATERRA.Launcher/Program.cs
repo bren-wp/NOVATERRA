@@ -43,6 +43,7 @@ internal static class Program
             start.ArgumentList.Add("novaterra");
             // Use the engine-supported game search path; --gamepath is not a Luanti CLI option.
             start.Environment["LUANTI_GAME_PATH"] = Path.Combine(root, "games");
+            start.Environment["MINETEST_GAME_PATH"] = Path.Combine(root, "games");
             foreach (var argument in args)
                 start.ArgumentList.Add(argument);
 
