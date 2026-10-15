@@ -89,4 +89,4 @@ jobs:
 
           See [issue #1](https://github.com/$GH_REPO/issues/1) for outstanding acceptance criteria.
           EOF
-          gh release create "$RELEASE_TAG" release/upload/* --target "$TARGET_SHA" --title "NOVATERRA $RELEASE_TAG" --notes-file release/notes.md --prerelease --verify-tag
+          gh release create "$RELEASE_TAG" release/upload/* --target "$TARGET_SHA" --title "NOVATERRA $RELEASE_TAG" --notes-file release/notes.md --prerelease
