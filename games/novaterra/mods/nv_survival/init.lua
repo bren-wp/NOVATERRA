@@ -8,15 +8,26 @@ local function clamp(value)
 end
 local function update_hud(player, data)
   if not player or not player:is_player() then return end
-  local hearts = math.ceil(player:get_hp() / 2)
-  local hunger = math.ceil(data.hunger / 2)
+  local hp = math.max(0, player:get_hp())
   local max_hp = (player:get_properties() or {}).hp_max or 20
-  if data.hud_visible == false then return end
-  player:hud_change(data.hud_health, 'text', 'HP  ' .. string.rep('♥', math.max(0, hearts)) .. '  ' .. player:get_hp() .. '/' .. max_hp)
-  player:hud_change(data.hud_hunger, 'text', 'FOOD  ' .. string.rep('●', math.max(0, hunger)) .. '  ' .. data.hunger .. '/20')
-  if data.hud_coordinates then
+  max_hp = math.max(1, max_hp)
+  local visible = data.hud_visible ~= false
+  -- Statbars draw actual pixel-art hearts/drumsticks and half icons, just like
+  -- the NOVATERRA Android HUD reference. Never create overlapping text labels.
+  player:hud_change(data.hud_health, 'text', visible and 'nv_health_full.png' or '')
+  player:hud_change(data.hud_health, 'text2', visible and 'nv_health_empty.png' or '')
+  player:hud_change(data.hud_health, 'number', visible and hp or 0)
+  player:hud_change(data.hud_health, 'item', visible and max_hp or 0)
+  player:hud_change(data.hud_hunger, 'text', visible and 'nv_hunger_full.png' or '')
+  player:hud_change(data.hud_hunger, 'text2', visible and 'nv_hunger_empty.png' or '')
+  player:hud_change(data.hud_hunger, 'number', visible and data.hunger or 0)
+  player:hud_change(data.hud_hunger, 'item', visible and MAX_HUNGER or 0)
+  if data.hud_coordinates and data.coordinates_visible then
     local pos = player:get_pos()
-    if pos then player:hud_change(data.hud_coordinates, 'text', string.format('X %.0f   Y %.0f   Z %.0f', pos.x, pos.y, pos.z)) end
+    if pos then
+      player:hud_change(data.hud_coordinates, 'text',
+        string.format('X %.0f   Y %.0f   Z %.0f', pos.x, pos.y, pos.z))
+    end
   end
 end
 local function save(player, data)
@@ -55,17 +66,24 @@ core.register_on_joinplayer(function(player)
   local meta = player:get_meta()
   local hunger = meta:get_int('nv_hunger_initialized') == 1 and meta:get_int('nv_hunger') or MAX_HUNGER
   local data = {hunger=clamp(hunger), elapsed=0, ticks=0, hud_visible=meta:get_int('nv_hide_hud') ~= 1, coordinates_visible=meta:get_int('nv_show_coordinates') == 1}
-  data.hud_health = player:hud_add({hud_elem_type='text', position={x=0.02,y=0.04}, offset={x=0,y=0}, text='', number=0xF66B65, alignment={x=1,y=0}, scale={x=100,y=20}})
-  data.hud_hunger = player:hud_add({hud_elem_type='text', position={x=0.02,y=0.085}, offset={x=0,y=0}, text='', number=0xF0C16A, alignment={x=1,y=0}, scale={x=100,y=20}})
+  data.hud_health = player:hud_add({
+    hud_elem_type='statbar', position={x=0.02,y=0.025}, offset={x=0,y=0},
+    text='nv_health_full.png', text2='nv_health_empty.png',
+    number=0, item=20, direction=0, size={x=24,y=24},
+    alignment={x=1,y=1},
+  })
+  data.hud_hunger = player:hud_add({
+    hud_elem_type='statbar', position={x=0.02,y=0.075}, offset={x=0,y=0},
+    text='nv_hunger_full.png', text2='nv_hunger_empty.png',
+    number=0, item=20, direction=0, size={x=24,y=24},
+    alignment={x=1,y=1},
+  })
   data.hud_coordinates = player:hud_add({hud_elem_type='text', position={x=0.98,y=0.04}, offset={x=0,y=0}, text='', number=0xE7DBBD, alignment={x=-1,y=0}, scale={x=100,y=20}})
   state[player:get_player_name()] = data
   save(player, data)
   update_hud(player, data)
   if not data.coordinates_visible then player:hud_change(data.hud_coordinates, 'text', '') end
-  if not data.hud_visible then
-    player:hud_change(data.hud_health, 'text', '')
-    player:hud_change(data.hud_hunger, 'text', '')
-  end
+
 end)
 core.register_on_leaveplayer(function(player)
   local name = player:get_player_name()
@@ -81,6 +99,17 @@ core.register_globalstep(function(dtime)
   for _, player in ipairs(core.get_connected_players()) do
     local data = state[player:get_player_name()]
     if data then
+      -- Responsive HUD: health changes should appear within half a second,
+      -- not after the 30-second survival hunger interval.
+      data.hud_elapsed = (data.hud_elapsed or 0) + dtime
+      if data.hud_elapsed >= 0.5 then
+        data.hud_elapsed = data.hud_elapsed % 0.5
+        local hp = player:get_hp()
+        if data.last_hp ~= hp or data.coordinates_visible then
+          update_hud(player, data)
+          data.last_hp = hp
+        end
+      end
       data.elapsed = data.elapsed + dtime
       if data.elapsed >= TICK_SECONDS then
         local ticks = math.floor(data.elapsed / TICK_SECONDS)
@@ -113,12 +142,7 @@ function novaterra_survival.set_hud_visible(player, visible)
   if not data then return false end
   data.hud_visible = visible == true
   player:get_meta():set_int('nv_hide_hud', data.hud_visible and 0 or 1)
-  if data.hud_visible then
-    update_hud(player, data)
-  else
-    player:hud_change(data.hud_health, 'text', '')
-    player:hud_change(data.hud_hunger, 'text', '')
-  end
+  update_hud(player, data)
   return true
 end
 core.register_on_respawnplayer(function(player)
