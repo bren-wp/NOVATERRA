@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>NOVATERRA-Portable</AssemblyName>
+    <RootNamespace>Novaterra.Portable</RootNamespace>
+    <ApplicationManifest>..\NOVATERRA.Launcher\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GameBundle.zip" LogicalName="NOVATERRA.GameBundle" />
+  </ItemGroup>
+</Project>
