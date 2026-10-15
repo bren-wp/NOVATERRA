@@ -39,7 +39,7 @@ class RepositoryIntegrity(unittest.TestCase):
         self.assertIn("LuantiExe", launcher)
 
     def test_textures_valid_png(self):
-        for mod in ("nv_core", "nv_world"):
+        for mod in ("nv_core", "nv_world", "nv_survival"):
             texture_dir = MODS / mod / "textures"
             self.assertTrue(texture_dir.is_dir())
             for file in sorted(texture_dir.glob("*.png")):
@@ -50,7 +50,7 @@ class RepositoryIntegrity(unittest.TestCase):
                     width, height = struct.unpack(">II", data[16:24])
                     self.assertGreater(width, 0)
                     self.assertGreater(height, 0)
-        self.assertEqual(len(list(MODS.rglob("*.png"))), 17)
+        self.assertEqual(len(list(MODS.rglob("*.png"))), 21)
 
 
 if __name__ == "__main__":
