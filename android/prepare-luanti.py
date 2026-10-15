@@ -15,7 +15,7 @@ BUILD_NUMBER = int(os.environ.get("GITHUB_RUN_NUMBER", "1"))
 if BUILD_NUMBER < 1 or BUILD_NUMBER > 1000000:
     raise SystemExit("Invalid Android build number")
 VERSION_CODE = 12000 + BUILD_NUMBER
-PNG_COUNT = 17
+PNG_COUNT = 21
 
 
 def replace_once(text: str, old: str, new: str, where: str) -> str:
