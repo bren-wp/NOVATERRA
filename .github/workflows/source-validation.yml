@@ -8,17 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check source tree
+      - name: Install Lua parser
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1
+      - name: Validate imported source
         shell: bash
         run: |
           set -euo pipefail
           test -f README.md
           test -f LICENSE
-          if [ -d games/novaterra ]; then
-            test -f games/novaterra/game.conf
-            sudo apt-get update -qq
-            sudo apt-get install -y -qq lua5.1
-            find games/novaterra -name '*.lua' -print0 | xargs -0 -r -n1 luac5.1 -p
-          else
-            echo "Prototype source not imported yet; runtime/build checks are pending."
-          fi
+          test -f games/novaterra/game.conf
+          for mod in nv_core nv_survival nv_ui nv_world; do
+            test -f "games/novaterra/mods/$mod/mod.conf"
+            test -s "games/novaterra/mods/$mod/init.lua"
+          done
+          test -s games/novaterra/mods/nv_world/furnace.lua
+          test -s games/novaterra/mods/nv_core/textures/nv_stone.png
+          test -s games/novaterra/mods/nv_world/textures/nv_coal_overlay.png
+          find games/novaterra -name '*.lua' -print0 | xargs -0 -r -n1 luac5.1 -p
+          python3 -m unittest discover -s tests -p 'test*.py' -v
