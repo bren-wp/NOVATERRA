@@ -82,8 +82,9 @@ local function inventory_formspec()
     'list[current_player;main;0.65,5.6;8,4;]',
     'button[9.3,5.6;2.55,0.85;nv_guide;SURVIVAL GUIDE]',
     'button[9.3,6.55;2.55,0.85;nv_quests;QUEST JOURNAL]',
-    'label[9.3,8.0;BUILD  /  EXPLORE]',
-    'label[9.3,8.5;SURVIVE  /  THRIVE]',
+    'button[9.3,7.5;2.55,0.85;nv_menu;NOVATERRA MENU]',
+    'label[9.3,8.58;BUILD  /  EXPLORE]',
+    'label[9.3,8.98;SURVIVE  /  THRIVE]',
     'listring[current_player;main]',
     'listring[current_player;craft]',
   })
