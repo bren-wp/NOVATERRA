@@ -1,0 +1,33 @@
+name: Windows launcher build
+on:
+  push:
+    paths:
+      - 'windows/NOVATERRA.Launcher/**'
+      - '.github/workflows/windows-launcher.yml'
+  pull_request:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Publish self-contained Windows launcher
+        shell: pwsh
+        run: |
+          dotnet publish windows/NOVATERRA.Launcher/NOVATERRA.Launcher.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -o artifacts/windows-launcher
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (!(Test-Path artifacts/windows-launcher/NOVATERRA.exe)) { throw "NOVATERRA.exe missing" }
+      - name: Check published executable
+        shell: pwsh
+        run: |
+          $exe = Get-Item artifacts/windows-launcher/NOVATERRA.exe
+          if ($exe.Length -lt 1024) { throw "Launcher binary is suspiciously small" }
+          Get-FileHash $exe.FullName -Algorithm SHA256 | Format-List
+      - uses: actions/upload-artifact@v4
+        with:
+          name: novaterra-windows-launcher-win-x64
+          path: artifacts/windows-launcher/
+          if-no-files-found: error
