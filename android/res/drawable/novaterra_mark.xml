@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Premium cube + emerald NOVATERRA identity, scalable without raster artifacts. -->
+    <path android:fillColor="#0B1820" android:pathData="M0,0 H108 V108 H0 Z" />
+    <path android:fillColor="#E2BC7E" android:pathData="M54,31 L86,49 L54,67 L22,49 Z" />
+    <path android:fillColor="#8D6643" android:pathData="M22,49 L54,67 L54,100 L22,82 Z" />
+    <path android:fillColor="#4D4137" android:pathData="M54,67 L86,49 L86,82 L54,100 Z" />
+    <path android:fillColor="#EEE0B9" android:pathData="M34,65 L40,68 L48,81 L48,73 L53,76 L53,92 L47,89 L39,76 L39,86 L34,83 Z" />
+    <path android:fillColor="#60C85F" android:pathData="M54,5 L74,31 L54,55 L34,31 Z" />
+    <path android:fillColor="#C1F17D" android:pathData="M54,5 L54,55 L34,31 Z" />
+    <path android:fillColor="#287B49" android:pathData="M54,55 L74,31 L54,5 Z" />
+    <path android:strokeColor="#C8F6A3" android:strokeWidth="1.6" android:fillColor="#00000000"
+          android:pathData="M54,8 L54,53 M37,31 L71,31" />
+</vector>
