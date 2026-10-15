@@ -116,8 +116,11 @@ for kind, def in pairs(kinds) do
     get_staticdata = function(self)
       return tostring(math.max(0, self.object:get_hp()))
     end,
-    on_punch = function(self)
+    on_punch = function(self, puncher)
       if self.object:get_hp() <= 0 then
+        if puncher and puncher:is_player() and novaterra_rpg and novaterra_rpg.record_defeat then
+          novaterra_rpg.record_defeat(puncher, self.kind)
+        end
         local pos = self.object:get_pos()
         if pos then drop_loot(self, pos) end
         self.object:remove()
