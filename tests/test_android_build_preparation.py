@@ -64,6 +64,7 @@ class AndroidPrepTest(unittest.TestCase):
         config = (self.engine / "android/novaterra-mobile.conf").read_text()
         self.assertIn("hud_scaling = 0.9\n", config)
         self.assertIn("gui_scaling = 0.95\n", config)
+        self.assertIn("menu_last_game = novaterra\n", config)
         self.assertNotIn("name = NOVATERRA", config)
         self.assertNotIn("\\n", config)
         main = self.engine / "android/app/src/main"
