@@ -32,11 +32,9 @@ jobs:
             test -n "$ANDROID_RUN" && test "$ANDROID_RUN" != "null"
             TARGET_SHA=$(gh run view "$ANDROID_RUN" --json headSha --jq '.headSha')
           fi
-          MAIN_SHA=$(gh api repos/"$GH_REPO"/commits/main --jq '.sha')
-          if [[ "$MAIN_SHA" != "$TARGET_SHA" ]]; then
-            echo "Skipping outdated commit: $TARGET_SHA != current main $MAIN_SHA"
-            exit 1
-          fi
+          # Artifacts are immutable and labeled by the EXACT source commit they were built from.
+          # README-only commits may advance main while an Android NDK build runs.
+          echo "Preparing same-SHA Android/Windows release for $TARGET_SHA"
           WIN_RUN=""
           for attempt in $(seq 1 40); do
             WIN_RUN=$(gh run list --workflow windows-game.yml --branch main --status success --limit 100 --json databaseId,headSha --jq ".[] | select(.headSha == \"$TARGET_SHA\") | .databaseId" | head -1)
