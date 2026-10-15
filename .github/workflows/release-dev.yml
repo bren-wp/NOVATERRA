@@ -59,6 +59,7 @@ jobs:
           (cd release/android && sha256sum --check SHA256SUMS.txt)
           (cd release/windows && sha256sum --check SHA256SUMS.txt)
           test -s release/windows/NOVATERRA-Windows-x64-v1.2.0-dev.zip
+          test -s release/windows/NOVATERRA-Windows-Setup-v1.2.0-dev.exe
           test -s release/android/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk
           test -s release/android/NOVATERRA-Android-v1.2.0-dev-debug.aab
           unzip -t release/windows/NOVATERRA-Windows-x64-v1.2.0-dev.zip >/dev/null
@@ -69,21 +70,21 @@ jobs:
         run: |
           set -euo pipefail
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            if [[ "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 4)')" == "true" ]]; then
+            if [[ "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 5)')" == "true" ]]; then
               echo "Verified release $RELEASE_TAG already published"
               exit 0
             fi
             echo "Incomplete draft $RELEASE_TAG found; will repair it"
           fi
           mkdir -p release/upload
-          cp release/windows/*.zip release/android/*.apk release/android/*.aab release/upload/
+          cp release/windows/*.zip release/windows/*.exe release/android/*.apk release/android/*.aab release/upload/
           (cd release/upload && sha256sum ./* > SHA256SUMS.txt)
           cat > release/notes.md <<EOF
           # NOVATERRA $RELEASE_TAG
 
           Native-engine development preview based on source commit \`$TARGET_SHA\`.
 
-          - **Windows x64:** portable archive with compiled NOVATERRA launcher, Luanti engine and game assets.
+          - **Windows x64:** portable ZIP and unsigned per-user Setup EXE, with NOVATERRA launcher, Luanti engine and bundled game assets.
           - **Android arm64:** debug-signed APK and development AAB, with bundled NOVATERRA content.
           - Creature AI, exploration, survival, food, mining, crafting and furnace mechanics.
           - CI-tested source, Luanti startup and binary archive verification.
