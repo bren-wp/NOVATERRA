@@ -64,6 +64,22 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
         gradle, marker, game_assets_copy + "\n\t\t" + marker,
         "android/app/build.gradle"
     )
+    # Android-specific default settings are bundled with the game's asset archive.
+    # They preserve the upstream native engine and its touch implementation.
+    # Users can override these in their own settings after first launch.
+    mobile_settings = (
+        "# NOVATERRA mobile defaults\\n"
+        "name = NOVATERRA\\n"
+        "touchscreen_threshold = 10\\n"
+        "touch_sensitivity = 0.22\\n"
+        "hud_scaling = 0.9\\n"
+        "gui_scaling = 0.95\\n"
+        "enable_shaders = true\\n"
+        "fps_max = 60\\n"
+        "viewing_range = 100\\n"
+    )
+    mobile_settings_path = engine / "android" / "novaterra-mobile.conf"
+    mobile_settings_path.write_text(mobile_settings, encoding="utf-8")
     gradle_path.write_text(gradle, encoding="utf-8")
 
     manifest_path = engine / "android/app/src/main/AndroidManifest.xml"
