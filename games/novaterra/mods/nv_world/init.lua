@@ -60,3 +60,6 @@ core.register_decoration({
 
 -- Smelting station
 dofile(core.get_modpath("nv_world") .. "/furnace.lua")
+
+-- In-game map and persistent waypoint controls.
+dofile(core.get_modpath('nv_world') .. '/map.lua')
