@@ -23,6 +23,18 @@ local function save(player, data)
   player:get_meta():set_int('nv_hunger', data.hunger)
   player:get_meta():set_int('nv_hunger_initialized', 1)
 end
+-- Shared hunger API for food items supplied by other gameplay modules.
+novaterra_survival = novaterra_survival or {}
+function novaterra_survival.feed(player, amount)
+  if not player or not player:is_player() then return false end
+  local data = state[player:get_player_name()]
+  if not data or data.hunger >= MAX_HUNGER then return false end
+  if type(amount) ~= 'number' or amount <= 0 or amount > MAX_HUNGER then return false end
+  data.hunger = clamp(data.hunger + amount)
+  save(player, data)
+  update_hud(player, data)
+  return true
+end
 local function consume_food(itemstack, user)
   if not user or not user:is_player() then return itemstack end
   local data = state[user:get_player_name()]
