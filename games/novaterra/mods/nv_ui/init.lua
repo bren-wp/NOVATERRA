@@ -1,96 +1,144 @@
--- NOVATERRA in-game hub and settings.
+-- NOVATERRA in-game hub. No client-supplied player names or privileged actions.
+local FORM = 'nv_ui:hub'
+local GUIDE = 'nv_ui:guide'
+local INVENTORY = 'nv_ui:inventory'
+local SETTINGS = 'nv_ui:settings'
 local function esc(s) return core.formspec_escape(s) end
 local function hub()
   return table.concat({
-    "formspec_version[4]size[11,8]",
-    "bgcolor[#09161DEB;true]",
-    "box[0.2,0.2;10.6,7.6;#162A35]",
-    "label[0.65,0.65;NOVATERRA]",
-    "label[0.65,1.15;EXPLORE  /  BUILD  /  SURVIVE]",
-    "button[0.7,2.0;4.5,0.8;guide;SURVIVAL GUIDE]",
-    "button[0.7,3.0;4.5,0.8;settings;SETTINGS]",
-    "button_exit[0.7,4.0;4.5,0.8;resume;RESUME GAME]",
-    "label[6.0,2.0;WORLD / VOXEL SURVIVAL]",
-    "label[6.0,2.6;Mine, craft and explore.]",
+    'formspec_version[4]size[11,8.5]',
+    'bgcolor[#09151EF4;true]',
+    'box[0.25,0.25;10.5,8;#12252BEF]',
+    'box[0.25,0.25;10.5,0.14;#C99B51]',
+    'label[0.8,0.85;NOVATERRA]',
+    'label[0.8,1.45;BUILD  /  EXPLORE  /  SURVIVE  /  THRIVE]',
+    'button[0.8,2.15;4.4,0.85;resume;NASTAVI]',
+    'button[0.8,3.15;4.4,0.85;inventory;INVENTORY]',
+    'button[0.8,4.15;4.4,0.85;guide;VODIC ZA PREZIVLJAVANJE]',
+    'button[0.8,5.15;4.4,0.85;controls;KONTROLE]',
+    'button[0.8,6.15;4.4,0.75;settings;POSTAVKE]',
+    'label[5.8,2.4;NOVATERRA / SURVIVAL WORLD]',
+    'textarea[5.8,3;4.3,2.8;;;' .. esc('Svjetovi, multiplayer i postavke dostupni su u Luanti glavnom izborniku. Ovaj ekran je izbornik unutar igre.') .. ']',
+    'button_exit[3.8,7.1;3.4,0.8;close;POVRATAK U IGRU]',
   })
 end
 local function guide()
   return table.concat({
-    "formspec_version[4]size[11,8]",
-    "bgcolor[#09161DEB;true]",
-    "label[0.6,0.6;NOVATERRA  |  SURVIVAL GUIDE]",
-    "textarea[0.65,1.2;9.8,5.8;;;",
-    esc("MOVEMENT\nWASD on desktop or touch controls on Android.\n\nRESOURCES\nMine stone, coal and iron. Collect wood to craft tools.\n\nSURVIVAL\nWatch health and hunger. Eat food to restore hunger.\n\nCRAFTING\nOpen inventory to craft a pickaxe, axe, torches and furnace."),
-    "]",
-    "button[0.65,7.0;3.2,0.7;back;BACK]",
+    'formspec_version[4]size[10.5,8.4]',
+    'bgcolor[#09161DF5;true]',
+    'box[0.25,0.25;10,7.9;#15262DEE]',
+    'label[0.7,0.65;NOVATERRA  /  SURVIVAL GUIDE]',
+    'label[0.7,1.5;1. Gather wood and stone by mining blocks.]',
+    'label[0.7,2.2;2. Open inventory and craft your first tools.]',
+    'label[0.7,2.9;3. Build a shelter before exploring caves.]',
+    'label[0.7,3.6;4. Craft trail rations to restore hunger.]',
+    'label[0.7,4.3;5. Place torches to illuminate dark areas.]',
+    'label[0.7,5.35;ANDROID: use the Luanti touch controls.]',
+    'label[0.7,5.9;WINDOWS: use keyboard and mouse controls.]',
+    'button[0.8,7;3,0.8;back;BACK TO MENU]',
+    'button_exit[6.2,7;3.2,0.8;close;CLOSE]',
+  })
+end
+local function controls()
+  return table.concat({
+    'formspec_version[4]size[10,6]',
+    'bgcolor[#09161DF5;true]',
+    'box[0.2,0.2;9.6,5.6;#15262DEE]',
+    'label[0.6,0.8;NOVATERRA  /  CONTROLS]',
+    'textarea[0.6,1.4;8.8,2.9;;;WINDOWS: WASD to move, mouse to look, left click to mine, right click to place.\nANDROID: use Luanti touch controls, tap and hold to mine.\nInventory: use the Luanti inventory button or keyboard shortcut.]',
+    'button[0.6,4.6;3.2,0.8;back;BACK TO MENU]',
+    'button_exit[6,4.6;3.2,0.8;close;CLOSE]',
   })
 end
 local function settings(player)
-  local meta=player:get_meta()
-  local hud=meta:get_string("nv_hud")~="false"
-  local coords=meta:get_string("nv_coordinates")=="true"
+  local hidden = player:get_meta():get_int('nv_hide_hud') == 1
+  local coords = player:get_meta():get_int('nv_show_coordinates') == 1
   return table.concat({
-    "formspec_version[4]size[9,6.3]",
-    "bgcolor[#09161DEB;true]",
-    "label[0.6,0.55;NOVATERRA  |  SETTINGS]",
-    "checkbox[0.8,1.6;hud_visible;Show health and hunger;",tostring(hud),"]",
-    "checkbox[0.8,2.5;coordinates_visible;Show coordinates;",tostring(coords),"]",
-    "label[0.8,3.6;Graphics and audio are configured in the Luanti client.]",
-    "button[0.8,5.0;3.0,0.75;back;BACK]",
+    'formspec_version[4]size[9,6.3]',
+    'bgcolor[#09151EF4;true]',
+    'box[0.25,0.25;8.5,5.8;#12252BEF]',
+    'box[0.25,0.25;8.5,0.12;#C99B51]',
+    'label[0.7,0.85;NOVATERRA / POSTAVKE]',
+    'label[0.7,1.7;SURVIVAL HUD]',
+    'checkbox[0.8,2.45;hud_visible;Prikazi zdravlje i glad;', hidden and 'false' or 'true', ']',
+    'checkbox[0.8,3.3;coordinates_visible;Prikazi koordinate;', coords and 'true' or 'false', ']',
+    'label[0.7,4.0;Promjene se spremaju za ovog igraca.]',
+    'button[0.7,4.8;3,0.85;back;NATRAG]',
+    'button_exit[5.3,4.8;3,0.85;close;ZATVORI]',
   })
 end
-local function show(player,page)
-  local name=player:get_player_name()
-  local form=page=="settings" and settings(player) or (page=="guide" and guide() or hub())
-  core.show_formspec(name,"nv_ui:"..page,form)
+local function show(player, name, spec)
+  if player and player:is_player() then core.show_formspec(player:get_player_name(), name, spec) end
 end
-core.register_chatcommand("novaterra",{
-  description="Open NOVATERRA hub",
+local function show_inventory(player)
+  -- Server-side inventory formspec: all lists are bound to the current player.
+  show(player, INVENTORY, player:get_inventory_formspec())
+end
+local function show_hub(player) show(player, FORM, hub()) end
+core.register_chatcommand('novaterra', {
+  description='Open the NOVATERRA in-game menu',
   func=function(name)
     local player=core.get_player_by_name(name)
-    if not player then return false,"Player not found" end
-    show(player,"hub");return true
+    if not player then return false, 'Player not connected' end
+    show_hub(player)
+    return true
   end,
 })
-core.register_chatcommand("guide",{
-  description="Open survival guide",
+core.register_chatcommand('guide', {
+  description='Open the NOVATERRA survival guide',
   func=function(name)
     local player=core.get_player_by_name(name)
-    if not player then return false,"Player not found" end
-    show(player,"guide");return true
+    if not player then return false, 'Player not connected' end
+    show(player, GUIDE, guide())
+    return true
   end,
 })
-core.register_chatcommand("nvhud",{
-  description="Toggle NOVATERRA HUD",
-  func=function(name)
-    local player=core.get_player_by_name(name)
-    if not player then return false,"Player not found" end
-    local enabled=player:get_meta():get_string("nv_hud")=="false"
-    novaterra_survival.set_hud_visible(player,enabled)
-    return true,enabled and "HUD enabled" or "HUD disabled"
-  end,
-})
-core.register_chatcommand("nvstatus",{
-  description="Show NOVATERRA survival status",
-  func=function(name)
-    local player=core.get_player_by_name(name)
-    if not player then return false,"Player not found" end
-    return true,"Health: "..player:get_hp().." / Hunger: "..novaterra_survival.get_hunger(player)
-  end,
-})
-core.register_on_player_receive_fields(function(player,formname,fields)
-  if type(formname)~="string" or formname:sub(1,6)~="nv_ui:" then return false end
-  if fields.quit then return true end
-  if fields.back then show(player,"hub");return true end
-  if fields.guide then show(player,"guide");return true end
-  if fields.settings then show(player,"settings");return true end
-  if fields.hud_visible then
-    novaterra_survival.set_hud_visible(player,fields.hud_visible=="true")
-    show(player,"settings")
+core.register_on_player_receive_fields(function(player, formname, fields)
+  if not player or not player:is_player() then return end
+  if (formname == '' or formname == INVENTORY) and fields.nv_guide then
+    show(player, GUIDE, guide())
+    return
   end
-  if fields.coordinates_visible then
-    novaterra_survival.set_coordinates_visible(player,fields.coordinates_visible=="true")
-    show(player,"settings")
+  if formname ~= FORM and formname ~= GUIDE and formname ~= 'nv_ui:controls' and formname ~= INVENTORY and formname ~= SETTINGS then return end
+  if fields.quit or fields.close or fields.resume then return end
+  if formname == SETTINGS and fields.coordinates_visible then
+    if novaterra_survival and novaterra_survival.set_coordinates_visible then
+      novaterra_survival.set_coordinates_visible(player, fields.coordinates_visible == 'true')
+    end
+    show(player, SETTINGS, settings(player))
+    return
   end
-  return true
+  if formname == SETTINGS and fields.hud_visible then
+    local visible = fields.hud_visible == 'true'
+    player:get_meta():set_int('nv_hide_hud', visible and 0 or 1)
+    if novaterra_survival and novaterra_survival.set_hud_visible then
+      novaterra_survival.set_hud_visible(player, visible)
+    end
+    show(player, SETTINGS, settings(player))
+    return
+  end
+  if fields.back then show_hub(player)
+  elseif formname == FORM and fields.guide then show(player, GUIDE, guide())
+  elseif formname == FORM and fields.controls then show(player, 'nv_ui:controls', controls())
+  elseif formname == FORM and fields.settings then show(player, SETTINGS, settings(player))
+  elseif formname == FORM and fields.inventory then
+    show_inventory(player)
+  end
 end)
+core.register_on_joinplayer(function(player)
+  core.chat_send_player(player:get_player_name(), 'NOVATERRA: type /novaterra to open the in-game menu, or /guide for survival help.')
+end)
+
+-- Lightweight cross-platform world status: no extra touch buttons or UI overlap.
+core.register_chatcommand('nvstatus', {
+  description = 'Show NOVATERRA position and in-game time',
+  func = function(name)
+    local player = core.get_player_by_name(name)
+    if not player then return false, 'Player not connected' end
+    local pos = player:get_pos()
+    local time = core.get_timeofday() or 0
+    local hour = math.floor(time * 24) % 24
+    local minute = math.floor((time * 24 - math.floor(time * 24)) * 60)
+    return true, string.format('NOVATERRA | X %.0f  Y %.0f  Z %.0f | %02d:%02d', pos.x, pos.y, pos.z, hour, minute)
+  end,
+})

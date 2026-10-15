@@ -15,34 +15,90 @@ node('glass','Glass','nv_glass.png',{cracky=3}, {drawtype='glasslike', paramtype
 node('torch','Torch','nv_torch.png',{dig_immediate=3,attached_node=1}, {drawtype='torchlike', paramtype='light', sunlight_propagates=true, light_source=12, walkable=false, selection_box={type='wallmounted'}, paramtype2='wallmounted'})
 core.register_node('nv_core:water_source', {description='Water', drawtype='liquid', tiles={'nv_water.png'}, special_tiles={{name='nv_water.png',backface_culling=false}}, paramtype='light', walkable=false, pointable=false, diggable=false, buildable_to=true, liquidtype='source', liquid_alternative_flowing='nv_core:water_flowing', liquid_alternative_source='nv_core:water_source', liquid_viscosity=1, groups={water=3,liquid=3}, is_ground_content=false})
 core.register_node('nv_core:water_flowing', {description='Flowing Water', drawtype='flowingliquid', tiles={'nv_water.png'}, special_tiles={{name='nv_water.png',backface_culling=false},{name='nv_water.png',backface_culling=true}}, paramtype='light', paramtype2='flowingliquid', walkable=false, pointable=false, diggable=false, buildable_to=true, liquidtype='flowing', liquid_alternative_flowing='nv_core:water_flowing', liquid_alternative_source='nv_core:water_source', liquid_viscosity=1, groups={water=3,liquid=3}, is_ground_content=false})
-local aliases={stone='stone',dirt='dirt',dirt_with_grass='grass',sand='sand',water_source='water_source',river_water_source='water_source',lava_source='stone',gravel='cobble',desert_sand='sand',desert_stone='stone',sandstone='stone',snow='grass',snowblock='stone',ice='glass',dirt_with_snow='grass',stair_sandstonebrick='stone',stair_desert_stone='stone',mossycobble='cobble',cobble='cobble',stair_cobble='cobble',stair_stone='stone',stair_sandstone='stone',sandstonebrick='stone',desert_sandstone='stone',desert_sandstone_brick='stone',silver_sand='sand',stair_desert_sandstone_brick='stone',stair_desert_sandstone='stone',stair_sandstone_block='stone',stair_desert_sandstone_block='stone',stair_silver_sandstone='stone',silver_sandstone='stone',silver_sandstone_brick='stone',stair_silver_sandstone_brick='stone',stair_silver_sandstone_block='stone',silver_sandstone_block='stone',stair_stone_block='stone',stone_block='stone',stair_stonebrick='stone',stonebrick='stone',stair_desert_stone_block='stone',desert_stone_block='stone',stair_desert_stonebrick='stone',desert_stonebrick='stone'}
-for source,target in pairs(aliases) do core.register_alias('mapgen_'..source,'nv_core:'..target) end
+core.register_alias('mapgen_stone','nv_core:stone')
+core.register_alias('mapgen_dirt','nv_core:dirt')
+core.register_alias('mapgen_dirt_with_grass','nv_core:grass')
+core.register_alias('mapgen_sand','nv_core:sand')
+core.register_alias('mapgen_water_source','nv_core:water_source')
+core.register_alias('mapgen_river_water_source','nv_core:water_source')
+core.register_alias('mapgen_lava_source','nv_core:stone')
+core.register_alias('mapgen_gravel','nv_core:cobble')
+core.register_alias('mapgen_desert_sand','nv_core:sand')
+core.register_alias('mapgen_desert_stone','nv_core:stone')
+core.register_alias('mapgen_sandstone','nv_core:stone')
+core.register_alias('mapgen_snow','nv_core:grass')
+core.register_alias('mapgen_snowblock','nv_core:stone')
+core.register_alias('mapgen_ice','nv_core:glass')
+core.register_alias('mapgen_dirt_with_snow','nv_core:grass')
+core.register_alias('mapgen_stair_sandstonebrick','nv_core:stone')
+core.register_alias('mapgen_stair_desert_stone','nv_core:stone')
+core.register_alias('mapgen_mossycobble','nv_core:cobble')
+core.register_alias('mapgen_cobble','nv_core:cobble')
+core.register_alias('mapgen_stair_cobble','nv_core:cobble')
+core.register_alias('mapgen_stair_stone','nv_core:stone')
+core.register_alias('mapgen_stair_sandstone','nv_core:stone')
+core.register_alias('mapgen_sandstonebrick','nv_core:stone')
+core.register_alias('mapgen_desert_sandstone','nv_core:stone')
+core.register_alias('mapgen_desert_sandstone_brick','nv_core:stone')
+core.register_alias('mapgen_silver_sand','nv_core:sand')
+core.register_alias('mapgen_stair_desert_sandstone_brick','nv_core:stone')
+core.register_alias('mapgen_stair_desert_sandstone','nv_core:stone')
+core.register_alias('mapgen_stair_sandstone_block','nv_core:stone')
+core.register_alias('mapgen_stair_desert_sandstone_block','nv_core:stone')
+core.register_alias('mapgen_stair_silver_sandstone','nv_core:stone')
+core.register_alias('mapgen_silver_sandstone','nv_core:stone')
+core.register_alias('mapgen_silver_sandstone_brick','nv_core:stone')
+core.register_alias('mapgen_stair_silver_sandstone_brick','nv_core:stone')
+core.register_alias('mapgen_stair_silver_sandstone_block','nv_core:stone')
+core.register_alias('mapgen_silver_sandstone_block','nv_core:stone')
+core.register_alias('mapgen_stair_stone_block','nv_core:stone')
+core.register_alias('mapgen_stone_block','nv_core:stone')
+core.register_alias('mapgen_stair_stonebrick','nv_core:stone')
+core.register_alias('mapgen_stonebrick','nv_core:stone')
+core.register_alias('mapgen_stair_desert_stone_block','nv_core:stone')
+core.register_alias('mapgen_desert_stone_block','nv_core:stone')
+core.register_alias('mapgen_stair_desert_stonebrick','nv_core:stone')
+core.register_alias('mapgen_desert_stonebrick','nv_core:stone')
 core.register_tool('nv_core:pickaxe', {description='Stone Pickaxe', inventory_image='nv_pickaxe.png', tool_capabilities={full_punch_interval=1.2,max_drop_level=0,groupcaps={cracky={times={[1]=7,[2]=3,[3]=1},uses=35,maxlevel=1}},damage_groups={fleshy=2}}})
 core.register_tool('nv_core:axe', {description='Wooden Axe', inventory_image='nv_axe.png', tool_capabilities={full_punch_interval=1.2,max_drop_level=0,groupcaps={choppy={times={[1]=4,[2]=2,[3]=1},uses=30,maxlevel=1}},damage_groups={fleshy=2}}})
 core.register_craft({output='nv_core:wood 4',recipe={{'nv_core:tree'}}})
 core.register_craft({output='nv_core:pickaxe',recipe={{'nv_core:cobble','nv_core:cobble','nv_core:cobble'},{'','nv_core:wood',''},{'','nv_core:wood',''}}})
 core.register_craft({output='nv_core:axe',recipe={{'nv_core:wood','nv_core:wood'},{'nv_core:wood','nv_core:wood'},{'','nv_core:wood'}}})
+-- Torches require coal (recipe supplied by nv_world).
+-- Glass requires smelting; the old shapeless sand-to-glass shortcut was removed.
 core.register_craft({type='cooking', output='nv_core:glass', recipe='nv_core:sand', cooktime=8})
+-- A compact, touch-friendly dark inventory inspired by the NOVATERRA references.
 local function inventory_formspec()
   return table.concat({
-    'formspec_version[4]size[12.6,10.2]','bgcolor[#09161DEB;true]',
+    'formspec_version[4]size[12.6,10.2]',
+    'bgcolor[#09161DEB;true]',
     'label[0.6,0.35;NOVATERRA  |  INVENTORY & CRAFTING]',
-    'box[0.55,0.95;4.0,4.05;#14252FCC]','label[0.85,1.12;CRAFTING]',
-    'list[current_player;craft;0.9,1.55;3,3;]','label[4.72,2.5;>]',
+    'box[0.55,0.95;4.0,4.05;#14252FCC]',
+    'label[0.85,1.12;CRAFTING]',
+    'list[current_player;craft;0.9,1.55;3,3;]',
+    'label[4.72,2.5;>]',
     'list[current_player;craftpreview;5.3,2.15;1,1;]',
-    'label[0.65,5.18;BACKPACK]','list[current_player;main;0.65,5.6;8,4;]',
+    'label[0.65,5.18;BACKPACK]',
+    'list[current_player;main;0.65,5.6;8,4;]',
     'button[9.3,5.6;2.55,0.85;nv_guide;SURVIVAL GUIDE]',
-    'label[9.3,6.8;BUILD  /  EXPLORE]','label[9.3,7.3;SURVIVE  /  THRIVE]',
-    'listring[current_player;main]','listring[current_player;craft]',
+    'label[9.3,6.8;BUILD  /  EXPLORE]',
+    'label[9.3,7.3;SURVIVE  /  THRIVE]',
+    'listring[current_player;main]',
+    'listring[current_player;craft]',
   })
 end
-core.register_on_joinplayer(function(player)
+local function set_inventory(player)
   local inv=player:get_inventory()
   inv:set_size('main',32)
   inv:set_size('craft',9)
+  -- craftpreview is an engine-managed output list; do not resize it manually.
   player:set_inventory_formspec(inventory_formspec())
+end
+core.register_on_joinplayer(function(player)
+  set_inventory(player)
   local meta=player:get_meta()
   if meta:get_int('nv_starter') == 0 then
+    local inv=player:get_inventory()
     inv:add_item('main','nv_core:wood 20')
     inv:add_item('main','nv_core:tree 12')
     inv:add_item('main','nv_core:pickaxe')
@@ -52,20 +108,31 @@ core.register_on_joinplayer(function(player)
     core.chat_send_player(player:get_player_name(),'Welcome to NOVATERRA! Explore, mine and build.')
   end
 end)
+-- Engine-managed tree decoration avoids expensive per-node mapgen writes.
+-- Only places trees on natural grass and leaves mapblock boundaries to the engine.
 core.register_decoration({
-  deco_type='schematic',place_on={'nv_core:grass'},sidelen=16,fill_ratio=0.007,
-  y_min=1,y_max=120,
-  schematic={
-    size={x=5,y=6,z=5},
-    data=(function()
-      local data={}
-      for y=1,6 do for z=1,5 do for x=1,5 do
-        local trunk=x==3 and z==3 and y<=5
-        local crown=y>=4 and y<=6 and math.abs(x-3)+math.abs(z-3)<=3
-        data[#data+1]={name=trunk and 'nv_core:tree' or (crown and 'nv_core:leaves' or 'air'),prob=trunk and 255 or (crown and 225 or 0)}
-      end end end
+  deco_type = 'schematic',
+  place_on = {'nv_core:grass'},
+  sidelen = 16,
+  fill_ratio = 0.007,
+  y_min = 1,
+  y_max = 120,
+  schematic = {
+    size = {x=5,y=6,z=5},
+    data = (function()
+      local data = {}
+      for y=1,6 do
+        for z=1,5 do
+          for x=1,5 do
+            local trunk = x==3 and z==3 and y<=5
+            local crown = y>=4 and y<=6 and math.abs(x-3)+math.abs(z-3)<=3
+            data[#data+1] = {name=trunk and 'nv_core:tree' or (crown and 'nv_core:leaves' or 'air'), prob=trunk and 255 or (crown and 225 or 0)}
+          end
+        end
+      end
       return data
     end)(),
   },
-  flags='place_center_x,place_center_z',rotation='random',
+  flags = 'place_center_x,place_center_z',
+  rotation = 'random',
 })
