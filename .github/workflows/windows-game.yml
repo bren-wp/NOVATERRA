@@ -5,6 +5,7 @@ on:
       - 'games/novaterra/**'
       - 'windows/**'
       - 'android/**'
+      - '.github/workflows/android-game.yml'
       - '.github/workflows/windows-game.yml'
   pull_request:
   workflow_dispatch:
