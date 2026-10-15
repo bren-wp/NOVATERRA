@@ -29,6 +29,9 @@ jobs:
           printf 'server_name = NOVATERRA Smoke Test\nport = 30491\nmax_users = 1\n' > smoke/minetest.conf
           export LUANTI_GAME_PATH="$GITHUB_WORKSPACE/games"
           export MINETEST_GAME_PATH="$GITHUB_WORKSPACE/games"
+          mkdir -p "$HOME/.minetest/games"
+          cp -a games/novaterra "$HOME/.minetest/games/novaterra"
+          export MINETEST_USER_PATH="$HOME/.minetest"
           ENGINE=$(command -v luantiserver || command -v minetestserver || command -v minetest-server || true)
           if [[ -z "$ENGINE" ]]; then
             echo "No headless Luanti executable after package installation" >&2
