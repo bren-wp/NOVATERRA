@@ -9,6 +9,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: novaterra-android-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   native-android-arm64:
     runs-on: ubuntu-latest
@@ -48,6 +51,11 @@ jobs:
           APK=$(find build/luanti/android/app/build/outputs/apk -name '*arm64-v8a*debug.apk' -type f | head -1)
           test -n "$APK"
           unzip -t "$APK" >/dev/null
+          AAPT=$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)
+          test -x "$AAPT"
+          "$AAPT" dump badging "$APK" > artifacts/android-badging.txt
+          grep -q "package: name='com.brendigo.novaterra' versionCode='12001'" artifacts/android-badging.txt
+          grep -q "application-label:'NOVATERRA'" artifacts/android-badging.txt
           unzip -p "$APK" assets/assets.zip > artifacts/novaterra-game-assets.zip
           unzip -t artifacts/novaterra-game-assets.zip >/dev/null
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/game.conf'
