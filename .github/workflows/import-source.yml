@@ -1,46 +1,25 @@
-name: Import original NOVATERRA source
+name: Verify archived NOVATERRA v1.1 source
 on:
-  push:
-    paths:
-      - 'imports/novaterra-v1.1.0-source.tar.xz.b64'
-      - 'scripts/import_source.py'
-      - 'tests/test_repository_integrity.py'
-      - '.github/workflows/import-source.yml'
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
-  import-source:
-    if: github.ref == 'refs/heads/main'
+  verify-historical-source:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-      - name: Verify and import the original source archive
-        run: python3 scripts/import_source.py
-      - name: Install Lua parser
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1
-      - name: Validate imported Lua code and assets
+      - name: Import archived source into an isolated temporary folder
         shell: bash
         run: |
           set -euo pipefail
-          find games/novaterra -type f -name '*.lua' -print0 | xargs -0 -r -n1 luac5.1 -p
-          python3 -m unittest discover -s tests -p 'test*.py' -v
-          python3 tests/check_source.py
-          echo 'Original asset manifest:'
-          find games/novaterra -name '*.png' | sort
-          test "$(find games/novaterra -name '*.png' | wc -l)" -eq 17
-      - name: Commit verified game source and textures
+          mkdir -p "$RUNNER_TEMP/novaterra-archive"
+          python3 scripts/import_source.py --root "$RUNNER_TEMP/novaterra-archive"
+          test "$(find "$RUNNER_TEMP/novaterra-archive/games/novaterra" -type f -name '*.png' | wc -l)" -eq 17
+          test -s "$RUNNER_TEMP/novaterra-archive/games/novaterra/game.conf"
+      - name: Verify original Lua source without modifying the active game
         shell: bash
         run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add games/novaterra tests
-          if git diff --cached --quiet; then
-            echo 'Source is already synchronized'
-          else
-            git commit -m "feat: import all original v1.1.0 Luanti gameplay assets and tests"
-            git push origin HEAD:main
-          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.1
+          find "$RUNNER_TEMP/novaterra-archive/games/novaterra" -type f -name '*.lua' -print0 | xargs -0 -r -n1 luac5.1 -p
+          echo "Archived v1.1.0 gameplay was verified in isolation."
