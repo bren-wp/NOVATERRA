@@ -64,8 +64,14 @@ def import_archive(root: pathlib.Path, payload_file: pathlib.Path, expected_sha2
             data = content_file.read()
             if len(data) != member.size:
                 raise SystemExit(f"Incorrect extracted length for {member.name}")
+            if target.exists() and target.read_bytes() != data:
+                raise SystemExit(
+                    f"Refusing to overwrite modified game code: {member.name}. "
+                    "Import this historical archive into a new empty directory."
+                )
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(data)
+            if not target.exists():
+                target.write_bytes(data)
 
     textures = sum(path.suffix == ".png" for _, path in imported)
     lua = sum(path.suffix == ".lua" for _, path in imported)
