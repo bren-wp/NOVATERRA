@@ -83,6 +83,23 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     mobile_settings_path.write_text(mobile_settings, encoding="utf-8")
     gradle_path.write_text(gradle, encoding="utf-8")
 
+    # Install the branded Android shell as real resources. Keep the engine's
+    # MainActivity and progress callbacks intact so asset extraction remains safe.
+    res_folder = engine / "android/app/src/main/res"
+    branding_folder = project / "android/res"
+    resources = {
+        "drawable/novaterra_mark.xml": "drawable/novaterra_mark.xml",
+        "drawable/novaterra_splash_background.xml": "drawable/novaterra_splash_background.xml",
+        "layout/novaterra_splash.xml": "layout/activity_main.xml",
+    }
+    for source_name, target_name in resources.items():
+        source_path = branding_folder / source_name
+        if not source_path.is_file():
+            raise SystemExit(f"Missing NOVATERRA Android branding resource: {source_path}")
+        destination_path = res_folder / target_name
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source_path, destination_path)
+
     manifest_path = engine / "android/app/src/main/AndroidManifest.xml"
     manifest = manifest_path.read_text(encoding="utf-8")
     for extension in (".fileprovider", ".documents"):
@@ -90,6 +107,10 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
             manifest, f"net.minetest.minetest{extension}",
             f"{APP_ID}{extension}", "AndroidManifest.xml"
         )
+    manifest = replace_once(
+        manifest, 'android:icon="@mipmap/ic_launcher"',
+        'android:icon="@drawable/novaterra_mark"', "AndroidManifest.xml"
+    )
     manifest_path.write_text(manifest, encoding="utf-8")
 
     activity = engine / "android/app/src/main/java/net/minetest/minetest/GameActivity.java"
@@ -97,6 +118,10 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     java = replace_once(
         java, '"net.minetest.minetest.fileprovider"',
         f'"{APP_ID}.fileprovider"', "GameActivity.java"
+    )
+    java = replace_once(
+        java, "setSmallIcon(R.mipmap.ic_launcher)",
+        "setSmallIcon(R.drawable.novaterra_mark)", "GameActivity.java"
     )
     activity.write_text(java, encoding="utf-8")
 
@@ -108,6 +133,8 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     )
     strings = strings.replace("Loading Luanti", "Loading NOVATERRA")
     strings = strings.replace("Luanti is running", "NOVATERRA is running")
+    strings = strings.replace("Notifications from Luanti", "NOVATERRA updates")
+    strings = strings.replace("Loading&#8230;", "Preparing NOVATERRA&#8230;")
     strings_path.write_text(strings, encoding="utf-8")
     print(f"Prepared {APP_ID} ({VERSION_NAME}; code {VERSION_CODE}) with {len(textures)} original textures")
 
