@@ -33,7 +33,8 @@ foreach ($candidate in $candidates) {
 if (-not $engine) {
     throw "Luanti executable not found. Install Luanti or provide -LuantiExe."
 }
-$argsList = @("--gameid", "novaterra", "--gamepath", $gameDir)
+$argsList = @("--gameid", "novaterra")
+$env:LUANTI_GAME_PATH = Join-Path $repoRoot "games"
 if ($WorldPath) {
     $argsList += @("--world", $WorldPath)
 }
