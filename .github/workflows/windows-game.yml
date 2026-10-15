@@ -62,7 +62,7 @@ jobs:
         run: |
           $output = (& build/staging/NOVATERRA/engine/bin/luanti.exe --version 2>&1 | Out-String)
           Write-Host $output
-          if ($output -notmatch 'Luanti 5\\.17\\.0 \\(Windows\\)') { throw "Native engine version or platform could not be verified" }
+          if (-not $output.Contains('Luanti 5.17.0 (Windows)')) { throw "Native engine version or platform could not be verified" }
           if ($LASTEXITCODE -notin @(0, 1)) { throw "Native engine terminated unexpectedly: $LASTEXITCODE" }
       - name: Package and checksum portable Windows game
         shell: pwsh
