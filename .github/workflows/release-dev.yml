@@ -58,6 +58,7 @@ jobs:
           (cd release/windows && sha256sum --check SHA256SUMS.txt)
           test -s release/windows/NOVATERRA-Windows-x64-v1.2.0-dev.zip
           test -s release/windows/NOVATERRA-Windows-Setup-v1.2.0-dev.exe
+          test -s release/windows/NOVATERRA-Windows-Portable-v1.2.0-dev.exe
           test -s release/android/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk
           test -s release/android/NOVATERRA-Android-v1.2.0-dev-debug.aab
           unzip -t release/windows/NOVATERRA-Windows-x64-v1.2.0-dev.zip >/dev/null
@@ -68,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            if [[ "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 5)')" == "true" ]]; then
+            if [[ "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 6)')" == "true" ]]; then
               echo "Verified release $RELEASE_TAG already published"
               exit 0
             fi
@@ -82,7 +83,7 @@ jobs:
 
           Native-engine development preview based on source commit \`$TARGET_SHA\`.
 
-          - **Windows x64:** portable ZIP and unsigned per-user Setup EXE, with NOVATERRA launcher, Luanti engine and bundled game assets.
+          - **Windows x64:** genuine single-file self-extracting Portable EXE, portable ZIP and unsigned per-user Setup EXE; all include the Luanti engine and game data.
           - **Android arm64:** debug-signed APK and development AAB, with bundled NOVATERRA content.
           - Creature AI, exploration, survival, food, mining, crafting and furnace mechanics.
           - CI-tested source, Luanti startup and binary archive verification.
@@ -108,5 +109,5 @@ jobs:
             echo "GitHub release upload failed on attempt $attempt; retrying"
             sleep 15
           done
-          test "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 5)')" = "true"
+          test "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 6)')" = "true"
           echo "Published verified release $RELEASE_TAG with Android and Windows artifacts"
