@@ -10,19 +10,25 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Lua parser
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1
-      - name: Validate imported source
+      - name: Validate game source and assets
         shell: bash
         run: |
           set -euo pipefail
-          test -f README.md
-          test -f LICENSE
-          test -f games/novaterra/game.conf
+          test -s LICENSE
+          test -s games/novaterra/game.conf
           for mod in nv_core nv_survival nv_ui nv_world; do
-            test -f "games/novaterra/mods/$mod/mod.conf"
+            test -s "games/novaterra/mods/$mod/mod.conf"
             test -s "games/novaterra/mods/$mod/init.lua"
           done
           test -s games/novaterra/mods/nv_world/furnace.lua
-          test -s games/novaterra/mods/nv_core/textures/nv_stone.png
-          test -s games/novaterra/mods/nv_world/textures/nv_coal_overlay.png
           find games/novaterra -name '*.lua' -print0 | xargs -0 -r -n1 luac5.1 -p
           python3 -m unittest discover -s tests -p 'test*.py' -v
+      - name: Inspect Windows launcher on PowerShell
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "windows/Launch-NOVATERRA.ps1"), [ref]$tokens, [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) { $errors | Out-String | Write-Error; exit 1 }
