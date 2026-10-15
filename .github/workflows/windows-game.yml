@@ -64,6 +64,20 @@ jobs:
           Write-Host $output
           if (-not $output.Contains('Luanti 5.17.0 (Windows)')) { throw "Native engine version or platform could not be verified" }
           if ($LASTEXITCODE -notin @(0, 1)) { throw "Native engine terminated unexpectedly: $LASTEXITCODE" }
+      - name: Compile Windows Setup installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path -LiteralPath $iscc)) {
+            choco install innosetup --no-progress -y
+            if ($LASTEXITCODE -ne 0) { throw "Inno Setup installation failed" }
+          }
+          if (!(Test-Path -LiteralPath $iscc)) { throw "ISCC.exe is missing" }
+          & $iscc "/Qp" "windows/novaterra.iss"
+          if ($LASTEXITCODE -ne 0) { throw "NOVATERRA setup compilation failed" }
+          if (!(Test-Path artifacts/NOVATERRA-Windows-Setup-v1.2.0-dev.exe)) {
+            throw "Setup EXE was not generated"
+          }
       - name: Package and checksum portable Windows game
         shell: pwsh
         run: |
@@ -71,9 +85,15 @@ jobs:
           Compress-Archive -Path build/staging/NOVATERRA -DestinationPath artifacts/NOVATERRA-Windows-x64-v1.2.0-dev.zip -CompressionLevel Optimal
           $zip = Get-Item artifacts/NOVATERRA-Windows-x64-v1.2.0-dev.zip
           if ($zip.Length -lt 1000000) { throw "Windows game archive is unexpectedly small" }
-          $hash = (Get-FileHash $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  $($zip.Name)" | Set-Content artifacts/SHA256SUMS.txt -Encoding ascii
-          Write-Host "NOVATERRA Windows package: $($zip.Length) bytes SHA256=$hash"
+          $setup = Get-Item artifacts/NOVATERRA-Windows-Setup-v1.2.0-dev.exe
+          if ($setup.Length -lt 1000000) { throw "Windows installer is unexpectedly small" }
+          $packages = @($zip, $setup)
+          $sums = @($packages | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            Write-Host "NOVATERRA Windows package: $($_.Name) $($_.Length) bytes SHA256=$hash"
+            "$hash  $($_.Name)"
+          })
+          $sums | Set-Content artifacts/SHA256SUMS.txt -Encoding ascii
       - uses: actions/upload-artifact@v4
         with:
           name: NOVATERRA-Windows-x64-v1.2.0-dev
