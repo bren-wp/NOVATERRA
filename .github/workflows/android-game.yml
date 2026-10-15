@@ -73,6 +73,7 @@ jobs:
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_world/textures/nv_coal_overlay.png'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'minetest.conf'
           unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'hud_scaling = 0.9'
+          unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'menu_last_game = novaterra'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_mobs/init.lua'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_rpg/init.lua'
           for icon in nv_health_full.png nv_health_empty.png nv_hunger_full.png nv_hunger_empty.png; do
