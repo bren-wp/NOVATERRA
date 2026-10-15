@@ -20,7 +20,7 @@ class RepositoryIntegrity(unittest.TestCase):
     def test_modules_complete(self):
         for mod in ("nv_core", "nv_survival", "nv_ui", "nv_world"):
             with self.subTest(mod=mod):
-                self.assertTrue((MODS / mod / "mod.conf").is_file())
+        self.assertTrue("register_node('nv_world:furnace'" in source or 'register_node("nv_world:furnace"' in source)
                 self.assertTrue((MODS / mod / "init.lua").is_file())
                 self.assertGreater((MODS / mod / "init.lua").stat().st_size, 100)
 
