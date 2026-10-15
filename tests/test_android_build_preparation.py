@@ -53,7 +53,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("novaterra-mobile.conf", gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
-        self.assertEqual(len(list(game.rglob("*.png"))), 17)
+        self.assertEqual(len(list(game.rglob("*.png"))), 21)
         for mod in ("nv_core", "nv_world", "nv_survival", "nv_ui", "nv_mobs", "nv_rpg"):
             with self.subTest(mod=mod):
                 self.assertTrue((game / "mods" / mod / "init.lua").is_file())
