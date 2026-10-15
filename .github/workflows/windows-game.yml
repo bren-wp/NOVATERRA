@@ -1,0 +1,80 @@
+name: Windows portable NOVATERRA game
+on:
+  push:
+    paths:
+      - 'games/novaterra/**'
+      - 'windows/**'
+      - '.github/workflows/windows-game.yml'
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package-win-x64:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Validate complete NOVATERRA game data
+        shell: pwsh
+        run: |
+          ./windows/Check-NOVATERRA.ps1
+          $textures = @(Get-ChildItem -Path games/novaterra -Recurse -Filter '*.png')
+          if ($textures.Count -ne 17) { throw "Expected 17 original PNG assets; got $($textures.Count)" }
+      - name: Download and verify Luanti 5.17.0 64-bit portable engine
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          $url = "https://github.com/luanti-org/luanti/releases/download/5.17.0/luanti-5.17.0-win64.zip"
+          & curl.exe -fL --retry 3 --retry-delay 3 -o build/luanti-win64.zip $url
+          if ($LASTEXITCODE -ne 0) { throw "Luanti portable engine download failed" }
+          $actual = (Get-FileHash build/luanti-win64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          $expected = "3ce20c77f5c206a988d7a6b883439e2759e3cf67428c9dbcf99ecd2936da631c"
+          if ($actual -ne $expected) { throw "Luanti engine SHA256 mismatch: $actual" }
+          Expand-Archive -Path build/luanti-win64.zip -DestinationPath build/engine-unpacked -Force
+      - name: Publish compiled NOVATERRA Windows launcher
+        shell: pwsh
+        run: |
+          dotnet publish windows/NOVATERRA.Launcher/NOVATERRA.Launcher.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -o build/launcher
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (!(Test-Path build/launcher/NOVATERRA.exe)) { throw "Launcher EXE missing" }
+      - name: Assemble complete Windows game distribution
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path build/engine-unpacked -Recurse -File -Filter luanti.exe | Where-Object { $_.Directory.Name -eq 'bin' } | Select-Object -First 1
+          if ($null -eq $exe) { throw "Luanti executable not found in verified release archive" }
+          $engineRoot = Split-Path $exe.Directory.FullName -Parent
+          New-Item -ItemType Directory -Force -Path build/staging/NOVATERRA/engine | Out-Null
+          Copy-Item -Path (Join-Path $engineRoot '*') -Destination build/staging/NOVATERRA/engine -Recurse -Force
+          Copy-Item -LiteralPath build/launcher/NOVATERRA.exe -Destination build/staging/NOVATERRA/NOVATERRA.exe
+          New-Item -ItemType Directory -Force -Path build/staging/NOVATERRA/games | Out-Null
+          Copy-Item -Path games/novaterra -Destination build/staging/NOVATERRA/games -Recurse -Force
+          Copy-Item -LiteralPath LICENSE -Destination build/staging/NOVATERRA/LICENSE-NOVATERRA.txt
+          if (!(Test-Path build/staging/NOVATERRA/engine/bin/luanti.exe)) { throw "Engine binary was not packaged" }
+          if (!(Test-Path build/staging/NOVATERRA/games/novaterra/game.conf)) { throw "Game config was not packaged" }
+          $packagedTextures = @(Get-ChildItem build/staging/NOVATERRA/games/novaterra -Recurse -Filter '*.png')
+          if ($packagedTextures.Count -ne 17) { throw "Packaged textures missing" }
+      - name: Smoke-check native Luanti engine
+        shell: pwsh
+        run: |
+          & build/staging/NOVATERRA/engine/bin/luanti.exe --version
+          if ($LASTEXITCODE -ne 0) { throw "Native engine smoke test failed" }
+      - name: Package and checksum portable Windows game
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          Compress-Archive -Path build/staging/NOVATERRA -DestinationPath artifacts/NOVATERRA-Windows-x64-v1.2.0-dev.zip -CompressionLevel Optimal
+          $zip = Get-Item artifacts/NOVATERRA-Windows-x64-v1.2.0-dev.zip
+          if ($zip.Length -lt 1000000) { throw "Windows game archive is unexpectedly small" }
+          $hash = (Get-FileHash $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $($zip.Name)" | Set-Content artifacts/SHA256SUMS.txt -Encoding ascii
+          Write-Host "NOVATERRA Windows package: $($zip.Length) bytes SHA256=$hash"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NOVATERRA-Windows-x64-v1.2.0-dev
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
