@@ -69,8 +69,11 @@ jobs:
         run: |
           set -euo pipefail
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Release $RELEASE_TAG already exists: no overwrite"
-            exit 0
+            if [[ "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 4)')" == "true" ]]; then
+              echo "Verified release $RELEASE_TAG already published"
+              exit 0
+            fi
+            echo "Incomplete draft $RELEASE_TAG found; will repair it"
           fi
           mkdir -p release/upload
           cp release/windows/*.zip release/android/*.apk release/android/*.aab release/upload/
@@ -89,4 +92,19 @@ jobs:
 
           See [issue #1](https://github.com/$GH_REPO/issues/1) for outstanding acceptance criteria.
           EOF
-          gh release create "$RELEASE_TAG" release/upload/* --target "$TARGET_SHA" --title "NOVATERRA $RELEASE_TAG" --notes-file release/notes.md --prerelease
+          # The GitHub API may return HTTP 500 after creating an empty release draft.
+          # Remove only an incomplete draft with this exact tag and retry atomically.
+          for attempt in 1 2 3 4 5; do
+            draft_id=$(gh api "repos/$GH_REPO/releases?per_page=100" --jq ".[] | select(.tag_name == \"$RELEASE_TAG\" and .draft == true) | .id" | head -1 || true)
+            if [[ -n "$draft_id" ]]; then
+              echo "Removing incomplete draft $draft_id for $RELEASE_TAG"
+              gh api -X DELETE "repos/$GH_REPO/releases/$draft_id"
+            fi
+            if gh release create "$RELEASE_TAG" release/upload/* --target "$TARGET_SHA" --title "NOVATERRA $RELEASE_TAG" --notes-file release/notes.md --prerelease; then
+              break
+            fi
+            echo "GitHub release upload failed on attempt $attempt; retrying"
+            sleep 15
+          done
+          test "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 4)')" = "true"
+          echo "Published verified release $RELEASE_TAG with Android and Windows artifacts"
