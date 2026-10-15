@@ -7,28 +7,52 @@ on:
 permissions:
   contents: write
   actions: read
+concurrency:
+  group: novaterra-prerelease
+  cancel-in-progress: false
 jobs:
-  publish-v1-2-0-dev:
+  release-verified-builds:
     if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
-      - name: Locate tested Android and Windows build artifacts
+      - name: Find Windows and Android builds for the SAME commit
         shell: bash
         run: |
           set -euo pipefail
           if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
             ANDROID_RUN="${{ github.event.workflow_run.id }}"
+            TARGET_SHA="${{ github.event.workflow_run.head_sha }}"
           else
-            ANDROID_RUN=$(gh run list --workflow android-game.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+            ANDROID_RUN=$(gh run list --workflow android-game.yml --branch main --status success --limit 100 --json databaseId --jq '.[0].databaseId')
+            test -n "$ANDROID_RUN" && test "$ANDROID_RUN" != "null"
+            TARGET_SHA=$(gh run view "$ANDROID_RUN" --json headSha --jq '.headSha')
           fi
-          WIN_RUN=$(gh run list --workflow windows-game.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')
-          test -n "$ANDROID_RUN"
+          MAIN_SHA=$(gh api repos/"$GH_REPO"/commits/main --jq '.sha')
+          if [[ "$MAIN_SHA" != "$TARGET_SHA" ]]; then
+            echo "Skipping outdated commit: $TARGET_SHA != current main $MAIN_SHA"
+            exit 1
+          fi
+          WIN_RUN=""
+          for attempt in $(seq 1 40); do
+            WIN_RUN=$(gh run list --workflow windows-game.yml --branch main --status success --limit 100 --json databaseId,headSha --jq ".[] | select(.headSha == \"$TARGET_SHA\") | .databaseId" | head -1)
+            if [[ -n "$WIN_RUN" ]]; then break; fi
+            echo "Waiting for Windows game build for $TARGET_SHA (attempt $attempt)"
+            sleep 30
+          done
           test -n "$WIN_RUN"
+          printf 'ANDROID_RUN=%s\nWIN_RUN=%s\nTARGET_SHA=%s\n' "$ANDROID_RUN" "$WIN_RUN" "$TARGET_SHA" >> "$GITHUB_ENV"
+          printf 'RELEASE_TAG=v1.2.0-dev.%s\n' "${TARGET_SHA:0:8}" >> "$GITHUB_ENV"
+      - name: Download and verify both native app archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh run view "$ANDROID_RUN" --json headSha --jq '.headSha')" = "$TARGET_SHA"
+          test "$(gh run view "$WIN_RUN" --json headSha --jq '.headSha')" = "$TARGET_SHA"
           mkdir -p release/android release/windows
           gh run download "$ANDROID_RUN" -n NOVATERRA-Android-arm64-v1.2.0-dev-debug -D release/android
           gh run download "$WIN_RUN" -n NOVATERRA-Windows-x64-v1.2.0-dev -D release/windows
@@ -37,29 +61,32 @@ jobs:
           test -s release/windows/NOVATERRA-Windows-x64-v1.2.0-dev.zip
           test -s release/android/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk
           test -s release/android/NOVATERRA-Android-v1.2.0-dev-debug.aab
-      - name: Publish a truthful development prerelease
+          unzip -t release/windows/NOVATERRA-Windows-x64-v1.2.0-dev.zip >/dev/null
+          unzip -t release/android/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk >/dev/null
+          unzip -t release/android/NOVATERRA-Android-v1.2.0-dev-debug.aab >/dev/null
+      - name: Publish one immutable development prerelease per tested commit
         shell: bash
         run: |
           set -euo pipefail
-          if gh release view v1.2.0-dev >/dev/null 2>&1; then
-            echo 'Release v1.2.0-dev already exists; no overwrite'
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists: no overwrite"
             exit 0
           fi
           mkdir -p release/upload
           cp release/windows/*.zip release/android/*.apk release/android/*.aab release/upload/
           (cd release/upload && sha256sum ./* > SHA256SUMS.txt)
-          cat > release/notes.md <<'EOF'
-          # NOVATERRA v1.2.0-dev
+          cat > release/notes.md <<EOF
+          # NOVATERRA $RELEASE_TAG
 
-          First source-complete development preview of the NOVATERRA voxel-survival game.
+          Native-engine development preview based on source commit \`$TARGET_SHA\`.
 
-          - Windows x64 portable archive includes a compiled native Windows launcher, Luanti 5.17.0 and NOVATERRA game data.
-          - Android arm64 debug APK and test AAB embed NOVATERRA and a compiled Android Luanti client.
-          - 17/17 original PNG textures and all imported game source files verified.
-          - Automated source syntax, tests, package and binary-integrity checks.
+          - **Windows x64:** portable archive with compiled NOVATERRA launcher, Luanti engine and game assets.
+          - **Android arm64:** debug-signed APK and development AAB, with bundled NOVATERRA content.
+          - Creature AI, exploration, survival, food, mining, crafting and furnace mechanics.
+          - CI-tested source, Luanti startup and binary archive verification.
 
-          **Development build:** Android artifacts are debug-signed, not Play Store-ready.
-          Full gameplay runtime, device compatibility, screenshots and 1:1 visual parity are not yet certified.
-          See issue #1 for remaining acceptance criteria.
+          **Not production-certified.** Android AAB is a debug development artifact, not a Play Store release. No physical-device install, performance or 1:1 visual parity certification yet.
+
+          See [issue #1](https://github.com/$GH_REPO/issues/1) for outstanding acceptance criteria.
           EOF
-          gh release create v1.2.0-dev release/upload/* --target main --title 'NOVATERRA v1.2.0-dev' --notes-file release/notes.md --prerelease
+          gh release create "$RELEASE_TAG" release/upload/* --target "$TARGET_SHA" --title "NOVATERRA $RELEASE_TAG" --notes-file release/notes.md --prerelease --verify-tag
