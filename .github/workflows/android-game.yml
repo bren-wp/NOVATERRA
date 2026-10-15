@@ -11,7 +11,7 @@ permissions:
   contents: read
 concurrency:
   group: novaterra-android-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   native-android-arm64:
     runs-on: ubuntu-latest
@@ -22,6 +22,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: novaterra-gradle-${{ runner.os }}-luanti-5.17.0-${{ hashFiles('android/prepare-luanti.py') }}
+          restore-keys: |
+            novaterra-gradle-${{ runner.os }}-luanti-5.17.0-
       - name: Use preinstalled Android SDK
         shell: bash
         run: |
@@ -54,7 +63,8 @@ jobs:
           AAPT=$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)
           test -x "$AAPT"
           "$AAPT" dump badging "$APK" > artifacts/android-badging.txt
-          grep -q "package: name='com.brendigo.novaterra' versionCode='12001'" artifacts/android-badging.txt
+          EXPECTED_VERSION_CODE=$((12000 + GITHUB_RUN_NUMBER))
+          grep -q "package: name='com.brendigo.novaterra' versionCode='$EXPECTED_VERSION_CODE'" artifacts/android-badging.txt
           grep -q "application-label:'NOVATERRA'" artifacts/android-badging.txt
           unzip -p "$APK" assets/assets.zip > artifacts/novaterra-game-assets.zip
           unzip -t artifacts/novaterra-game-assets.zip >/dev/null
