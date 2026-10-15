@@ -18,6 +18,7 @@ local function hub()
     'button[0.8,5.15;4.4,0.85;map;MAP / WAYPOINT]',
     'button[0.8,6.15;2.1,0.75;controls;KONTROLE]',
     'button[3.0,6.15;2.2,0.75;settings;POSTAVKE]',
+    'button[5.8,6.15;4.35,0.75;quests;ZADACI I POSTIGNUCA]',
     'label[5.8,2.4;NOVATERRA / SURVIVAL WORLD]',
     'textarea[5.8,3;4.3,2.8;;;' .. esc('Svjetovi, multiplayer i postavke dostupni su u Luanti glavnom izborniku. Ovaj ekran je izbornik unutar igre.') .. ']',
     'button_exit[3.8,7.1;3.4,0.8;close;POVRATAK U IGRU]',
@@ -96,6 +97,10 @@ core.register_chatcommand('guide', {
 })
 core.register_on_player_receive_fields(function(player, formname, fields)
   if not player or not player:is_player() then return end
+  if (formname == '' or formname == INVENTORY) and fields.nv_quests then
+    if novaterra_rpg and novaterra_rpg.show then novaterra_rpg.show(player) end
+    return
+  end
   if (formname == '' or formname == INVENTORY) and fields.nv_guide then
     show(player, GUIDE, guide())
     return
@@ -123,6 +128,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
   elseif formname == FORM and fields.map then
     core.close_formspec(player:get_player_name(), FORM)
     core.chatcommands.nvmap.func(player:get_player_name())
+  elseif formname == FORM and fields.quests then
+    if novaterra_rpg and novaterra_rpg.show then novaterra_rpg.show(player) end
   elseif formname == FORM and fields.controls then show(player, 'nv_ui:controls', controls())
   elseif formname == FORM and fields.settings then show(player, SETTINGS, settings(player))
   elseif formname == FORM and fields.inventory then
