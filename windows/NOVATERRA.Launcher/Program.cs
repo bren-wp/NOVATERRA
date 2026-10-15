@@ -32,6 +32,8 @@ internal static class Program
             }
 
             var gamePath = Path.Combine(root, "games", "novaterra");
+            if (!File.Exists(Path.Combine(gamePath, "game.conf")))
+                throw new FileNotFoundException("NOVATERRA game.conf is missing.");
             var start = new ProcessStartInfo(engine)
             {
                 UseShellExecute = false,
@@ -39,8 +41,8 @@ internal static class Program
             };
             start.ArgumentList.Add("--gameid");
             start.ArgumentList.Add("novaterra");
-            start.ArgumentList.Add("--gamepath");
-            start.ArgumentList.Add(gamePath);
+            // Use the engine-supported game search path; --gamepath is not a Luanti CLI option.
+            start.Environment["LUANTI_GAME_PATH"] = Path.Combine(root, "games");
             foreach (var argument in args)
                 start.ArgumentList.Add(argument);
 
