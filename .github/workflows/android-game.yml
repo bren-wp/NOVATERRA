@@ -54,7 +54,7 @@ jobs:
           unzip -t "$AAB" >/dev/null
           cp "$AAB" artifacts/NOVATERRA-Android-v1.2.0-dev-debug.aab
           rm artifacts/novaterra-game-assets.zip
-          (cd artifacts && sha256sum '*.apk' '*.aab' > SHA256SUMS.txt)
+          (cd artifacts && sha256sum ./*.apk ./*.aab > SHA256SUMS.txt)
       - uses: actions/upload-artifact@v4
         with:
           name: NOVATERRA-Android-arm64-v1.2.0-dev-debug
