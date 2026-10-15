@@ -4,13 +4,13 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
-  validate:
+  syntax:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Lua parser
+      - name: Install Lua 5.1 parser
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1
-      - name: Validate game source and assets
+      - name: Validate Lua syntax and source structure
         shell: bash
         run: |
           set -euo pipefail
@@ -22,8 +22,7 @@ jobs:
           done
           test -s games/novaterra/mods/nv_world/furnace.lua
           find games/novaterra -name '*.lua' -print0 | xargs -0 -r -n1 luac5.1 -p
-          python3 -m unittest discover -s tests -p 'test*.py' -v
-      - name: Inspect Windows launcher on PowerShell
+      - name: Validate Windows launcher PowerShell syntax
         shell: pwsh
         run: |
           $tokens = $null
@@ -32,3 +31,9 @@ jobs:
             (Resolve-Path "windows/Launch-NOVATERRA.ps1"), [ref]$tokens, [ref]$errors
           ) | Out-Null
           if ($errors.Count -gt 0) { $errors | Out-String | Write-Error; exit 1 }
+  assets-and-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check original textures and source tests
+        run: python3 -m unittest discover -s tests -p 'test*.py' -v
