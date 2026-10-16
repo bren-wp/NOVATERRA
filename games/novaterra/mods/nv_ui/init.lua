@@ -129,7 +129,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     return
   end
   if formname ~= FORM and formname ~= GUIDE and formname ~= 'nv_ui:controls' and formname ~= INVENTORY and formname ~= SETTINGS then return end
-  if fields.quit or fields.close or fields.resume then return end
+  if fields.resume then
+    core.close_formspec(player:get_player_name(), formname)
+    return
+  end
+  if fields.quit or fields.close then return end
   if formname == SETTINGS and fields.mobile_interface then
     player:get_meta():set_int('nv_classic_ui', fields.mobile_interface == 'true' and 0 or 1)
     show(player, SETTINGS, settings(player))
