@@ -2,7 +2,9 @@ name: Android NOVATERRA game build
 on:
   push:
     paths:
-      - 'android/**'
+      - 'prepare-luanti.py'
+      - 'offline_mainmenu.py'
+      - 'res/**'
       - 'games/novaterra/**'
       - 'tests/**'
       - '.github/workflows/source-validation.yml'
@@ -30,7 +32,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: novaterra-gradle-${{ runner.os }}-luanti-5.17.0-${{ hashFiles('android/prepare-luanti.py') }}
+          key: novaterra-gradle-${{ runner.os }}-luanti-5.17.0-${{ hashFiles('prepare-luanti.py', 'offline_mainmenu.py') }}
           restore-keys: |
             novaterra-gradle-${{ runner.os }}-luanti-5.17.0-
       - name: Use preinstalled Android SDK
@@ -46,7 +48,7 @@ jobs:
       - name: Check out pinned Luanti native engine 5.17.0
         run: git clone --branch 5.17.0 --depth 1 https://github.com/luanti-org/luanti.git build/luanti
       - name: Brand Android client and bundle the full NOVATERRA game
-        run: python3 android/prepare-luanti.py --luanti build/luanti --project .
+        run: python3 prepare-luanti.py --luanti build/luanti --project .
       - name: Verify patched engine is offline-only
         shell: bash
         run: |
