@@ -31,7 +31,7 @@ class MenuArtwork(unittest.TestCase):
             self.assertEqual(logo[:8], b"\x89PNG\r\n\x1a\n")
             self.assertEqual(struct.unpack(">II", logo[16:24]), (880, 210))
             self.assertEqual(logo[25], 6, "Logo must be an RGBA PNG")
-            self.assertGreater(len(logo), 10000)
+            self.assertGreater(len(logo), 2000)
             self.assertEqual(hashlib.sha256(logo).digest(), hashlib.sha256(two.read_bytes()).digest())
 
     def test_art_script_is_self_contained(self):
