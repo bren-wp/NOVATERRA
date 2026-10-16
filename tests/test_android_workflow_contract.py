@@ -18,13 +18,13 @@ class AndroidPackagingAudit(unittest.TestCase):
     def test_first_release_version_matches_build(self):
         game = WORKFLOW.read_text(encoding="utf-8")
         release = (ROOT / ".github/workflows/android-release.yml").read_text(encoding="utf-8")
-        self.assertIn("EXPECTED_VERSION_CODE=20007", game)
-        self.assertIn("versionName='0.0.7'", game)
-        self.assertIn("TAG=v0.0.7", release)
+        self.assertIn("EXPECTED_VERSION_CODE=20008", game)
+        self.assertIn("versionName='0.0.8'", game)
+        self.assertIn("TAG=v0.0.8", release)
         self.assertIn("test \"$SOURCE_SHA\" = \"$HEAD_SHA\"", release)
         for content in (game, release):
-            self.assertIn("NOVATERRA-Android-arm64-v0.0.7-debug.apk", content)
-            self.assertIn("NOVATERRA-Android-v0.0.7-debug.aab", content)
+            self.assertIn("NOVATERRA-Android-arm64-v0.0.8-debug.apk", content)
+            self.assertIn("NOVATERRA-Android-v0.0.8-debug.aab", content)
         self.assertIn("SHA256SUMS.txt", release)
 
     def test_verify_actual_game_content(self):
