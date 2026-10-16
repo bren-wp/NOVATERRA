@@ -45,7 +45,14 @@ class AndroidPrepTest(unittest.TestCase):
             '\tcaption = fgettext("Start Game"),\n'
             '\tlabel[0,0.2; .. fgettext("Select World:") .. ]\n'
             '\tbutton[play; .. fgettext("Play Game") .. ]\n'
-            '\tbutton[world_create; .. fgettext("New") .. ]\n',
+            '\tbutton[world_create; .. fgettext("New") .. ]\n'
+            '\treturn retval\n'
+            'end\n\n'
+            'local function main_button_handler(this, fields, name, tabdata)\n'
+            '\tif fields["world_create"] ~= nil then\n'
+            '\t\treturn true\n'
+            '\tend\n'
+            'end\n',
             encoding="utf-8",
         )
         gradle = self.engine / "android/app/build.gradle"
