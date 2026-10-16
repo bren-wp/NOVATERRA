@@ -1,69 +1,53 @@
 # NOVATERRA
 
-![NOVATERRA — Build, Explore, Survive, Thrive](assets/branding/novaterra-banner.svg)
+![NOVATERRA – Build, Explore, Survive, Thrive](assets/branding/novaterra-banner.svg)
 
-**Build worlds. Explore the unknown. Survive your own adventure.**
+**BUILD · EXPLORE · SURVIVE · THRIVE**
 
-A voxel survival and crafting game in development for **Windows** and **Android**. Discover procedural biomes, mine resources, craft tools and shape your world.
+An original **offline, Android-only voxel survival game**. Explore procedural worlds, gather resources, craft tools, survive the night and progress through quests. No account or external game server is required to play singleplayer.
 
+[![Android APK & AAB](https://github.com/bren-wp/NOVATERRA/actions/workflows/android-game.yml/badge.svg)](https://github.com/bren-wp/NOVATERRA/actions/workflows/android-game.yml)
 [![Source validation](https://github.com/bren-wp/NOVATERRA/actions/workflows/source-validation.yml/badge.svg)](https://github.com/bren-wp/NOVATERRA/actions/workflows/source-validation.yml)
-[![Real-engine smoke test](https://github.com/bren-wp/NOVATERRA/actions/workflows/luanti-smoke.yml/badge.svg)](https://github.com/bren-wp/NOVATERRA/actions/workflows/luanti-smoke.yml)
-[![Windows build](https://github.com/bren-wp/NOVATERRA/actions/workflows/windows-game.yml/badge.svg)](https://github.com/bren-wp/NOVATERRA/actions/workflows/windows-game.yml)
-[![Android build](https://github.com/bren-wp/NOVATERRA/actions/workflows/android-game.yml/badge.svg)](https://github.com/bren-wp/NOVATERRA/actions/workflows/android-game.yml)
-![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Android-192C3B)
-![Status](https://img.shields.io/badge/status-development-D69E35)
+[![Game runtime](https://github.com/bren-wp/NOVATERRA/actions/workflows/luanti-smoke.yml/badge.svg)](https://github.com/bren-wp/NOVATERRA/actions/workflows/luanti-smoke.yml)
 
-> **Development preview:** Complete original v1.1.0 gameplay source and all 17 textures are in GitHub. A native Windows x64 portable package has passed GitHub Actions packaging and Luanti engine checks; a real Linux Luanti server has loaded the game and listened for connections. An Android arm64 development APK and AAB have passed build and checksum verification; final in-hand device tests and visual parity checks remain outstanding. The supplied design images are targets, **not** screenshots of running builds.
+## One Android game, no external game servers
 
-## Discover NOVATERRA
+- **Android arm64** – native C++/OpenGL ES runtime with integrated Luanti singleplayer engine and Lua game modules.
+- **Offline worlds** – generated, played and saved locally on the device.
+- **Singleplayer only** – public server browser, external ContentDB and in-engine update checks removed from the Android menu.
+- **Touch-first** – real touch movement, building/mining controls, scalable HUD, inventory and menus.
+- **Local progression** – persistent health, hunger, items, world map and waypoint, five quests, levels and XP.
+- **Survival world** – biomes, caves, trees, stone, coal/iron, furnace, cooking, wildlife and hostile creatures.
 
-🌍 **Explore** — procedural biomes and terrain  
-⛏️ **Mine** — collect stone, coal and iron  
-🛠️ **Craft** — tools, torches, a working furnace and building blocks  
-❤️ **Survive** — persistent health, hunger, cooking and food  
-🏡 **Build** — create your own shelters and worlds  
-🦌 **Encounter** — roaming wildlife, cave enemies, combat and loot  
-🏆 **Progress** — five quests, XP, levels and an in-game quest journal  
-🎮 **Play your way** — planned Windows keyboard/mouse and Android touch controls
+The engine internally operates a local singleplayer game service; that **does not require an external server**. Certain native engine components may use local loopback sockets. Internet access should not be required to play, but independence from all outbound traffic still needs a device-level network audit.
 
-## Visual direction
+## Development builds
 
-The visual references supplied by the project owner define the target for the splash screen, main menu, HUD, inventory and settings. They are not included as verified in-game screenshots. The implementation and comparison checklist is in [UI parity](docs/UI-PARITY.md).
+- [Android APK/AAB CI builds](https://github.com/bren-wp/NOVATERRA/actions/workflows/android-game.yml)
+- [Android-only development releases](https://github.com/bren-wp/NOVATERRA/releases)
+- [Automated code and game tests](https://github.com/bren-wp/NOVATERRA/actions/workflows/source-validation.yml)
 
-## Platforms
+Releases are created **only after** the compiled Android APK and AAB pass checksum and archive integrity checks. The current development AAB is **debug-signed**, not a Google Play production release. A Play-compatible AAB requires proper release signing, physical-device testing and Play checks.
 
-| | Windows | Android |
-|---|---|---|
-| Platform folder | [windows/](windows/) | [android/](android/) |
-| Interface goal | Desktop controls | Touch controls |
-| Packaging goal | EXE / installer | APK / AAB |
-| Packaging status | ✅ Portable ZIP and unsigned Setup EXE builds verified in CI | ✅ arm64 development APK and AAB build verified in CI |
-| Real gameplay/device visual test | ⏳ Not yet | ⏳ Not yet |
+## Gameplay and menus
 
-Both platforms must use an actual compiled platform engine, not a webview pretending to be a native application. Shared Lua game content lives in `games/novaterra/`.
+Explore the generated world, mine blocks, craft tools and a furnace, cook food, avoid hostile creatures and complete RPG objectives. The NOVATERRA in-game menu, inventory, quests and map are available by touch. Touch controls are provided by the integrated native engine. The game and all original textures are included in the application.
 
-## Development
+## Visual reference fidelity
 
-**Windows development builds:** [Portable ZIP and Windows Setup CI output](https://github.com/bren-wp/NOVATERRA/actions/runs/38823694526) (GitHub sign-in may be required). The packages contain the Windows launcher, the pinned Luanti engine and NOVATERRA game data. The Setup EXE is currently unsigned, and a passing CI build is **not** an in-hand gameplay certification.
+The owner's supplied reference images define the target for the launch screen, game menu, world selection, HUD, inventory, map, interactions and creature presentation. The implemented menus and HUD are functional development steps, **not proof of exact 1:1 visual parity**. Real screenshots from installed builds and screen-by-screen comparison are required. See [UI parity](docs/UI-PARITY.md).
 
-**Headless runtime:** [NOVATERRA loaded into a real Luanti server](https://github.com/bren-wp/NOVATERRA/actions/runs/38822429862) and listened on UDP game port 30491 for the duration of a 22-second smoke test.
+## Project structure
 
-**Android:** [Successful APK/AAB CI build](https://github.com/bren-wp/NOVATERRA/actions/runs/38821920870) — debug APK and test AAB contain the native-engine game. Newer builds may be underway; these are development-signed, **not** Google Play production releases.
+| Directory | Purpose |
+|---|---|
+| [android/](android/) | Native Android build integration, splash screen, icon and offline engine customization |
+| [games/novaterra/](games/novaterra/) | Game content, world generation, inventory, survival, AI and quests |
+| [tests/](tests/) | Gameplay tests, Android preparation and UI integration checks |
+| [.github/workflows/](.github/workflows/) | Android builds, verified Android prereleases and source/runtime checks |
 
-For development, the [PowerShell launcher](windows/Launch-NOVATERRA.ps1) additionally supports an installed external Luanti executable.
-
-Check [GitHub Actions](https://github.com/bren-wp/NOVATERRA/actions) for current test results and [issue #1](https://github.com/bren-wp/NOVATERRA/issues/1) for missing migration/build steps.
-
-## Releases
-
-A development prerelease workflow is configured to publish a **portable Windows ZIP, Windows Setup EXE, Android APK and Android AAB** only after both builds for the same source commit pass integrity checks. Releases are commit-qualified as `v1.2.0-dev.<commit>`. A draft without attachments is **not** a published release. The automated workflow retries recoverable GitHub API failures; always verify the published release contains all four packages. See [GitHub Releases](https://github.com/bren-wp/NOVATERRA/releases).
-
-## In-game controls and progression
-
-Start a NOVATERRA world from the engine's singleplayer screen. Open your inventory to craft and manage the backpack. Use **/novaterra** for the in-game menu, **/nvmap** for coordinates and a saved waypoint, and **/nvquests** for RPG objectives and XP. Food, survival metadata, waypoint coordinates and quest progress are stored per player.
-
-**Design fidelity:** The owner-provided menu, character, HUD and world images remain visual references rather than gameplay screenshots. The current build uses Luanti's main menu and temporary cube creature visuals; 1:1 visuals and polished animations are still outstanding. This README's banner is original branding artwork, not a gameplay capture.
+NOVATERRA targets **Android only**. Windows and iOS applications are not maintained or distributed from this repository.
 
 ## Licensing
 
-See [LICENSE](LICENSE). Engine and third-party asset licenses must be reviewed before redistributing bundled applications.
+The project source license is in [LICENSE](LICENSE). The bundled upstream Luanti runtime retains its own copyright notices and licenses. Review third-party licenses and perform a security and privacy audit before any production distribution.
