@@ -110,4 +110,20 @@ jobs:
             sleep 15
           done
           test "$(gh release view "$RELEASE_TAG" --json isDraft,assets --jq '(.isDraft == false) and (.assets | length >= 6)')" = "true"
-          echo "Published verified release $RELEASE_TAG with Android and Windows artifacts"
+          gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' > release/remote-assets.txt
+          for artifact in \
+            NOVATERRA-Windows-x64-v1.2.0-dev.zip \
+            NOVATERRA-Windows-Setup-v1.2.0-dev.exe \
+            NOVATERRA-Windows-Portable-v1.2.0-dev.exe \
+            NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk \
+            NOVATERRA-Android-v1.2.0-dev-debug.aab \
+            SHA256SUMS.txt; do
+            grep -Fx "$artifact" release/remote-assets.txt
+          done
+          echo "Published all six expected release assets for $TARGET_SHA"
+          # An earlier API 500 left an empty v1.2.0-dev prerelease. Remove it
+          # only after the new immutable release is successfully published.
+          legacy_assets=$(gh release view v1.2.0-dev --json assets --jq '.assets | length' 2>/dev/null || echo unknown)
+          if [[ "$legacy_assets" == "0" ]]; then
+            gh release delete v1.2.0-dev --yes --cleanup-tag || true
+          fi
