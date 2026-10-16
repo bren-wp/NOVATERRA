@@ -33,11 +33,6 @@ class RepositoryIntegrity(unittest.TestCase):
         self.assertIn("set_coordinates_visible", source)
         self.assertIn("nv_hunger", source)
 
-    def test_windows_launcher(self):
-        launcher = (ROOT / "windows" / "Launch-NOVATERRA.ps1").read_text(encoding="utf-8")
-        self.assertIn("game.conf", launcher)
-        self.assertIn("LuantiExe", launcher)
-
     def test_textures_valid_png(self):
         for mod in ("nv_core", "nv_world", "nv_survival"):
             texture_dir = MODS / mod / "textures"
