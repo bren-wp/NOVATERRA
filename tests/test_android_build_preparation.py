@@ -24,7 +24,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.project = root / "project"
         self.engine = root / "luanti"
         shutil.copytree(ROOT / "games" / "novaterra", self.project / "games" / "novaterra")
-        shutil.copytree(ROOT / "res", self.project / "android" / "res")
+        shutil.copytree(ROOT / "res", self.project / "res")
         mainmenu = self.engine / "builtin/mainmenu"
         mainmenu.mkdir(parents=True)
         (mainmenu / "init.lua").write_text(
