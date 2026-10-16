@@ -12,6 +12,7 @@ core = {
     set_bool=function(_,k,v) stored[k]=v;count.settings=count.settings+1 end,
   },
   start=function() count.started=count.started+1 end,
+  formspec_escape=function(value) return tostring(value):gsub("%]", "\\]") end,
 }
 menudata={worldlist={
   get_raw_element=function(_,id) return worlds[id] end,
@@ -21,6 +22,9 @@ gamedata={}
 menu_worldmt_legacy=function(id) assert(id==2); count.mode=id end
 local home=dofile("novaterra_home.lua")
 local f=home.formspec()
+local branded=home.formspec("/installed/games/novaterra/menu/logo.png")
+assert(branded:find("image[5.59,0.52;4.28,1.02;",1,true))
+assert(branded:find("/installed/games/novaterra/menu/logo.png",1,true))
 for _,item in ipairs({"NOVATERRA", "NASTAVI", "NOVA IGRA", "MOJI SVJETOVI",
                         "POSTAVKE", "IZLAZ", "TVOJ SVIJET. BEZ GRANICA."}) do
   assert(f:find(item,1,true),item.." missing on home")
