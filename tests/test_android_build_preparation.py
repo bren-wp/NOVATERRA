@@ -37,7 +37,12 @@ class AndroidPrepTest(unittest.TestCase):
             encoding="utf-8",
         )
         (mainmenu / "tab_local.lua").write_text(
-            '\tbtnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))\n',
+            '\tbtnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))\n'
+            '\tlocal retval = ""\n'
+            '\tcaption = fgettext("Start Game"),\n'
+            '\tlabel[0,0.2; .. fgettext("Select World:") .. ]\n'
+            '\tbutton[play; .. fgettext("Play Game") .. ]\n'
+            '\tbutton[world_create; .. fgettext("New") .. ]\n',
             encoding="utf-8",
         )
         gradle = self.engine / "android/app/build.gradle"
@@ -110,6 +115,11 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn('core.settings:set_bool("enable_server", false)', menu)
         self.assertIn('core.settings:set("serverlist_url", "")', menu)
         self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
+        self.assertIn("NOVATERRA / OFFLINE ADVENTURE", local)
+        self.assertIn("style[play;bgcolor=#418F4D", local)
+        self.assertIn("IGRAJ / NASTAVI", local)
+        self.assertIn("NOVI SVIJET", local)
+        self.assertNotIn('caption = fgettext("Start Game")', local)
         game_conf = (self.engine / "games/novaterra/game.conf").read_text(encoding="utf-8")
         self.assertIn("disabled_settings = enable_server", game_conf)
 
