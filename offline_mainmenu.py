@@ -118,7 +118,7 @@ def patch_offline_mainmenu(engine: Path) -> None:
     local = replace_once(
         local,
         '"container[0.375,0.375]" ..\n\t\t\tcreative ..',
-        '"container[0.375,4.10]" ..\n\t\t\tcreative ..',
+        '"container[10.25,5.60]" ..\n\t\t\tcreative ..',
         "tab_local.lua",
     )
     for old, new in (
