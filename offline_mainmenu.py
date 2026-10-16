@@ -50,6 +50,7 @@ def patch_offline_mainmenu(engine: Path) -> None:
         'core.settings:set_bool("enable_server", false)\n'
         'core.settings:set_bool("server_announce", false)\n'
         'core.settings:set("serverlist_url", "")\n'
+        'core.get_http_api = nil\n'
         'core.settings:set_bool("contentdb_enable_updates_indicator", false)\n'
         'local menupath = core.get_mainmenu_path()',
         "init.lua",
