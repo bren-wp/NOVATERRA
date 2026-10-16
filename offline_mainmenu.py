@@ -8,6 +8,7 @@ network sockets internally; it is not evidence of an external backend.
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
 
 
 def replace_once(text: str, old: str, new: str, source: str) -> str:
@@ -22,6 +23,9 @@ def patch_offline_mainmenu(engine: Path) -> None:
     init_file = menu / "init.lua"
     local_file = menu / "tab_local.lua"
     original = init_file.read_text(encoding="utf-8")
+    # Use only local Luanti world records and read their world.mt files.
+    shutil.copyfile(Path(__file__).with_name("novaterra_world_details.lua"),
+                    menu / "novaterra_world_details.lua")
 
     # No public server browser, online ContentDB tab, or update request.
     # Loading the internal tab modules is harmless; none are selectable.
@@ -35,6 +39,14 @@ def patch_offline_mainmenu(engine: Path) -> None:
                         "\t-- NOVATERRA offline: update polling disabled.\n", "init.lua")
     main = replace_once(main, '\tlocal last_tab = core.settings:get("maintab_LAST")',
                         '\tlocal last_tab = "local"', "init.lua")
+
+    # Register the read-only inspector before tab_local is constructed.
+    main = replace_once(
+        main, "local menupath = core.get_mainmenu_path()",
+        'local menupath = core.get_mainmenu_path()\n'
+        'novaterra_world_details = dofile(menupath .. DIR_DELIM .. "novaterra_world_details.lua")',
+        "init.lua",
+    )
 
     # Limit world management to singleplayer and disallow the ContentDB
     # shortcut. The NOVATERRA game.conf also disables hosting options.
@@ -109,6 +121,42 @@ def patch_offline_mainmenu(engine: Path) -> None:
     local = replace_once(local, 'fgettext("New")',
                          '"NOVI SVIJET"', "tab_local.lua")
 
+    # Add real world metadata without replacing Luanti's native world list,
+    # world creation, confirmation before deletion or singleplayer launch.
+    local = replace_once(
+        local,
+        "\treturn retval\nend\n\nlocal function main_button_handler",
+        '''\tif world then
+        retval = retval ..
+            "button[5.34,5.925;4.58,0.8;nv_world_info;DETALJI SVIJETA]"
+    end
+    return retval
+end
+
+local function main_button_handler''',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        '\tif fields["world_create"] ~= nil then',
+        '''\tif fields["nv_world_info"] ~= nil then
+        local selected = core.get_textlist_index("sp_worlds")
+        local list = menudata.worldlist:get_list()
+        local world = selected and list and list[selected]
+        if world then
+            local details = novaterra_world_details.create_dialog(world)
+            if details then
+                details:set_parent(this)
+                this:hide()
+                details:show()
+            end
+        end
+        return true
+    end
+
+    if fields["world_create"] ~= nil then''',
+        "tab_local.lua",
+    )
     init_file.write_text(main, encoding="utf-8")
     local_file.write_text(local, encoding="utf-8")
 
