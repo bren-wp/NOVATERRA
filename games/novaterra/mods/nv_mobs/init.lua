@@ -134,9 +134,12 @@ for kind, def in pairs(kinds) do
       self._step_clock = 0
       local pos = self.object:get_pos()
       if not pos then return end
-      local observer = nearest_player(pos, 48)
+      -- One nearby-player scan per AI tick instead of two.
+      local observer, observer_distance = nearest_player(pos, 48)
       if not observer then self.object:remove(); return end
-      local player, distance = nearest_player(pos, def.friendly and 5 or 15)
+      local radius = def.friendly and 5 or 15
+      local player = observer_distance <= radius and observer or nil
+      local distance = observer_distance
       if player and not def.friendly then
         local destination = player:get_pos()
         if distance > 1.4 then
