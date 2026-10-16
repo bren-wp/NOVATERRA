@@ -61,9 +61,11 @@ class SplashContract(unittest.TestCase):
         for spacer in spacers:
             self.assertEqual(spacer.get(attr("layout_height")), "0dp")
             self.assertGreater(float(spacer.get(attr("layout_weight"))), 0)
-        title = [x for x in content.findall("TextView") if x.get(attr("text")) == "NOVATERRA"]
+        title = [x for x in content.findall("ImageView") if x.get(attr("src")) == "@drawable/novaterra_title"]
         self.assertEqual(len(title), 1)
-        self.assertEqual(title[0].get(attr("maxLines")), "1")
+        self.assertEqual(title[0].get(attr("scaleType")), "fitCenter")
+        self.assertEqual(title[0].get(attr("layout_width")), "match_parent")
+        self.assertEqual(title[0].get(attr("contentDescription")), "@string/label")
         self.assertIn("TVOJ SVIJET. BEZ GRANICA.",
                       [x.get(attr("text")) for x in content.findall("TextView")])
 
