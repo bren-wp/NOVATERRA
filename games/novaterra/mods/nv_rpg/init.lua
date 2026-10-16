@@ -36,7 +36,7 @@ local function award(player, id, amount)
     notify(player, "Endless " .. endless.definitions[id].title .. " complete! +" .. repeat_xp .. " XP")
     if level(player) > old_level then notify(player, "LEVEL UP! " .. level(player)) end
   end
-  if previous >= def.goal then return repeat_xp > 0 end
+  if previous >= def.goal then return true end
   local current = math.min(def.goal, previous + math.floor(amount))
   meta:set_int(key(id), current)
   if current >= def.goal then
