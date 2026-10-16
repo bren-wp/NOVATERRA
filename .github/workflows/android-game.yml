@@ -4,6 +4,8 @@ on:
     paths:
       - 'android/**'
       - 'games/novaterra/**'
+      - 'tests/**'
+      - '.github/workflows/source-validation.yml'
       - '.github/workflows/android-game.yml'
   pull_request:
   workflow_dispatch:
