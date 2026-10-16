@@ -32,6 +32,7 @@ for _, token in ipairs({
   'formspec_version[4]', 'NOVATERRA', 'NASTAVI', 'INVENTORY',
   'VODIC ZA PREZIVLJAVANJE', 'KARTA / LOKACIJE',
   'ZADACI I POSTIGNUCA', 'KONTROLE', 'POSTAVKE',
+  'style[resume;bgcolor=#388B48',
   'ZDRAVLJE  15 / 20', 'HRANA  12 / 20',
   'RAZINA  2   /   225 XP', 'X 128   Y 71   Z -305',
 }) do
