@@ -2,11 +2,13 @@
 import importlib.util
 from pathlib import Path
 import shutil
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "android" / "prepare-luanti.py"
+sys.path.insert(0, str(ROOT / "android"))
 
 class AndroidPrepTest(unittest.TestCase):
     @classmethod
@@ -23,6 +25,21 @@ class AndroidPrepTest(unittest.TestCase):
         self.engine = root / "luanti"
         shutil.copytree(ROOT / "games" / "novaterra", self.project / "games" / "novaterra")
         shutil.copytree(ROOT / "android" / "res", self.project / "android" / "res")
+        mainmenu = self.engine / "builtin/mainmenu"
+        mainmenu.mkdir(parents=True)
+        (mainmenu / "init.lua").write_text(
+            'local menupath = core.get_mainmenu_path()\n'
+            '\ttv_main:add(tabs.local_game)\n'
+            '\ttv_main:add(tabs.play_online)\n'
+            '\ttv_main:add(tabs.content)\n'
+            '\tlocal last_tab = core.settings:get("maintab_LAST")\n'
+            '\tcheck_new_version()\n',
+            encoding="utf-8",
+        )
+        (mainmenu / "tab_local.lua").write_text(
+            '\tbtnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))\n',
+            encoding="utf-8",
+        )
         gradle = self.engine / "android/app/build.gradle"
         gradle.parent.mkdir(parents=True)
         version = 'versionName "' + '$' + '{versionMajor}.' + '$' + '{versionMinor}.' + '$' + '{versionPatch}"'
@@ -65,6 +82,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("hud_scaling = 0.9\n", config)
         self.assertIn("gui_scaling = 0.95\n", config)
         self.assertIn("menu_last_game = novaterra\n", config)
+        self.assertIn("enable_server = false\n", config)
+        self.assertIn("server_announce = false\n", config)
+        self.assertIn("serverlist_url = \n", config)
         self.assertNotIn("name = NOVATERRA", config)
         self.assertNotIn("\\n", config)
         main = self.engine / "android/app/src/main"
@@ -79,6 +99,20 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("@+id/progressBar", (main / "res/layout/activity_main.xml").read_text())
         self.assertIn("@+id/textView", (main / "res/layout/activity_main.xml").read_text())
         self.assertTrue((main / "res/drawable/novaterra_mark.xml").is_file())
+
+    def test_offline_menu_disables_online_server_and_content_browser(self):
+        self.preparer.prepare(self.engine, self.project)
+        menu = (self.engine / "builtin/mainmenu/init.lua").read_text(encoding="utf-8")
+        local = (self.engine / "builtin/mainmenu/tab_local.lua").read_text(encoding="utf-8")
+        self.assertNotIn("tv_main:add(tabs.play_online)", menu)
+        self.assertNotIn("tv_main:add(tabs.content)", menu)
+        self.assertNotIn("check_new_version()", menu)
+        self.assertIn('core.settings:set_bool("enable_server", false)', menu)
+        self.assertIn('core.settings:set("serverlist_url", "")', menu)
+        self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
+        game_conf = (self.engine / "games/novaterra/game.conf").read_text(encoding="utf-8")
+        self.assertIn("disabled_settings = enable_server", game_conf)
+
 
 
 if __name__ == "__main__":
