@@ -9,11 +9,11 @@ import shutil
 from offline_mainmenu import patch_offline_mainmenu
 
 APP_ID = "com.brendigo.novaterra"
-# Public game release numbering begins at 0.0.3. Android's versionCode is
+# Public game release numbering begins at 0.0.4. Android's versionCode is
 # separate from the visible version and must NOT decrease relative to earlier
 # internal 1.2.0-dev builds, or upgrades could strand on-device saves.
 VERSION_NAME = "0.0.3"
-VERSION_CODE = 20003
+VERSION_CODE = 20004
 PNG_COUNT = 21
 
 
@@ -91,6 +91,7 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     resources = {
         "drawable/novaterra_mark.xml": "drawable/novaterra_mark.xml",
         "drawable/novaterra_splash_background.xml": "drawable/novaterra_splash_background.xml",
+        "drawable/novaterra_landscape.xml": "drawable/novaterra_landscape.xml",
         "layout/novaterra_splash.xml": "layout/activity_main.xml",
     }
     for source_name, target_name in resources.items():

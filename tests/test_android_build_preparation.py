@@ -77,9 +77,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.3")
-        self.assertEqual(self.preparer.VERSION_CODE, 20003)
-        self.assertIn('versionName "0.0.3"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.4")
+        self.assertEqual(self.preparer.VERSION_CODE, 20004)
+        self.assertIn('versionName "0.0.4"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
         self.assertEqual(len(list(game.rglob("*.png"))), 21)
@@ -110,6 +110,11 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("@+id/progressBar", (main / "res/layout/activity_main.xml").read_text())
         self.assertIn("@+id/textView", (main / "res/layout/activity_main.xml").read_text())
         self.assertTrue((main / "res/drawable/novaterra_mark.xml").is_file())
+        self.assertTrue((main / "res/drawable/novaterra_landscape.xml").is_file())
+        splash = (main / "res/layout/activity_main.xml").read_text(encoding="utf-8")
+        self.assertIn("@drawable/novaterra_landscape", splash)
+        self.assertIn('android:scaleType="centerCrop"', splash)
+        self.assertIn('android:text="TVOJ SVIJET. BEZ GRANICA."', splash)
 
     def test_offline_menu_disables_online_server_and_content_browser(self):
         self.preparer.prepare(self.engine, self.project)

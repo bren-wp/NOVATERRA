@@ -4,65 +4,87 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/novaterra_splash_background">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
+    android:background="#091820">
+    <!-- Art fills portrait and landscape screens without stretching. -->
+    <ImageView android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/novaterra_landscape"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no" />
+    <View android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/novaterra_splash_background"
+        android:importantForAccessibility="no" />
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="28dp"
-        android:paddingRight="28dp">
-
-        <ImageView
-            android:layout_width="108dp"
-            android:layout_height="108dp"
-            android:contentDescription="@string/label"
-            android:src="@drawable/novaterra_mark" />
-
-        <TextView
-            android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="24dp">
+        <Space android:layout_width="1dp" android:layout_height="0dp"
+            android:layout_weight="1" />
+        <ImageView android:layout_width="100dp" android:layout_height="100dp"
+            android:src="@drawable/novaterra_mark"
+            android:contentDescription="@string/label" />
+        <TextView android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:fontFamily="serif"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.025"
+            android:maxLines="1"
             android:text="NOVATERRA"
-            android:textColor="#EBC58A"
-            android:textSize="42sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.08" />
-
-        <TextView
-            android:layout_width="match_parent"
+            android:textColor="#EFD399"
+            android:shadowColor="#D9091418"
+            android:shadowDx="2"
+            android:shadowDy="3"
+            android:shadowRadius="5"
+            android:textSize="38sp"
+            android:textStyle="bold" />
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:gravity="center"
+            android:letterSpacing="0.06"
+            android:maxLines="1"
+            android:text="BUILD · EXPLORE · SURVIVE · THRIVE"
+            android:textColor="#F4E4C0"
+            android:textSize="10sp"
+            android:shadowColor="#BB0B1920"
+            android:shadowRadius="4" />
+        <Space android:layout_width="1dp" android:layout_height="0dp"
+            android:layout_weight="1.6" />
+        <TextView android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_marginTop="5dp"
-            android:text="EXPLORE  ·  BUILD  ·  SURVIVE"
-            android:textColor="#BDD1C9"
+            android:letterSpacing="0.12"
+            android:text="TVOJ SVIJET. BEZ GRANICA."
+            android:textColor="#F5EBD0"
             android:textSize="12sp"
-            android:letterSpacing="0.07" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
+            android:shadowColor="#DD071A16"
+            android:shadowRadius="3" />
+        <ProgressBar android:id="@+id/progressBar"
             style="@style/CustomProgressBar"
             android:layout_width="match_parent"
-            android:layout_height="7dp"
-            android:layout_marginTop="30dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="23dp"
             android:indeterminate="false"
             android:max="100"
-            android:progressTint="#80CE72"
-            android:progressBackgroundTint="#263B43"
-            android:visibility="visible" />
-
-        <TextView
-            android:id="@+id/textView"
+            android:progressTint="#61D164"
+            android:progressBackgroundTint="#365047"
+            android:visibility="gone"
+            tools:visibility="visible" />
+        <TextView android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/loading"
-            android:textColor="#EBE6D8"
-            android:textSize="13sp"
+            android:textColor="#FFF2DB"
+            android:textSize="12sp"
             android:visibility="gone"
             tools:visibility="visible" />
     </LinearLayout>
