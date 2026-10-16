@@ -114,6 +114,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertNotIn("check_new_version()", menu)
         self.assertIn('core.settings:set_bool("enable_server", false)', menu)
         self.assertIn('core.settings:set("serverlist_url", "")', menu)
+        self.assertIn("core.get_http_api = nil", menu)
         self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
         self.assertIn("NOVATERRA / OFFLINE ADVENTURE", local)
         self.assertIn("style[play;bgcolor=#418F4D", local)
