@@ -32,6 +32,11 @@ jobs:
             SOURCE_SHA=$(gh run view "$RUN_ID" --json headSha --jq '.headSha')
           fi
           test "$(gh run view "$RUN_ID" --json conclusion --jq '.conclusion')" = "success"
+          VALIDATION=$(gh run list --workflow source-validation.yml --branch main --status success --limit 100 --json databaseId,headSha --jq ".[] | select(.headSha == \"$SOURCE_SHA\") | .databaseId" | head -1)
+          if [[ -z "$VALIDATION" ]]; then
+            echo "Refusing release: source validation did not succeed for commit $SOURCE_SHA" >&2
+            exit 1
+          fi
           printf 'RUN_ID=%s\nSOURCE_SHA=%s\nTAG=v1.2.0-android.%s\n' "$RUN_ID" "$SOURCE_SHA" "${SOURCE_SHA:0:8}" >> "$GITHUB_ENV"
       - name: Download and verify APK and AAB
         shell: bash
