@@ -4,7 +4,7 @@ NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 na
 
 ## Android build
 
-The `android/prepare-luanti.py` script packages the game and branded Android resources. The `android/offline_mainmenu.py` patch disables online server browsing, ContentDB access and engine update polling. The initial game is NOVATERRA and hosting controls are hidden.
+The `prepare-luanti.py` script packages the game and branded Android resources. The `offline_mainmenu.py` patch disables online server browsing, ContentDB access and engine update polling. The initial game is NOVATERRA and hosting controls are hidden.
 
 The GitHub Android workflow creates a debug-signed arm64 APK and a development AAB, and verifies included assets and SHA-256 checksums. The Android release workflow is configured to publish those packages after successful checks.
 
