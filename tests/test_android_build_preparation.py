@@ -45,7 +45,14 @@ class AndroidPrepTest(unittest.TestCase):
             '\tcaption = fgettext("Start Game"),\n'
             '\tlabel[0,0.2; .. fgettext("Select World:") .. ]\n'
             '\tbutton[play; .. fgettext("Play Game") .. ]\n'
-            '\tbutton[world_create; .. fgettext("New") .. ]\n',
+            '\tbutton[world_create; .. fgettext("New") .. ]\n'
+            '\treturn retval\n'
+            'end\n\n'
+            'local function main_button_handler(this, fields, name, tabdata)\n'
+            '\tif fields["world_create"] ~= nil then\n'
+            '\t\treturn true\n'
+            '\tend\n'
+            'end\n',
             encoding="utf-8",
         )
         gradle = self.engine / "android/app/build.gradle"
@@ -80,9 +87,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.4")
-        self.assertEqual(self.preparer.VERSION_CODE, 20004)
-        self.assertIn('versionName "0.0.4"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.5")
+        self.assertEqual(self.preparer.VERSION_CODE, 20005)
+        self.assertIn('versionName "0.0.5"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
         self.assertEqual(len(list(game.rglob("*.png"))), 21)
@@ -134,6 +141,15 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("core.get_http_api = nil", menu)
         self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
         self.assertIn("NOVATERRA / OFFLINE ADVENTURE", local)
+        details = (self.engine / "builtin/mainmenu/novaterra_world_details.lua").read_text(encoding="utf-8")
+        self.assertIn("novaterra_world_details = dofile(", menu)
+        self.assertIn("nv_world_info", local)
+        self.assertIn("novaterra_world_details.create_dialog(world)", local)
+        self.assertIn("fixed_map_seed", details)
+        self.assertIn("mg_name", details)
+        self.assertIn("creative_mode", details)
+        self.assertIn("enable_damage", details)
+        self.assertNotIn("core.delete_world(", details)
         self.assertIn("TVOJ SVIJET.", local)
         self.assertIn("BEZ GRANICA.", local)
         self.assertIn("ODABIR SVIJETA", local)

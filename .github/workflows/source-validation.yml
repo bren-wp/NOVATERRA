@@ -28,6 +28,7 @@ jobs:
           lua5.1 tests/test_landscapes.lua
           lua5.1 tests/test_survival_hud.lua
           lua5.1 tests/test_ui_actions.lua
+          lua5.1 tests/test_world_details.lua
   assets-and-tests:
     runs-on: ubuntu-latest
     steps:
