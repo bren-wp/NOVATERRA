@@ -2,8 +2,8 @@
 -- Original Luanti callbacks still operate the world selection and dialogs.
 local M = {}
 
-function M.formspec()
-  return table.concat({
+function M.formspec(logo_file)
+  local elements = {
     "box[0.00,0.00;15.5,7.1;#09151E35]",
     "box[5.20,0.41;5.10,6.32;#10242BBD]",
     "box[5.20,0.41;5.10,0.08;#D6AF71]",
@@ -13,7 +13,7 @@ function M.formspec()
     "style[nv_new;bgcolor=#337C4B;bgcolor_hovered=#499861;textcolor=#FFFFFF]",
     "style[nv_exit;bgcolor=#3E3031;bgcolor_hovered=#6B4143;textcolor=#FFFFFF]",
     "style_type[label;font=bold;textcolor=#F2D6A3]",
-    "label[6.68,0.80;NOVATERRA]",
+    -- Branded PNG is embedded from the local game menu folder.
     "label[6.03,1.34;BUILD  -  EXPLORE  -  SURVIVE]",
     "button[5.62,2.11;4.23,0.70;nv_continue;NASTAVI]",
     "button[5.62,2.92;4.23,0.70;nv_new;NOVA IGRA]",
@@ -21,7 +21,14 @@ function M.formspec()
     "button[5.62,4.54;4.23,0.70;nv_settings;POSTAVKE]",
     "button[5.62,5.35;4.23,0.70;nv_exit;IZLAZ]",
     "label[6.20,6.31;TVOJ SVIJET. BEZ GRANICA.]",
-  })
+  }
+  if logo_file and logo_file ~= "" then
+    elements[#elements+1] =
+      "image[5.62,0.54;4.26,1.16;" .. core.formspec_escape(logo_file) .. "]"
+  else
+    elements[#elements+1] = "label[6.68,0.80;NOVATERRA]"
+  end
+  return table.concat(elements)
 end
 
 -- Continue the last actually existing offline world. A stale setting must
