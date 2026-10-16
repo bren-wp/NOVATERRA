@@ -8,6 +8,7 @@ import shutil
 
 from offline_mainmenu import patch_offline_mainmenu
 from assets.branding.generate_menu_landscape import render_menu_background
+from assets.branding.generate_menu_logo import render_menu_logo
 
 APP_ID = "com.brendigo.novaterra"
 # Public game release numbering begins at 0.0.4. Android's versionCode is
@@ -41,6 +42,9 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     # Original menu art is rendered deterministically before Gradle's assets.zip.
     # It stays local and is never presented as a runtime screenshot.
     menu_bg = render_menu_background(destination / "menu" / "background.png")
+    menu_logo = render_menu_logo(destination / "menu" / "logo.png")
+    if menu_logo.stat().st_size < 10000:
+        raise SystemExit("NOVATERRA logo art was not generated")
     if not menu_bg.is_file() or menu_bg.stat().st_size < 10000:
         raise SystemExit("NOVATERRA menu art was not generated")
 
