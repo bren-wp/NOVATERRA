@@ -25,6 +25,7 @@ jobs:
           lua5.1 tests/test_endless_progression.lua
           lua5.1 tests/test_rpg_building.lua
           lua5.1 tests/test_mobile_ui.lua
+          lua5.1 tests/test_landscapes.lua
           lua5.1 tests/test_survival_hud.lua
           lua5.1 tests/test_ui_actions.lua
   assets-and-tests:

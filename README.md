@@ -1,16 +1,16 @@
 # NOVATERRA — Android offline game
 
-**First Android development version: 0.0.2** · [Releases](https://github.com/bren-wp/NOVATERRA/releases)
+**First Android development version: 0.0.3** · [Releases](https://github.com/bren-wp/NOVATERRA/releases)
 
-NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 native C++/OpenGL ES engine. The game includes all Lua gameplay mods, 21 textures, offline world generation and on-device saves. External game servers, accounts and hosted databases are not required.
+NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 native C++/OpenGL ES engine. The game includes all Lua gameplay mods, 21 base textures plus tint-based biome materials, offline world generation and on-device saves. External game servers, accounts and hosted databases are not required.
 
 ## Android build
 
 The `prepare-luanti.py` script packages the game and branded Android resources. The `offline_mainmenu.py` patch disables online server browsing, ContentDB access and engine update polling. The initial game is NOVATERRA and hosting controls are hidden.
 
-The Android workflow builds a debug-signed arm64 APK and development AAB with `versionName 0.0.2` and `versionCode 20002`. The higher Android code is deliberate: older internal test builds used greater version codes than 1, and Android never allows an in-place versionCode downgrade. For each later public version, increase both the displayed version and Android versionCode monotonically.
+The Android workflow builds a debug-signed arm64 APK and development AAB with `versionName 0.0.3` and `versionCode 20003`. The higher Android code is deliberate: older internal test builds used greater version codes than 1, and Android never allows an in-place versionCode downgrade. For each later public version, increase both the displayed version and Android versionCode monotonically.
 
-Only a successful build with validated assets and SHA-256 sums is eligible for the **v0.0.2** GitHub prerelease. APK and AAB are development builds, not Google Play production-signed bundles. **An online upgrade of the app is not required for gameplay.**
+Only a successful build with validated assets and SHA-256 sums is eligible for the **v0.0.3** GitHub prerelease. APK and AAB are development builds, not Google Play production-signed bundles. **An online upgrade of the app is not required for gameplay.**
 
 The engine's integrated local game service may use loopback sockets. The existing Android INTERNET permission is retained until the engine's local networking has been validated without it. NOVATERRA does not depend on an external server for offline gameplay.
 
@@ -26,6 +26,22 @@ runtime is preserved.
 
 Reference images are visual targets; this build has not yet been certified
 pixel-perfect or profiled on physical Android devices.
+
+## Procedural landscapes (v0.0.3)
+
+The initial five climates are retained. Fifteen additional distinctive
+climates now use NOVATERRA's original textures with independent tinting and
+surface materials: alpine, frostwood, glacier, tundra, marsh, rainforest,
+savanna, badlands, canyon, volcanic, twilight grove, blossom fields, crystal
+valley, ocean depths and redwood. The engine generates native plants and
+rare stone ruins without per-frame world modifications or network content.
+Existing saved chunks are not regenerated; new content appears when
+exploring *new* regions of a world.
+
+Biome silhouettes, advanced 3D flora, foliage shaders, real shadow quality,
+hand-authored settlements, 1:1 UI screenshots and final premium character
+models remain unfinished; color-tinted material variants are a first pass,
+not a substitute for the reference art.
 
 ## Touch UI
 

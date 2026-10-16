@@ -40,18 +40,18 @@ jobs:
             echo "Refusing release: source validation did not succeed for commit $SOURCE_SHA" >&2
             exit 1
           fi
-          printf 'RUN_ID=%s\nSOURCE_SHA=%s\nTAG=v0.0.2\n' "$RUN_ID" "$SOURCE_SHA" >> "$GITHUB_ENV"
+          printf 'RUN_ID=%s\nSOURCE_SHA=%s\nTAG=v0.0.3\n' "$RUN_ID" "$SOURCE_SHA" >> "$GITHUB_ENV"
       - name: Download and verify APK and AAB
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p release
-          gh run download "$RUN_ID" -n NOVATERRA-Android-arm64-v0.0.2-debug -D release
+          gh run download "$RUN_ID" -n NOVATERRA-Android-arm64-v0.0.3-debug -D release
           (cd release && sha256sum --check SHA256SUMS.txt)
-          test -s release/NOVATERRA-Android-arm64-v0.0.2-debug.apk
-          test -s release/NOVATERRA-Android-v0.0.2-debug.aab
-          unzip -t release/NOVATERRA-Android-arm64-v0.0.2-debug.apk >/dev/null
-          unzip -t release/NOVATERRA-Android-v0.0.2-debug.aab >/dev/null
+          test -s release/NOVATERRA-Android-arm64-v0.0.3-debug.apk
+          test -s release/NOVATERRA-Android-v0.0.3-debug.aab
+          unzip -t release/NOVATERRA-Android-arm64-v0.0.3-debug.apk >/dev/null
+          unzip -t release/NOVATERRA-Android-v0.0.3-debug.aab >/dev/null
           echo "Verified both Android binaries from $SOURCE_SHA"
       - name: Publish Android-only prerelease
         shell: bash
@@ -69,15 +69,16 @@ jobs:
           - Native Android splash and application identity. No external game server is required.
           - Premium dark NOVATERRA offline main menu and real world management.
           - Refined in-game touch navigation and status panel.
+          - Fifteen new original climates (twenty biomes in all), five new plant types and rare world-generated stone ruins.
 
           Built from commit: $SOURCE_SHA
 
-          **Development build (0.0.2).** No device or airplane-mode test has been certified. Gameplay features and pixel-perfect 1:1 parity with the supplied screenshots are still in development.
+          **Development build (0.0.3).** No device or airplane-mode test has been certified. Gameplay features and pixel-perfect 1:1 parity with the supplied screenshots are still in development.
           EOF
           if gh release view "$TAG" >/dev/null 2>&1; then
             assets=$(gh release view "$TAG" --json assets --jq '.assets[].name')
-            if printf '%s\n' "$assets" | grep -Fxq 'NOVATERRA-Android-arm64-v0.0.2-debug.apk' &&
-               printf '%s\n' "$assets" | grep -Fxq 'NOVATERRA-Android-v0.0.2-debug.aab' &&
+            if printf '%s\n' "$assets" | grep -Fxq 'NOVATERRA-Android-arm64-v0.0.3-debug.apk' &&
+               printf '%s\n' "$assets" | grep -Fxq 'NOVATERRA-Android-v0.0.3-debug.aab' &&
                printf '%s\n' "$assets" | grep -Fxq 'SHA256SUMS.txt'; then
               echo "Android release $TAG already has all verified artifacts"
               exit 0
@@ -88,14 +89,14 @@ jobs:
               gh release create "$TAG" --target "$SOURCE_SHA" --title "NOVATERRA Android $TAG" --notes-file release-notes.md --prerelease || true
             fi
             if gh release view "$TAG" >/dev/null 2>&1 &&
-               gh release upload "$TAG" release/NOVATERRA-Android-arm64-v0.0.2-debug.apk release/NOVATERRA-Android-v0.0.2-debug.aab release/SHA256SUMS.txt --clobber; then
+               gh release upload "$TAG" release/NOVATERRA-Android-arm64-v0.0.3-debug.apk release/NOVATERRA-Android-v0.0.3-debug.aab release/SHA256SUMS.txt --clobber; then
               break
             fi
             echo "GitHub release upload failed (attempt $attempt/5)"
             sleep 15
           done
           names=$(gh release view "$TAG" --json assets --jq '.assets[].name')
-          for expected in NOVATERRA-Android-arm64-v0.0.2-debug.apk NOVATERRA-Android-v0.0.2-debug.aab SHA256SUMS.txt; do
+          for expected in NOVATERRA-Android-arm64-v0.0.3-debug.apk NOVATERRA-Android-v0.0.3-debug.aab SHA256SUMS.txt; do
             printf '%s\n' "$names" | grep -Fx "$expected"
           done
           echo "Published Android-only release $TAG"

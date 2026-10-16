@@ -6,6 +6,11 @@ class WorldTests(unittest.TestCase):
     def test_world_registration(self):
         code = (ROOT/'nv_world'/'init.lua').read_text()
         self.assertEqual(code.count("biome('"), 5)
+        self.assertIn("landscapes.lua", code)
+        landscapes = (ROOT/'nv_world'/'landscapes.lua').read_text()
+        self.assertEqual(landscapes.count('biome("'), 15)
+        self.assertIn("core.register_decoration({", landscapes)
+        self.assertIn("ruin_schematic()", landscapes)
         self.assertEqual(code.count('core.register_ore({'), 2)
         for item in ('coal_ore','iron_ore','raw_iron','nv_core:stone'):
             self.assertIn(item, code)
