@@ -98,6 +98,9 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     # MainActivity and progress callbacks intact so asset extraction remains safe.
     res_folder = engine / "android/app/src/main/res"
     branding_folder = project / "res"
+    title_asset = res_folder / "drawable-nodpi" / "novaterra_title.png"
+    title_asset.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(menu_logo, title_asset)
     resources = {
         "drawable/novaterra_mark.xml": "drawable/novaterra_mark.xml",
         "drawable/novaterra_splash_background.xml": "drawable/novaterra_splash_background.xml",
