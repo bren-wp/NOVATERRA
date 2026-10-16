@@ -4,6 +4,7 @@ on:
     paths:
       - 'prepare-luanti.py'
       - 'offline_mainmenu.py'
+      - 'assets/branding/generate_menu_landscape.py'
       - 'res/**'
       - 'games/novaterra/**'
       - 'tests/**'
@@ -81,13 +82,24 @@ jobs:
           AAPT=$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)
           test -x "$AAPT"
           "$AAPT" dump badging "$APK" > artifacts/android-badging.txt
-          EXPECTED_VERSION_CODE=20005
+          EXPECTED_VERSION_CODE=20006
           grep -q "package: name='com.brendigo.novaterra' versionCode='$EXPECTED_VERSION_CODE'" artifacts/android-badging.txt
-          grep -q "versionName='0.0.5'" artifacts/android-badging.txt
+          grep -q "versionName='0.0.6'" artifacts/android-badging.txt
           grep -q "application-label:'NOVATERRA'" artifacts/android-badging.txt
           unzip -p "$APK" assets/assets.zip > artifacts/novaterra-game-assets.zip
           unzip -t artifacts/novaterra-game-assets.zip >/dev/null
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/game.conf'
+          unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/menu/background.png'
+          unzip -p artifacts/novaterra-game-assets.zip games/novaterra/menu/background.png > artifacts/menu-background.png
+          python3 - <<'PY'
+          import struct
+          from pathlib import Path
+          data = Path("artifacts/menu-background.png").read_bytes()
+          assert data.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+          assert struct.unpack(">II", data[16:24]) == (1440, 810)
+          assert len(data) > 15000
+          PY
+          rm artifacts/menu-background.png
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_core/textures/nv_stone.png'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_world/textures/nv_coal_overlay.png'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'minetest.conf'
@@ -117,16 +129,16 @@ jobs:
             echo "Unexpected non-arm64 library" >&2
             exit 1
           fi
-          cp "$APK" artifacts/NOVATERRA-Android-arm64-v0.0.5-debug.apk
+          cp "$APK" artifacts/NOVATERRA-Android-arm64-v0.0.6-debug.apk
           AAB=$(find build/luanti/android/app/build/outputs/bundle -type f -name '*debug.aab' | head -1)
           test -n "$AAB"
           unzip -t "$AAB" >/dev/null
-          cp "$AAB" artifacts/NOVATERRA-Android-v0.0.5-debug.aab
+          cp "$AAB" artifacts/NOVATERRA-Android-v0.0.6-debug.aab
           rm artifacts/novaterra-game-assets.zip
           (cd artifacts && sha256sum ./*.apk ./*.aab > SHA256SUMS.txt)
       - uses: actions/upload-artifact@v4
         with:
-          name: NOVATERRA-Android-arm64-v0.0.5-debug
+          name: NOVATERRA-Android-arm64-v0.0.6-debug
           path: artifacts/
           if-no-files-found: error
           retention-days: 30
