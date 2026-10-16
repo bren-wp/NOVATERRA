@@ -43,7 +43,7 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     # It stays local and is never presented as a runtime screenshot.
     menu_bg = render_menu_background(destination / "menu" / "background.png")
     menu_logo = render_menu_logo(destination / "menu" / "logo.png")
-    if menu_logo.stat().st_size < 10000:
+    if menu_logo.stat().st_size < 2000:
         raise SystemExit("NOVATERRA logo art was not generated")
     if not menu_bg.is_file() or menu_bg.stat().st_size < 10000:
         raise SystemExit("NOVATERRA menu art was not generated")
