@@ -7,8 +7,9 @@ local TYPES = {
   ore = {title = "Deep Miner", base = 10, step = 4, xp = 100},
   craft = {title = "Artisan", base = 2, step = 1, xp = 75},
   hunter = {title = "Night Guardian", base = 6, step = 2, xp = 120},
+  builder = {title = "Master Builder", base = 40, step = 16, xp = 85},
 }
-M.order = {"wood", "stone", "ore", "craft", "hunter"}
+M.order = {"wood", "stone", "ore", "craft", "hunter", "builder"}
 M.definitions = TYPES
 local function prefix(id) return "nv_endless_" .. id .. "_" end
 local function clamp_tier(value)
