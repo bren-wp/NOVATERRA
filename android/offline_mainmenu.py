@@ -54,6 +54,28 @@ def patch_offline_mainmenu(engine: Path) -> None:
         'local menupath = core.get_mainmenu_path()',
         "init.lua",
     )
+    # Branded, touch-friendly singleplayer menu styling; no fake controls.
+    local = replace_once(
+        local,
+        '\tlocal retval = ""',
+        '''\tlocal retval = table.concat({
+        "box[0.0,0.0;15.5,7.1;#0C1923E9]",
+        "box[0.18,0.18;15.1,0.11;#C9A060]",
+        "style_type[button;bgcolor=#1D3C34;bgcolor_hovered=#316A48;bgcolor_pressed=#123526;textcolor=#FFFFFF;border=false]",
+        "style[play;bgcolor=#418F4D;bgcolor_hovered=#52A861;textcolor=#FFFFFF]",
+        "label[0.4,6.33;NOVATERRA / OFFLINE ADVENTURE]",
+    })''',
+        "tab_local.lua",
+    )
+    local = replace_once(local, 'caption = fgettext("Start Game")',
+                         'caption = "NOVATERRA"', "tab_local.lua")
+    local = replace_once(local, 'fgettext("Play Game")',
+                         '"IGRAJ / NASTAVI"', "tab_local.lua")
+    local = replace_once(local, 'fgettext("Select World:")',
+                         '"MOJI SVJETOVI"', "tab_local.lua")
+    local = replace_once(local, 'fgettext("New")',
+                         '"NOVI SVIJET"', "tab_local.lua")
+
     init_file.write_text(main, encoding="utf-8")
     local_file.write_text(local, encoding="utf-8")
 
