@@ -28,7 +28,7 @@ class MenuArtwork(unittest.TestCase):
             one = render_menu_logo(Path(root) / "first/logo.png")
             two = render_menu_logo(Path(root) / "second/logo.png")
             logo = one.read_bytes()
-            self.assertEqual(logo[:8], b"\\x89PNG\\r\\n\\x1a\\n")
+            self.assertEqual(logo[:8], b"\x89PNG\r\n\x1a\n")
             self.assertEqual(struct.unpack(">II", logo[16:24]), (880, 210))
             self.assertEqual(logo[25], 6, "Logo must be an RGBA PNG")
             self.assertGreater(len(logo), 10000)
