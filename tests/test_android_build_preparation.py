@@ -166,7 +166,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("style[world_delete;", local)
         self.assertIn("POSTAVKE SVIJETA", local)
         self.assertIn("OBRISI SVIJET", local)
-        self.assertIn('"container[0.375,4.10]"', local)
+        self.assertIn('"container[10.25,5.60]"', local)
         self.assertNotIn("tv_main:add(tabs.about)", menu)
         self.assertIn("world_create", local)
         self.assertIn("world_delete", local)
