@@ -114,7 +114,7 @@ jobs:
           fi
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_mobs/init.lua'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'builtin/mainmenu/novaterra_world_details.lua'
-          unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/novaterra_world_details.lua | grep -Fq -- 'PODACI SE CITAJU IZ LOKALNOG'
+          unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/novaterra_world_details.lua | grep -Fq -- 'PODACI SVIJETA OSTAJU NA TVOM UREDAJU'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_rpg/init.lua'
           for icon in nv_health_full.png nv_health_empty.png nv_hunger_full.png nv_hunger_empty.png; do
             unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx "games/novaterra/mods/nv_survival/textures/$icon"
