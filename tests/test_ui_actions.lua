@@ -31,6 +31,7 @@ core = {
     closed = {name=name, formname=formname}
   end,
 }
+core.chatcommands = commands
 novaterra_survival = {
   set_hud_visible = function() return true end,
   set_coordinates_visible = function() return true end,
