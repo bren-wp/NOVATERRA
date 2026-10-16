@@ -94,10 +94,13 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn('versionName "0.0.7"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
-        self.assertEqual(len(list(game.rglob("*.png"))), 22)
+        self.assertEqual(len(list(game.rglob("*.png"))), 23)
         background = (game / "menu/background.png").read_bytes()
         self.assertEqual(background[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(__import__("struct").unpack(">II", background[16:24]), (1440, 810))
+        logo = (game / "menu/logo.png").read_bytes()
+        self.assertEqual(logo[:8], b"\\x89PNG\\r\\n\\x1a\\n")
+        self.assertEqual(__import__("struct").unpack(">II", logo[16:24]), (880, 210))
         for mod in ("nv_core", "nv_world", "nv_survival", "nv_ui", "nv_mobs", "nv_rpg"):
             with self.subTest(mod=mod):
                 self.assertTrue((game / "mods" / mod / "init.lua").is_file())
@@ -159,7 +162,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("nv_world_info", local)
         self.assertIn("novaterra_home = dofile(", menu)
         self.assertIn("nv_view", local)
-        self.assertIn("novaterra_home.formspec()", local)
+        self.assertIn("novaterra_home.formspec(path)", local)
         self.assertIn("novaterra_home.resume()", local)
         self.assertIn("nv_back_home", local)
         self.assertIn("fields[\"nv_worlds\"]", local)
