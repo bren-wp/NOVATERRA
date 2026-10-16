@@ -173,6 +173,57 @@ local function main_button_handler''',
     if fields["world_create"] ~= nil then''',
         "tab_local.lua",
     )
+    # Arrange genuine world actions in a left-side menu like the references.
+    # Keep each upstream field id, confirmation handler and save lifecycle.
+    local = replace_once(
+        local,
+        '"button[6.65,0;3.225,0.8;world_create;"',
+        '"button[-4.70,0.02;3.92,0.70;world_create;"',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        '"button[10.1875,5.925;4.9375,0.8;play;" .. "IGRAJ / NASTAVI"',
+        '"button[0.55,4.06;3.92,0.70;play;" .. "IGRAJ / NASTAVI"',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        "    return retval\nend\n\nlocal function main_button_handler",
+        '''    retval = retval .. "button[0.55,5.68;3.92,0.59;nv_settings;POSTAVKE]"
+    retval = retval .. "button[0.55,6.34;3.92,0.57;nv_exit;IZLAZ]"
+    return retval
+end
+
+local function main_button_handler''',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        '\tif fields["world_create"] ~= nil then',
+        '''\tif fields["nv_settings"] ~= nil then
+        local dlg = create_settings_dlg()
+        dlg:set_parent(this)
+        this:hide()
+        dlg:show()
+        return true
+    end
+    if fields["nv_exit"] ~= nil then
+        core.close()
+        return true
+    end
+
+    if fields["world_create"] ~= nil then''',
+        "tab_local.lua",
+    )
+    # NOVATERRA bundles exactly one native game. Do not show the generic
+    # Luanti multi-game selector below the main navigation.
+    gamebar = '''\t\tif singleplayer_refresh_gamebar() then
+\t\t\tui.find_by_name("game_button_bar"):show()
+\t\tend'''
+    if gamebar in local:
+        local = replace_once(local, gamebar, '\t\t-- NOVATERRA singleplayer navigation', "tab_local.lua")
+
     init_file.write_text(main, encoding="utf-8")
     local_file.write_text(local, encoding="utf-8")
 
