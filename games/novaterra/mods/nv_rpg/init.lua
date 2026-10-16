@@ -1,4 +1,5 @@
 -- NOVATERRA RPG journal: persistent, server-authoritative challenges and XP.
+local endless = dofile(core.get_modpath('nv_rpg') .. '/endless.lua')
 local quests = {
   wood = {title="First Steps", detail="Gather 20 oak logs", goal=20, reward=75},
   stone = {title="Prospector", detail="Mine 32 stone blocks", goal=32, reward=100},
@@ -15,7 +16,9 @@ local function experience(player)
   return player:get_meta():get_int("nv_rpg_xp")
 end
 local function level(player)
-  return math.floor(experience(player) / 150) + 1
+  -- Increasing XP requirements avoid reaching thousands of levels too quickly.
+  local xp = math.max(0, experience(player))
+  return math.floor((math.sqrt(1 + xp / 25) - 1) / 2) + 1
 end
 local function notify(player, message)
   core.chat_send_player(player:get_player_name(), "[NOVATERRA] " .. message)
@@ -26,7 +29,14 @@ local function award(player, id, amount)
   if type(amount) ~= "number" or amount < 1 or amount > 100 then return false end
   local meta = player:get_meta()
   local previous = progress(player, id)
-  if previous >= def.goal then return false end
+  local repeat_xp = endless.record(player, id, amount)
+  if repeat_xp > 0 then
+    local old_level = level(player)
+    meta:set_int("nv_rpg_xp", experience(player) + repeat_xp)
+    notify(player, "Endless " .. endless.definitions[id].title .. " complete! +" .. repeat_xp .. " XP")
+    if level(player) > old_level then notify(player, "LEVEL UP! " .. level(player)) end
+  end
+  if previous >= def.goal then return repeat_xp > 0 end
   local current = math.min(def.goal, previous + math.floor(amount))
   meta:set_int(key(id), current)
   if current >= def.goal then
@@ -45,6 +55,8 @@ novaterra_rpg = {
   get_xp = experience,
   get_progress = progress,
   add_event = award,
+  endless_state = endless.state,
+  endless_order = endless.order,
 }
 function novaterra_rpg.record_defeat(player, kind)
   if kind == "crawler" or kind == "nightshade" then
@@ -88,9 +100,37 @@ local function show(player)
     parts[#parts + 1] = string.format("label[0.95,%.2f;%s]", y + 0.60, core.formspec_escape(def.detail))
     parts[#parts + 1] = string.format("label[8.32,%.2f;%d/%d]", y + 0.43, current, def.goal)
   end
-  parts[#parts + 1] = "button_exit[4.2,8.45;2.6,0.65;close;BACK TO GAME]"
+  parts[#parts + 1] = "label[0.75,8.07;ENDLESS CHALLENGES / REPEATABLE GOALS]"
+  parts[#parts + 1] = "button[7.5,8.1;2.8,0.6;endless;ENDLESS]"
+  parts[#parts + 1] = "button_exit[4.2,8.65;2.6,0.65;close;BACK TO GAME]"
   core.show_formspec(name, "nv_rpg:quests", table.concat(parts))
 end
+local function show_endless(player)
+  local parts = {
+    "formspec_version[4]size[11,9.5]",
+    "bgcolor[#0A141BF2;true]",
+    "box[0.2,0.2;10.6,9.1;#142631E8]",
+    "box[0.2,0.2;10.6,0.13;#CBA055]",
+    "label[0.7,0.65;NOVATERRA / ENDLESS ADVENTURE]",
+    "label[0.7,1.3;LEVEL " .. level(player) .. " / " .. experience(player) .. " XP]",
+  }
+  for i, id in ipairs(endless.order) do
+    local state = endless.state(player, id)
+    local y = 1.85 + (i - 1) * 1.15
+    parts[#parts + 1] = string.format("box[0.65,%.2f;9.7,1.0;#1B3541BB]", y)
+    parts[#parts + 1] = string.format("label[0.95,%.2f;%s / TIER %d]", y + 0.15, state.title, state.tier)
+    parts[#parts + 1] = string.format("label[0.95,%.2f;%d / %d]", y + 0.55, state.progress, state.goal)
+  end
+  parts[#parts + 1] = "button[0.8,8.35;3,0.7;back;QUESTS]"
+  parts[#parts + 1] = "button_exit[7.2,8.35;3,0.7;close;CLOSE]"
+  core.show_formspec(player:get_player_name(), "nv_rpg:endless", table.concat(parts))
+end
+core.register_on_player_receive_fields(function(player, formname, fields)
+  if not player or not player:is_player() then return end
+  if formname == "nv_rpg:quests" and fields.endless then show_endless(player)
+  elseif formname == "nv_rpg:endless" and fields.back then show(player) end
+end)
+novaterra_rpg.show_endless = show_endless
 novaterra_rpg.show = show
 
 core.register_chatcommand("nvquests", {
