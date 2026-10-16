@@ -7,8 +7,8 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "android" / "prepare-luanti.py"
-sys.path.insert(0, str(ROOT / "android"))
+SCRIPT = ROOT / "prepare-luanti.py"
+sys.path.insert(0, str(ROOT))
 
 class AndroidPrepTest(unittest.TestCase):
     @classmethod
@@ -24,7 +24,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.project = root / "project"
         self.engine = root / "luanti"
         shutil.copytree(ROOT / "games" / "novaterra", self.project / "games" / "novaterra")
-        shutil.copytree(ROOT / "android" / "res", self.project / "android" / "res")
+        shutil.copytree(ROOT / "res", self.project / "android" / "res")
         mainmenu = self.engine / "builtin/mainmenu"
         mainmenu.mkdir(parents=True)
         (mainmenu / "init.lua").write_text(
