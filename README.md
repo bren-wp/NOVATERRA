@@ -1,6 +1,6 @@
 # NOVATERRA — Android offline game
 
-**Current Android development version: 0.0.7** · [Releases](https://github.com/bren-wp/NOVATERRA/releases)
+**Current Android development version: 0.0.8** · [Releases](https://github.com/bren-wp/NOVATERRA/releases)
 
 NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 native C++/OpenGL ES engine. The game includes all Lua gameplay mods, 21 base textures plus tint-based biome materials, offline world generation and on-device saves. External game servers, accounts and hosted databases are not required.
 
@@ -8,9 +8,9 @@ NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 na
 
 The `prepare-luanti.py` script packages the game and branded Android resources. The `offline_mainmenu.py` patch disables online server browsing, ContentDB access and engine update polling. The initial game is NOVATERRA and hosting controls are hidden.
 
-The Android workflow builds a debug-signed arm64 APK and development AAB with `versionName 0.0.7` and `versionCode 20007`. The higher Android code is deliberate: older internal test builds used greater version codes than 1, and Android never allows an in-place versionCode downgrade. For each later public version, increase both the displayed version and Android versionCode monotonically.
+The Android workflow builds a debug-signed arm64 APK and development AAB with `versionName 0.0.8` and `versionCode 20008`. The higher Android code is deliberate: older internal test builds used greater version codes than 1, and Android never allows an in-place versionCode downgrade. For each later public version, increase both the displayed version and Android versionCode monotonically.
 
-Only a successful build with validated assets and SHA-256 sums is eligible for the **v0.0.7** GitHub prerelease. APK and AAB are development builds, not Google Play production-signed bundles. **An online upgrade of the app is not required for gameplay.**
+Only a successful build with validated assets and SHA-256 sums is eligible for the **v0.0.8** GitHub prerelease. APK and AAB are development builds, not Google Play production-signed bundles. **An online upgrade of the app is not required for gameplay.**
 
 The engine's integrated local game service may use loopback sockets. The existing Android INTERNET permission is retained until the engine's local networking has been validated without it. NOVATERRA does not depend on an external server for offline gameplay.
 
@@ -27,7 +27,7 @@ runtime is preserved.
 Reference images are visual targets; this build has not yet been certified
 pixel-perfect or profiled on physical Android devices.
 
-## Procedural landscapes (v0.0.7)
+## Procedural landscapes (v0.0.8)
 
 The initial five climates are retained. Fifteen additional distinctive
 climates now use NOVATERRA's original textures with independent tinting and
@@ -43,7 +43,7 @@ hand-authored settlements, 1:1 UI screenshots and final premium character
 models remain unfinished; color-tinted material variants are a first pass,
 not a substitute for the reference art.
 
-## Splash-first visual parity work (v0.0.7)
+## Splash-first visual parity work (v0.0.8)
 
 The Android launch layout is rebuilt around an original scalable layered
 landscape illustration (mountain peaks, rivers, forest silhouettes and a
@@ -54,7 +54,7 @@ with `centerCrop` rather than stretched pixels. The artwork is a first
 implemented art direction, **not yet pixel-for-pixel identical** to the
 reference image. Gameplay and main-menu screens will be compared separately.
 
-## Selected world details (v0.0.7)
+## Selected world details (v0.0.8)
 
 The **Detalji svijeta** action next to the native singleplayer Play button
 opens a separate, touch-friendly screen. It reads genuine local `world.mt`
@@ -69,7 +69,7 @@ and tablet must be compared screen by screen; see
 [`docs/qa/ANDROID_VISUAL_QA.md`](docs/qa/ANDROID_VISUAL_QA.md). The current
 main menu does not yet feature a fully rendered 3D world preview.
 
-## Standalone NOVATERRA start menu (v0.0.7)
+## Standalone NOVATERRA start menu (v0.0.8)
 
 The default entry view is now an independent premium start screen over the
 original panoramic menu background. Its **NASTAVI**, **NOVA IGRA**,
@@ -86,7 +86,7 @@ Reference images remain acceptance targets. The existing panoramic menu
 art is **not** a live voxel-rendered 3D scene and there are no certified
 phone/tablet screenshot comparisons yet.
 
-## NOVATERRA menu art and player-facing polish (v0.0.7)
+## NOVATERRA menu art and player-facing polish (v0.0.8)
 
 Android packages contain an original deterministic panoramic mountain,
 river, pine forest and village illustration rendered at **1440 × 810** by
@@ -100,6 +100,17 @@ are hidden, without changing Android's debug build/signing status.
 **Not yet 1:1:** This is real packaged illustrative menu artwork, not a live
 three-dimensional voxel preview or a screenshot of game runtime. Device tests
 and screenshot comparisons remain open in `docs/qa/ANDROID_VISUAL_QA.md`.
+
+## In-game menu UX polish (v0.0.8)
+
+NOVATERRA no longer sends a technical chat command instruction on every
+join or opens a blocking menu on the first in-world frame. New players receive
+one locally craftable NOVATERRA manual to open the real interactive menu when
+desired, and existing players keep their old manual. The classic layout uses
+consistent Croatian labels instead of stock English or engine notices.
+The action callbacks and offline survival state remain unchanged.
+
+No visual 1:1 claim or physical device QA is implied by passing Lua tests.
 
 ## Touch UI
 
