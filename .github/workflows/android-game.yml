@@ -45,6 +45,20 @@ jobs:
         run: git clone --branch 5.17.0 --depth 1 https://github.com/luanti-org/luanti.git build/luanti
       - name: Brand Android client and bundle the full NOVATERRA game
         run: python3 android/prepare-luanti.py --luanti build/luanti --project .
+      - name: Verify patched engine is offline-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          MENU="build/luanti/builtin/mainmenu/init.lua"
+          LOCAL="build/luanti/builtin/mainmenu/tab_local.lua"
+          test -s "$MENU" && test -s "$LOCAL"
+          grep -Fq -- "NOVATERRA offline: online servers are unavailable" "$MENU"
+          grep -Fq -- "NOVATERRA offline: no content downloads" "$MENU"
+          ! grep -Fq -- 'tv_main:add(tabs.play_online)' "$MENU"
+          ! grep -Fq -- 'tv_main:add(tabs.content)' "$MENU"
+          ! grep -Fq -- 'check_new_version()' "$MENU"
+          ! grep -Fq -- 'btnbar:add_button("game_open_cdb"' "$LOCAL"
+          grep -Fq -- 'disabled_settings = enable_server' build/luanti/games/novaterra/game.conf
       - name: Compile arm64 native Android debug APK and test AAB
         shell: bash
         working-directory: build/luanti/android
@@ -74,6 +88,13 @@ jobs:
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'minetest.conf'
           unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'hud_scaling = 0.9'
           unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'menu_last_game = novaterra'
+          unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'enable_server = false'
+          unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'serverlist_url = '
+          unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/init.lua | grep -Fq -- 'NOVATERRA offline: online servers are unavailable'
+          if unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/init.lua | grep -Fq -- 'tv_main:add(tabs.play_online)'; then
+            echo "Public server button leaked into packaged APK" >&2
+            exit 1
+          fi
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_mobs/init.lua'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_rpg/init.lua'
           for icon in nv_health_full.png nv_health_empty.png nv_hunger_full.png nv_hunger_empty.png; do
