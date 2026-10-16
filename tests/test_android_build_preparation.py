@@ -124,10 +124,12 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn('android:icon="@drawable/novaterra_mark"', (main / "AndroidManifest.xml").read_text())
         self.assertIn('setSmallIcon(R.drawable.novaterra_mark)',
                       (main / "java/net/minetest/minetest/GameActivity.java").read_text())
-        self.assertIn("NOVATERRA", (main / "res/layout/activity_main.xml").read_text())
+        self.assertIn("@drawable/novaterra_title", (main / "res/layout/activity_main.xml").read_text())
         self.assertIn("@+id/progressBar", (main / "res/layout/activity_main.xml").read_text())
         self.assertIn("@+id/textView", (main / "res/layout/activity_main.xml").read_text())
         self.assertTrue((main / "res/drawable/novaterra_mark.xml").is_file())
+        title = (main / "res/drawable-nodpi/novaterra_title.png").read_bytes()
+        self.assertEqual(__import__("struct").unpack(">II", title[16:24]), (880, 210))
         self.assertTrue((main / "res/drawable/novaterra_landscape.xml").is_file())
         self.assertTrue((main / "res/drawable-land/novaterra_landscape.xml").is_file())
         self.assertIn('<item name="android:windowBackground">#091820</item>',
