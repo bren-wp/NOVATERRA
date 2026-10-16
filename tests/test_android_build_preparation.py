@@ -39,6 +39,7 @@ class AndroidPrepTest(unittest.TestCase):
         )
         (mainmenu / "tab_local.lua").write_text(
             '\tbtnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))\n'
+            'local function get_formspec(tabview, name, tabdata)\n'
             '\tlocal retval = ""\n'
             '\t\t\t"container[0.375,0.375]" ..\n\t\t\tcreative ..\n'
             'fgettext("Delete") fgettext("Select Mods") fgettext("Creative Mode") fgettext("Enable Damage")\n'
@@ -48,7 +49,8 @@ class AndroidPrepTest(unittest.TestCase):
             '\t"button[6.65,0;3.225,0.8;world_create;" .. fgettext("New") .. "]"\n'
             '\treturn retval\n'
             'end\n\n'
-            'local function main_button_handler(this, fields, name, tabdata)\n'
+            'local function main_button_handler(this, fields, name, tabdata)\n'            '\tassert(name == "local")\n'
+
             '\tif fields["world_create"] ~= nil then\n'
             '\t\treturn true\n'
             '\tend\n'
@@ -87,15 +89,18 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.6")
-        self.assertEqual(self.preparer.VERSION_CODE, 20006)
-        self.assertIn('versionName "0.0.6"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.7")
+        self.assertEqual(self.preparer.VERSION_CODE, 20007)
+        self.assertIn('versionName "0.0.7"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
-        self.assertEqual(len(list(game.rglob("*.png"))), 22)
+        self.assertEqual(len(list(game.rglob("*.png"))), 23)
         background = (game / "menu/background.png").read_bytes()
         self.assertEqual(background[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(__import__("struct").unpack(">II", background[16:24]), (1440, 810))
+        logo = (game / "menu/logo.png").read_bytes()
+        self.assertEqual(logo[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(__import__("struct").unpack(">II", logo[16:24]), (880, 210))
         for mod in ("nv_core", "nv_world", "nv_survival", "nv_ui", "nv_mobs", "nv_rpg"):
             with self.subTest(mod=mod):
                 self.assertTrue((game / "mods" / mod / "init.lua").is_file())
@@ -119,10 +124,12 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn('android:icon="@drawable/novaterra_mark"', (main / "AndroidManifest.xml").read_text())
         self.assertIn('setSmallIcon(R.drawable.novaterra_mark)',
                       (main / "java/net/minetest/minetest/GameActivity.java").read_text())
-        self.assertIn("NOVATERRA", (main / "res/layout/activity_main.xml").read_text())
+        self.assertIn("@drawable/novaterra_title", (main / "res/layout/activity_main.xml").read_text())
         self.assertIn("@+id/progressBar", (main / "res/layout/activity_main.xml").read_text())
         self.assertIn("@+id/textView", (main / "res/layout/activity_main.xml").read_text())
         self.assertTrue((main / "res/drawable/novaterra_mark.xml").is_file())
+        title = (main / "res/drawable-nodpi/novaterra_title.png").read_bytes()
+        self.assertEqual(__import__("struct").unpack(">II", title[16:24]), (880, 210))
         self.assertTrue((main / "res/drawable/novaterra_landscape.xml").is_file())
         self.assertTrue((main / "res/drawable-land/novaterra_landscape.xml").is_file())
         self.assertIn('<item name="android:windowBackground">#091820</item>',
@@ -147,12 +154,23 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertNotIn("SOLO / OFFLINE / ANDROID", local)
         self.assertNotIn("OFFLINE ADVENTURE", local)
         self.assertIn(";nv_settings;POSTAVKE", local)
-        self.assertIn(";nv_exit;IZLAZ", local)
+        self.assertIn(";nv_back_home;NATRAG", local)
+        home = (self.engine / "builtin/mainmenu/novaterra_home.lua").read_text(encoding="utf-8")
+        self.assertIn(";nv_exit;IZLAZ", home)
         self.assertIn("create_settings_dlg()", local)
         self.assertIn("core.close()", local)
         details = (self.engine / "builtin/mainmenu/novaterra_world_details.lua").read_text(encoding="utf-8")
         self.assertIn("novaterra_world_details = dofile(", menu)
         self.assertIn("nv_world_info", local)
+        self.assertIn("novaterra_home = dofile(", menu)
+        self.assertIn("nv_view", local)
+        self.assertIn("novaterra_home.formspec(path)", local)
+        self.assertIn("novaterra_home.resume()", local)
+        self.assertIn("nv_back_home", local)
+        self.assertIn("fields[\"nv_worlds\"]", local)
+        self.assertIn("fields[\"nv_new\"]", local)
+        self.assertIn("fields[\"nv_continue\"]", local)
+        self.assertTrue((self.engine / "builtin/mainmenu/novaterra_home.lua").is_file())
         self.assertIn("novaterra_world_details.create_dialog(world)", local)
         self.assertIn("fixed_map_seed", details)
         self.assertIn("mg_name", details)

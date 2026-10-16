@@ -26,24 +26,13 @@
         android:paddingBottom="24dp">
         <Space android:layout_width="1dp" android:layout_height="0dp"
             android:layout_weight="1" />
-        <ImageView android:layout_width="100dp" android:layout_height="100dp"
-            android:src="@drawable/novaterra_mark"
+        <!-- The same original embossed logo is used by the main menu. -->
+        <ImageView android:layout_width="match_parent"
+            android:layout_height="142dp"
+            android:src="@drawable/novaterra_title"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/label" />
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:fontFamily="serif"
-            android:includeFontPadding="false"
-            android:letterSpacing="0.025"
-            android:maxLines="1"
-            android:text="NOVATERRA"
-            android:textColor="#EFD399"
-            android:shadowColor="#D9091418"
-            android:shadowDx="2"
-            android:shadowDy="3"
-            android:shadowRadius="5"
-            android:textSize="38sp"
-            android:textStyle="bold" />
         <TextView android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
