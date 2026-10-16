@@ -31,7 +31,7 @@ local world = {
 }
 local f = info.formspec(world)
 for _, value in ipairs({"NOVATERRA", "DETALJI SVIJETA", "v7", "123456",
-                         "KREATIVNI MOD", "SURVIVAL", "NATRAG", "BEZ INTERNETA"}) do
+                         "KREATIVNI MOD", "SURVIVAL", "NATRAG", "PODACI SVIJETA OSTAJU NA TVOM UREDAJU"}) do
   assert(f:find(value,1,true), "Missing: "..value)
 end
 assert(not f:find("button[0,0;1,1;bad;WRONG",1,true), "Forms injection not escaped")
