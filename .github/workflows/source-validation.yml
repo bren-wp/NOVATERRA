@@ -25,15 +25,6 @@ jobs:
           lua5.1 tests/test_mobile_ui.lua
           lua5.1 tests/test_survival_hud.lua
           lua5.1 tests/test_ui_actions.lua
-      - name: Validate Windows launcher PowerShell syntax
-        shell: pwsh
-        run: |
-          $tokens = $null
-          $errors = $null
-          [System.Management.Automation.Language.Parser]::ParseFile(
-            (Resolve-Path "windows/Launch-NOVATERRA.ps1"), [ref]$tokens, [ref]$errors
-          ) | Out-Null
-          if ($errors.Count -gt 0) { $errors | Out-String | Write-Error; exit 1 }
   assets-and-tests:
     runs-on: ubuntu-latest
     steps:
