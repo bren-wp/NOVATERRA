@@ -26,6 +26,8 @@ def patch_offline_mainmenu(engine: Path) -> None:
     # Use only local Luanti world records and read their world.mt files.
     shutil.copyfile(Path(__file__).with_name("novaterra_world_details.lua"),
                     menu / "novaterra_world_details.lua")
+    shutil.copyfile(Path(__file__).with_name("novaterra_home.lua"),
+                    menu / "novaterra_home.lua")
 
     # No public server browser, online ContentDB tab, or update request.
     # Loading the internal tab modules is harmless; none are selectable.
@@ -44,7 +46,8 @@ def patch_offline_mainmenu(engine: Path) -> None:
     main = replace_once(
         main, "local menupath = core.get_mainmenu_path()",
         'local menupath = core.get_mainmenu_path()\n'
-        'novaterra_world_details = dofile(menupath .. DIR_DELIM .. "novaterra_world_details.lua")',
+        'novaterra_world_details = dofile(menupath .. DIR_DELIM .. "novaterra_world_details.lua")\n'
+        'novaterra_home = dofile(menupath .. DIR_DELIM .. "novaterra_home.lua")',
         "init.lua",
     )
 
@@ -223,6 +226,48 @@ local function main_button_handler''',
 \t\tend'''
     if gamebar in local:
         local = replace_once(local, gamebar, '\t\t-- NOVATERRA singleplayer navigation', "tab_local.lua")
+
+    # Genuine home and worlds are two different screens, using a persistent
+    # tabdata flag rather than stacking a mockup over the world list.
+    local = replace_once(
+        local,
+        'local function get_formspec(tabview, name, tabdata)\n',
+        '''local function get_formspec(tabview, name, tabdata)
+    if tabdata.nv_view ~= "worlds" then
+        return novaterra_home.formspec()
+    end
+''',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        '\tassert(name == "local")',
+        '''\tassert(name == "local")
+    if fields["nv_worlds"] then
+        tabdata.nv_view = "worlds"
+        return true
+    end
+    if fields["nv_back_home"] then
+        tabdata.nv_view = "home"
+        return true
+    end
+    if fields["nv_new"] then
+        tabdata.nv_view = "worlds"
+        fields["world_create"] = true
+    end
+    if fields["nv_continue"] then
+        if novaterra_home.resume() then return true end
+        tabdata.nv_view = "worlds"
+        return true
+    end''',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        '"button[0.55,6.34;3.92,0.57;nv_exit;IZLAZ]"',
+        '"button[0.55,6.34;3.92,0.57;nv_back_home;NATRAG]"',
+        "tab_local.lua",
+    )
 
     init_file.write_text(main, encoding="utf-8")
     local_file.write_text(local, encoding="utf-8")
