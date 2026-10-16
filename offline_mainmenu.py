@@ -200,7 +200,7 @@ local function main_button_handler''',
     )
     local = replace_once(
         local,
-        '\tif fields["world_create"] ~= nil then',
+        '    if fields["world_create"] ~= nil then',
         '''\tif fields["nv_settings"] ~= nil then
         local dlg = create_settings_dlg()
         dlg:set_parent(this)
