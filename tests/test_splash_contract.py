@@ -18,6 +18,7 @@ class SplashContract(unittest.TestCase):
         cls.layout = ET.parse(RES / "layout/novaterra_splash.xml").getroot()
         cls.landscape = ET.parse(RES / "drawable/novaterra_landscape.xml").getroot()
         cls.overlay = ET.parse(RES / "drawable/novaterra_splash_background.xml").getroot()
+        cls.widescreen = ET.parse(RES / "drawable-land/novaterra_landscape.xml").getroot()
 
     def test_original_splash_art_and_scaling(self):
         self.assertEqual(self.layout.tag, "FrameLayout")
@@ -31,6 +32,10 @@ class SplashContract(unittest.TestCase):
         paths = self.landscape.findall("path")
         self.assertGreaterEqual(len(paths), 14)
         self.assertTrue(all(p.get(attr("pathData")) and p.get(attr("fillColor")) for p in paths))
+        self.assertEqual(self.widescreen.tag, "vector")
+        self.assertEqual(self.widescreen.get(attr("viewportWidth")), "1920")
+        self.assertEqual(self.widescreen.get(attr("viewportHeight")), "1080")
+        self.assertGreaterEqual(len(self.widescreen.findall("path")), 18)
         self.assertEqual(self.overlay.tag, "shape")
         self.assertIsNotNone(self.overlay.find("gradient"))
 

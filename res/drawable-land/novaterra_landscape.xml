@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="960dp" android:height="540dp"
+    android:viewportWidth="1920" android:viewportHeight="1080">
+    <!-- Original widescreen NOVATERRA landscape, matched to native sensorLandscape. -->
+    <path android:fillColor="#81B7D9" android:pathData="M0,0 H1920 V1080 H0 Z"/>
+    <path android:fillColor="#F0C48A" android:pathData="M792,265 A150,150 0,1 1,1092 265 A150,150 0,1 1,792 265 Z"/>
+    <path android:fillColor="#F7DCAC" android:pathData="M842,265 A100,100 0,1 1,1042 265 A100,100 0,1 1,842 265 Z"/>
+    <path android:fillColor="#D6E9E4" android:pathData="M0,486 Q260,437 470,472 Q775,420 1065,474 Q1504,422 1920,475 V530 H0 Z"/>
+    <path android:fillColor="#7290A2" android:pathData="M0,664 L0,486 136,349 229,459 410,178 619,487 777,327 900,476 1046,268 1237,473 1420,145 1592,447 1711,299 1920,490 V692 Z"/>
+    <path android:fillColor="#E5EAE4" android:pathData="M259,373 L410,178 569,404 454,357 412,279 370,360 Z M1297,329 L1420,145 1543,349 1477,326 1431,254 1386,322 Z M944,402 L1046,268 1167,416 1080,383 1041,325 1005,389 Z"/>
+    <path android:fillColor="#50717C" android:pathData="M0,739 L120,503 258,648 388,470 530,657 685,456 818,625 1019,445 1173,644 1371,471 1537,641 1720,438 1920,628 V805 H0 Z"/>
+    <path android:fillColor="#40695C" android:pathData="M0,817 L149,623 359,736 504,582 697,746 862,610 1076,743 1213,588 1403,758 1561,612 1768,765 1920,653 V872 H0 Z"/>
+    <!-- Distant castle on a ridge, original village geometry. -->
+    <path android:fillColor="#CCB88F" android:pathData="M1189,601 H1461 V758 H1189 Z"/>
+    <path android:fillColor="#806351" android:pathData="M1159,550 H1214 V758 H1159 Z M1432,512 H1495 V758 H1432 Z"/>
+    <path android:fillColor="#E6CEA0" android:pathData="M1154,530 H1218 V560 H1154 Z M1428,491 H1500 V523 H1428 Z"/>
+    <path android:fillColor="#63483D" android:pathData="M1161,515 L1186,461 1211,515 Z M1434,477 L1465,423 1496,477 Z M1282,604 L1323,538 1361,604 Z"/>
+    <path android:fillColor="#2F3F3B" android:pathData="M1299,666 H1343 V758 H1299 Z M1177,568 H1193 V614 H1177 Z M1451,543 H1470 V598 H1451 Z"/>
+    <!-- Village roofs to the left of the castle. -->
+    <path android:fillColor="#D0B78B" android:pathData="M1020,699 H1088 V787 H1020 Z M1535,698 H1615 V780 H1535 Z"/>
+    <path android:fillColor="#765141" android:pathData="M1004,700 L1054,658 1106,700 Z M1515,698 L1574,650 1635,698 Z"/>
+    <!-- Valley river and wooded banks. -->
+    <path android:fillColor="#457C43" android:pathData="M0,743 Q331,697 710,805 L762,944 683,1080 H0 Z M1315,777 Q1706,687 1920,750 V1080 H1385 L1274,941 Z"/>
+    <path android:fillColor="#3383A0" android:pathData="M872,740 Q1134,751 1130,851 Q1123,954 1350,1080 H634 Q786,952 779,873 Q754,791 872,740 Z"/>
+    <path android:fillColor="#8BC4C1" android:pathData="M901,754 Q1108,789 1067,859 Q1027,946 1201,1080 H1072 Q943,945 1018,855 Q1042,792 873,767 Z"/>
+    <path android:fillColor="#7EAD54" android:pathData="M0,852 Q379,749 739,874 L737,966 658,1080 H0 Z M1339,859 Q1662,743 1920,861 V1080 H1442 Z"/>
+    <!-- Tall conifers frame the scene and reinforce the fantasy woodland. -->
+    <path android:fillColor="#2A593E" android:pathData="M70,812 L171,504 275,812 Z M284,871 L392,555 503,871 Z M1580,889 L1689,558 1797,889 Z M1712,892 L1827,499 1920,830 V971 H1712 Z"/>
+    <path android:fillColor="#1B4535" android:pathData="M151,778 H187 V954 H151 Z M377,840 H411 V1014 H377 Z M1678,847 H1712 V1022 H1678 Z M1815,844 H1852 V1080 H1815 Z"/>
+    <path android:fillColor="#315B37" android:pathData="M0,0 H357 L336,62 482,112 348,175 455,227 299,294 379,358 117,283 0,340 Z M1920,0 H1537 L1558,63 1442,125 1617,176 1484,253 1672,305 1561,366 1920,310 Z"/>
+    <path android:fillColor="#478B3E" android:pathData="M0,0 H180 L250,51 185,112 312,170 167,226 233,286 0,241 Z M1920,0 H1779 L1672,49 1744,116 1630,180 1771,244 1689,279 1920,233 Z"/>
+    <path android:fillColor="#B8AC7D" android:pathData="M0,964 L152,903 314,974 228,1022 0,1035 Z M1657,985 L1810,912 1920,962 V1080 H1761 Z"/>
+    <path android:fillColor="#F2D786" android:pathData="M75,995 h14 v14 H75 Z M242,1044 h16 v16 H242 Z M577,959 h14 v14 H577 Z M1477,986 h14 v14 H1477 Z M1859,1031 h16 v16 H1859 Z"/>
+</vector>

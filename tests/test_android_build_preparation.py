@@ -66,6 +66,8 @@ class AndroidPrepTest(unittest.TestCase):
         java = main / "java/net/minetest/minetest/GameActivity.java"
         java.parent.mkdir(parents=True)
         java.write_text('"net.minetest.minetest.fileprovider" setSmallIcon(R.mipmap.ic_launcher)', encoding="utf-8")
+        styles = main / "res/values/styles.xml"
+        styles.write_text('<item name="android:windowBackground">@drawable/bg</item>', encoding="utf-8")
         strings = main / "res/values/strings.xml"
         strings.parent.mkdir(parents=True)
         strings.write_text('<string name="label">Luanti</string>', encoding="utf-8")
@@ -111,6 +113,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("@+id/textView", (main / "res/layout/activity_main.xml").read_text())
         self.assertTrue((main / "res/drawable/novaterra_mark.xml").is_file())
         self.assertTrue((main / "res/drawable/novaterra_landscape.xml").is_file())
+        self.assertTrue((main / "res/drawable-land/novaterra_landscape.xml").is_file())
+        self.assertIn('<item name="android:windowBackground">#091820</item>',
+                      (main / "res/values/styles.xml").read_text())
         splash = (main / "res/layout/activity_main.xml").read_text(encoding="utf-8")
         self.assertIn("@drawable/novaterra_landscape", splash)
         self.assertIn('android:scaleType="centerCrop"', splash)

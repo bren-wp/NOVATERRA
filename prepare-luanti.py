@@ -92,6 +92,7 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
         "drawable/novaterra_mark.xml": "drawable/novaterra_mark.xml",
         "drawable/novaterra_splash_background.xml": "drawable/novaterra_splash_background.xml",
         "drawable/novaterra_landscape.xml": "drawable/novaterra_landscape.xml",
+        "drawable-land/novaterra_landscape.xml": "drawable-land/novaterra_landscape.xml",
         "layout/novaterra_splash.xml": "layout/activity_main.xml",
     }
     for source_name, target_name in resources.items():
@@ -101,6 +102,16 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
         destination_path = res_folder / target_name
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source_path, destination_path)
+
+    # Keep the operating-system launch window dark before MainActivity draws.
+    # The default upstream drawable can flash during cold starts.
+    styles_path = engine / "android/app/src/main/res/values/styles.xml"
+    styles = styles_path.read_text(encoding="utf-8")
+    styles = replace_once(
+        styles, '<item name="android:windowBackground">@drawable/bg</item>',
+        '<item name="android:windowBackground">#091820</item>', "styles.xml"
+    )
+    styles_path.write_text(styles, encoding="utf-8")
 
     manifest_path = engine / "android/app/src/main/AndroidManifest.xml"
     manifest = manifest_path.read_text(encoding="utf-8")
