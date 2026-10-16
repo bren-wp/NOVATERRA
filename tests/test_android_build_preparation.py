@@ -99,7 +99,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertEqual(background[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(__import__("struct").unpack(">II", background[16:24]), (1440, 810))
         logo = (game / "menu/logo.png").read_bytes()
-        self.assertEqual(logo[:8], b"\\x89PNG\\r\\n\\x1a\\n")
+        self.assertEqual(logo[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(__import__("struct").unpack(">II", logo[16:24]), (880, 210))
         for mod in ("nv_core", "nv_world", "nv_survival", "nv_ui", "nv_mobs", "nv_rpg"):
             with self.subTest(mod=mod):
