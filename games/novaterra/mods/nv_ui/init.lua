@@ -20,7 +20,7 @@ local function hub()
     'button[3.0,6.15;2.2,0.75;settings;POSTAVKE]',
     'button[5.8,6.15;4.35,0.75;quests;ZADACI I POSTIGNUCA]',
     'label[5.8,2.4;NOVATERRA / SURVIVAL WORLD]',
-    'textarea[5.8,3;4.3,2.8;;;' .. esc('Svjetovi, multiplayer i postavke dostupni su u Luanti glavnom izborniku. Ovaj ekran je izbornik unutar igre.') .. ']',
+    'textarea[5.8,3;4.3,2.8;;;' .. esc('Svjetovi i postavke dostupni su iz pocetnog izbornika. NOVATERRA se igra bez vanjskih servera.') .. ']',
     'button_exit[3.8,7.1;3.4,0.8;close;POVRATAK U IGRU]',
   })
 end
@@ -36,7 +36,7 @@ local function guide()
     'label[0.7,3.6;4. Craft trail rations to restore hunger.]',
     'label[0.7,4.3;5. Place torches to illuminate dark areas.]',
     'label[0.7,5.35;ANDROID: use the Luanti touch controls.]',
-    'label[0.7,5.9;WINDOWS: use keyboard and mouse controls.]',
+    'label[0.7,5.9;Igra radi bez interneta i udaljenih servera.]',
     'button[0.8,7;3,0.8;back;BACK TO MENU]',
     'button_exit[6.2,7;3.2,0.8;close;CLOSE]',
   })
@@ -47,7 +47,7 @@ local function controls()
     'bgcolor[#09161DF5;true]',
     'box[0.2,0.2;9.6,5.6;#15262DEE]',
     'label[0.6,0.8;NOVATERRA  /  CONTROLS]',
-    'textarea[0.6,1.4;8.8,2.9;;;WINDOWS: WASD to move, mouse to look, left click to mine, right click to place.\nANDROID: use Luanti touch controls, tap and hold to mine.\nInventory: use the Luanti inventory button or keyboard shortcut.]',
+    'textarea[0.6,1.4;8.8,2.9;;;ANDROID: use touch controls to move, look and mine.\nHold to mine and tap to place.\nInventory: touch the inventory button.]',
     'button[0.6,4.6;3.2,0.8;back;BACK TO MENU]',
     'button_exit[6,4.6;3.2,0.8;close;CLOSE]',
   })
@@ -69,7 +69,7 @@ local function settings(player)
     'button_exit[5.3,4.8;3,0.85;close;ZATVORI]',
   })
 end
--- Mobile layouts share the same server-side callbacks as desktop formspecs.
+-- Mobile and classic layout options share the same local gameplay callbacks.
 local classic_hub, classic_guide, classic_controls, classic_settings = hub, guide, controls, settings
 local touch = dofile(core.get_modpath('nv_ui') .. '/mobile.lua')
 local function touch_enabled(player)
@@ -199,7 +199,7 @@ core.register_on_joinplayer(function(player)
   end
 end)
 
--- Lightweight cross-platform world status: no extra touch buttons or UI overlap.
+-- Lightweight offline world status: no extra touch buttons or UI overlap.
 core.register_chatcommand('nvstatus', {
   description = 'Show NOVATERRA position and in-game time',
   func = function(name)
