@@ -1,4 +1,4 @@
--- Real Lua 5.1 exercise of the Android/Windows touch-first formspec builder.
+-- Real Lua 5.1 exercise of the Android-only touch-first formspec builder.
 local function assert_contains(value, term)
   assert(value:find(term, 1, true), 'Missing expected UI element: ' .. term)
 end
@@ -45,7 +45,8 @@ assert_contains(guide, 'SAKUPI DRVO')
 assert_contains(guide, ';back;')
 local controls = menu.controls()
 assert_contains(controls, 'ANDROID')
-assert_contains(controls, 'WINDOWS')
+assert(not controls:find('WINDOWS', 1, true))
+assert_contains(controls, 'IZRADA I ISTRAZIVANJE')
 local settings = menu.settings(player)
 for _, flag in ipairs({'hud_visible;', 'coordinates_visible;', 'mobile_interface;'}) do
   assert_contains(settings, flag)
