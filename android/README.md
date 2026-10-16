@@ -1,30 +1,19 @@
-# NOVATERRA — Android
+# NOVATERRA — Android offline game
 
-NOVATERRA uses the **Luanti 5.17.0 native C++/OpenGL ES engine** with shared Lua game modules. The Android package is built by Gradle from a pinned upstream engine checkout, with the complete game and its 17 original textures bundled at build time.
+NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 native C++/OpenGL ES engine. The game includes all Lua gameplay mods, 21 textures, offline world generation and on-device saves. External game servers, accounts and hosted databases are not required.
 
-## Android development packages
+## Android build
 
-- **APK (arm64)** — debug-signed, intended for direct installation and device testing.
-- **AAB** — debug development bundle, **not** signed with a Google Play production key.
-- Package name: `com.brendigo.novaterra`; development version code: `12001`.
-- Build workflow: [Android game build](https://github.com/bren-wp/NOVATERRA/actions/workflows/android-game.yml).
+The `android/prepare-luanti.py` script packages the game and branded Android resources. The `android/offline_mainmenu.py` patch disables online server browsing, ContentDB access and engine update polling. The initial game is NOVATERRA and hosting controls are hidden.
 
-The build verifies the Android package identity, embedded `games/novaterra` source, RPG and creature modules, original textures, Android configuration and native arm64 libraries. APK/AAB checksums are saved in `SHA256SUMS.txt`.
+The GitHub Android workflow creates a debug-signed arm64 APK and a development AAB, and verifies included assets and SHA-256 checksums. The Android release workflow is configured to publish those packages after successful checks.
 
-## Touch and mobile experience
+The engine's integrated local game service may use loopback sockets. The existing Android INTERNET permission is retained until the engine's local networking has been validated without it. NOVATERRA does not depend on an external server for offline gameplay.
 
-NOVATERRA uses the engine's touch controls, rather than emulating a keyboard or embedding a web app. A mobile configuration is included in the game's Android asset archive. The shared Lua interface exposes a survival HUD, inventory/crafting, world map, settings, and the RPG quest journal. The game currently opens using the Luanti engine's native game-selection UI.
+## Touch UI
 
-**Kotlin decision:** Kotlin is appropriate for future Android-specific onboarding, permissions, Play Billing (if ever required), and platform services. It is **not** a substitute for the C++ 3D engine. Avoid introducing a second activity/UI layer until its engine integration and lifecycle are tested.
+The app includes a branded splash, Android launcher icon, responsive in-game menu, pixel-heart and food HUD, crafting inventory, map and a quest journal. All primary menu actions have Lua tests.
 
-## Production release gates
+## Production requirements
 
-The following remain required before claiming that Android is fully complete:
-
-1. Install APK on physical Android devices and run launch/exit/relaunch tests.
-2. Create, save and reload a world; test hunger, mobs, furnace, crafting, quest progression and multiplayer.
-3. Verify touch targets, gesture conflicts, font scaling, safe areas, landscape/portrait behavior, frame pacing and thermal performance.
-4. Replace temporary voxel creature visuals and bring splash, main menu, HUD, inventory, buttons and all game screens to the owner's reference designs **screen by screen**.
-5. Set up a secure production signing key, bump unique `versionCode`, build a **release** AAB and run Google Play pre-launch and policy checks.
-
-CI success proves that binaries were compiled and packaged; it does not prove visual parity or physical-device compatibility. Do not describe a debug-signed AAB as a store-ready release.
+Physical-device launch, cold/restart, offline airplane-mode testing, landscape safe areas, gameplay stability, performance, privacy and screen-by-screen visual comparison remain necessary. Android production release signing keys and Google Play validation are not yet configured. A debug AAB must not be presented as production-signed.
