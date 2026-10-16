@@ -234,7 +234,10 @@ local function main_button_handler''',
         'local function get_formspec(tabview, name, tabdata)\n',
         '''local function get_formspec(tabview, name, tabdata)
     if tabdata.nv_view ~= "worlds" then
-        return novaterra_home.formspec()
+        local game = current_game()
+        local path = game and game.path and
+          (game.path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "logo.png") or ""
+        return novaterra_home.formspec(path)
     end
 ''',
         "tab_local.lua",
