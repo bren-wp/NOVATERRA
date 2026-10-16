@@ -9,11 +9,11 @@ import shutil
 from offline_mainmenu import patch_offline_mainmenu
 
 APP_ID = "com.brendigo.novaterra"
-# Public game release numbering begins at 0.0.1. Android's versionCode is
+# Public game release numbering begins at 0.0.2. Android's versionCode is
 # separate from the visible version and must NOT decrease relative to earlier
 # internal 1.2.0-dev builds, or upgrades could strand on-device saves.
-VERSION_NAME = "0.0.1"
-VERSION_CODE = 20001
+VERSION_NAME = "0.0.2"
+VERSION_CODE = 20002
 PNG_COUNT = 21
 
 
