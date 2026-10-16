@@ -44,8 +44,8 @@ class AndroidPrepTest(unittest.TestCase):
             'fgettext("Delete") fgettext("Select Mods") fgettext("Creative Mode") fgettext("Enable Damage")\n'
             '\tcaption = fgettext("Start Game"),\n'
             '\tlabel[0,0.2; .. fgettext("Select World:") .. ]\n'
-            '\tbutton[play; .. fgettext("Play Game") .. ]\n'
-            '\tbutton[world_create; .. fgettext("New") .. ]\n'
+            '\t"button[10.1875,5.925;4.9375,0.8;play;" .. fgettext("Play Game") .. "]"\n'
+            '\t"button[6.65,0;3.225,0.8;world_create;" .. fgettext("New") .. "]"\n'
             '\treturn retval\n'
             'end\n\n'
             'local function main_button_handler(this, fields, name, tabdata)\n'
@@ -87,12 +87,15 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.5")
-        self.assertEqual(self.preparer.VERSION_CODE, 20005)
-        self.assertIn('versionName "0.0.5"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.6")
+        self.assertEqual(self.preparer.VERSION_CODE, 20006)
+        self.assertIn('versionName "0.0.6"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
-        self.assertEqual(len(list(game.rglob("*.png"))), 21)
+        self.assertEqual(len(list(game.rglob("*.png"))), 22)
+        background = (game / "menu/background.png").read_bytes()
+        self.assertEqual(background[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(__import__("struct").unpack(">II", background[16:24]), (1440, 810))
         for mod in ("nv_core", "nv_world", "nv_survival", "nv_ui", "nv_mobs", "nv_rpg"):
             with self.subTest(mod=mod):
                 self.assertTrue((game / "mods" / mod / "init.lua").is_file())
@@ -140,7 +143,13 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn('core.settings:set("serverlist_url", "")', menu)
         self.assertIn("core.get_http_api = nil", menu)
         self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
-        self.assertIn("NOVATERRA / OFFLINE ADVENTURE", local)
+        self.assertIn("GRADI SVOJU PRICU", local)
+        self.assertNotIn("SOLO / OFFLINE / ANDROID", local)
+        self.assertNotIn("OFFLINE ADVENTURE", local)
+        self.assertIn(";nv_settings;POSTAVKE", local)
+        self.assertIn(";nv_exit;IZLAZ", local)
+        self.assertIn("create_settings_dlg()", local)
+        self.assertIn("core.close()", local)
         details = (self.engine / "builtin/mainmenu/novaterra_world_details.lua").read_text(encoding="utf-8")
         self.assertIn("novaterra_world_details = dofile(", menu)
         self.assertIn("nv_world_info", local)
@@ -157,7 +166,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("style[world_delete;", local)
         self.assertIn("POSTAVKE SVIJETA", local)
         self.assertIn("OBRISI SVIJET", local)
-        self.assertIn('"container[0.375,4.10]"', local)
+        self.assertIn('"container[10.25,5.60]"', local)
         self.assertNotIn("tv_main:add(tabs.about)", menu)
         self.assertIn("world_create", local)
         self.assertIn("world_delete", local)

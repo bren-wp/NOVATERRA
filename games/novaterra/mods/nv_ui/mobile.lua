@@ -23,7 +23,7 @@ function M.hub(player)
   local p = frame("BUILD  /  EXPLORE  /  SURVIVE  /  THRIVE")
   local buttons = {
     {"resume", "NASTAVI", 1.67},
-    {"inventory", "INVENTORY", 2.51},
+    {"inventory", "INVENTAR", 2.51},
     {"guide", "VODIC ZA PREZIVLJAVANJE", 3.35},
     {"map", "KARTA / LOKACIJE", 4.19},
     {"quests", "ZADACI I POSTIGNUCA", 5.03},
@@ -70,7 +70,7 @@ function M.guide()
   p[#p + 1] = "box[0.6,1.7;10.15,5.53;#0E202BCF]"
   local steps = {
     "01   SAKUPI DRVO I KAMEN",
-    "02   OTVORI INVENTORY I IZGRADI ALATE",
+    "02   OTVORI INVENTAR I IZGRADI ALATE",
     "03   PRONADI UGLJEN I ZELJEZO U SPILJAMA",
     "04   IZGRADI PEC I ISPECI HRANU",
     "05   IZGRADI SKLONISTE I OTVORI DNEVNIK ZADATAKA",
@@ -111,7 +111,7 @@ function M.settings(player)
   p[#p + 1] = "checkbox[0.95,3.73;coordinates_visible;Prikazi koordinate;" .. coords .. "]"
   p[#p + 1] = "checkbox[0.95,4.61;mobile_interface;Koristi velike mobilne gumbe;" .. mobile .. "]"
   p[#p + 1] = "label[0.95,5.55;Postavke su sacuvane posebno za svakog igraca.]"
-  p[#p + 1] = "label[0.95,6.05;Grafika i zvuk podesavaju se u postavkama Luanti enginea.]"
+  p[#p + 1] = "label[0.95,6.05;Grafiku i zvuk prilagodi u glavnim postavkama igre.]"
   p[#p + 1] = "button[0.7,7.4;3.55,0.63;back;NATRAG]"
   p[#p + 1] = "button_exit[7.2,7.4;3.52,0.63;close;NASTAVI IGRU]"
   return done(p)

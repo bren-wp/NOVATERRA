@@ -49,7 +49,7 @@ function M.formspec(world)
     "label[5.35,5.23;OSTECENJA / SURVIVAL]",
     "label[0.78,5.73;" .. esc(creative) .. "]",
     "label[5.35,5.73;" .. esc(damage) .. "]",
-    "label[0.78,6.37;PODACI SE CITAJU IZ LOKALNOG world.mt - BEZ INTERNETA]",
+    "label[0.78,6.37;PODACI SVIJETA OSTAJU NA TVOM UREDAJU]",
     "button_exit[3.75,6.86;2.9,0.54;nv_details_back;NATRAG]",
   })
 end

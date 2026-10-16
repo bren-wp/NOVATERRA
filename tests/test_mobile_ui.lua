@@ -29,7 +29,7 @@ local player = {
 local menu = dofile('games/novaterra/mods/nv_ui/mobile.lua')
 local hub = menu.hub(player)
 for _, token in ipairs({
-  'formspec_version[4]', 'NOVATERRA', 'NASTAVI', 'INVENTORY',
+  'formspec_version[4]', 'NOVATERRA', 'NASTAVI', 'INVENTAR',
   'VODIC ZA PREZIVLJAVANJE', 'KARTA / LOKACIJE',
   'ZADACI I POSTIGNUCA', 'KONTROLE', 'POSTAVKE',
   'style[resume;bgcolor=#388B48',

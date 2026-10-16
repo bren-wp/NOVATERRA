@@ -69,15 +69,31 @@ def patch_offline_mainmenu(engine: Path) -> None:
         'local menupath = core.get_mainmenu_path()',
         "init.lua",
     )
+    # Engine debugging remains available in logs; suppress only the stock
+    # red main-menu overlay that is not part of NOVATERRA's player UI.
+    debug_block = (
+        '\t-- Permanent warning if on an unoptimized debug build\n'
+        '\tif core.is_debug_build() then\n'
+        '\t\tlocal set_topleft_text = core.set_topleft_text\n'
+        '\t\tcore.set_topleft_text = function(s)\n'
+        '\t\t\ts = (s or "") .. "\\n"\n'
+        '\t\t\ts = s .. core.colorize("#f22", core.gettext("Debug build, expect worse performance"))\n'
+        '\t\t\tset_topleft_text(s)\n'
+        '\t\tend\n'
+        '\tend\n\n'
+    )
+    if debug_block in main:
+        main = replace_once(main, debug_block, "", "init.lua")
+
     # Branded, touch-friendly singleplayer menu styling; no fake controls.
     local = replace_once(
         local,
         '\tlocal retval = ""',
         '''\tlocal retval = table.concat({
         -- Real Luanti world operations are retained by their original field names.
-        "box[0.00,0.00;15.5,7.1;#09151EEB]",
-        "box[0.18,0.18;4.68,6.65;#10252FE6]",
-        "box[5.06,0.18;10.22,6.65;#142830EC]",
+        "box[0.00,0.00;15.5,7.1;#09151E60]",
+        "box[0.18,0.18;4.68,6.65;#10252FB8]",
+        "box[5.06,0.18;10.22,6.65;#142830BD]",
         "box[0.18,0.18;15.1,0.11;#C9A060]",
         "box[0.42,0.61;0.11,0.76;#65C970]",
         "style_type[button;bgcolor=#1D3540;bgcolor_hovered=#2E5660;bgcolor_pressed=#123526;textcolor=#FFFFFF;border=false]",
@@ -91,9 +107,9 @@ def patch_offline_mainmenu(engine: Path) -> None:
         "box[0.54,2.44;3.88,0.02;#A98853]",
         "label[0.55,2.65;TVOJ SVIJET.]",
         "label[0.55,3.10;BEZ GRANICA.]",
-        "label[0.55,3.58;SOLO / OFFLINE / ANDROID]",
+        "label[0.55,3.58;GRADI SVOJU PRICU]",
         "label[5.47,0.44;ODABIR SVIJETA]",
-        "label[0.52,6.44;NOVATERRA / OFFLINE ADVENTURE]",
+        "box[0.54,3.89;3.88,0.02;#A98853]",
     })''',
         "tab_local.lua",
     )
@@ -102,7 +118,7 @@ def patch_offline_mainmenu(engine: Path) -> None:
     local = replace_once(
         local,
         '"container[0.375,0.375]" ..\n\t\t\tcreative ..',
-        '"container[0.375,4.10]" ..\n\t\t\tcreative ..',
+        '"container[10.25,5.60]" ..\n\t\t\tcreative ..',
         "tab_local.lua",
     )
     for old, new in (
@@ -157,6 +173,57 @@ local function main_button_handler''',
     if fields["world_create"] ~= nil then''',
         "tab_local.lua",
     )
+    # Arrange genuine world actions in a left-side menu like the references.
+    # Keep each upstream field id, confirmation handler and save lifecycle.
+    local = replace_once(
+        local,
+        '"button[6.65,0;3.225,0.8;world_create;"',
+        '"button[-4.70,0.02;3.92,0.70;world_create;"',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        '"button[10.1875,5.925;4.9375,0.8;play;" .. "IGRAJ / NASTAVI"',
+        '"button[0.55,4.06;3.92,0.70;play;" .. "IGRAJ / NASTAVI"',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        "    return retval\nend\n\nlocal function main_button_handler",
+        '''    retval = retval .. "button[0.55,5.68;3.92,0.59;nv_settings;POSTAVKE]"
+    retval = retval .. "button[0.55,6.34;3.92,0.57;nv_exit;IZLAZ]"
+    return retval
+end
+
+local function main_button_handler''',
+        "tab_local.lua",
+    )
+    local = replace_once(
+        local,
+        '    if fields["world_create"] ~= nil then',
+        '''\tif fields["nv_settings"] ~= nil then
+        local dlg = create_settings_dlg()
+        dlg:set_parent(this)
+        this:hide()
+        dlg:show()
+        return true
+    end
+    if fields["nv_exit"] ~= nil then
+        core.close()
+        return true
+    end
+
+    if fields["world_create"] ~= nil then''',
+        "tab_local.lua",
+    )
+    # NOVATERRA bundles exactly one native game. Do not show the generic
+    # Luanti multi-game selector below the main navigation.
+    gamebar = '''\t\tif singleplayer_refresh_gamebar() then
+\t\t\tui.find_by_name("game_button_bar"):show()
+\t\tend'''
+    if gamebar in local:
+        local = replace_once(local, gamebar, '\t\t-- NOVATERRA singleplayer navigation', "tab_local.lua")
+
     init_file.write_text(main, encoding="utf-8")
     local_file.write_text(local, encoding="utf-8")
 
