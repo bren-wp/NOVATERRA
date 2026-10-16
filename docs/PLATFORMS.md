@@ -1,13 +1,19 @@
-# Platform architecture
+# Android-only platform architecture
 
-## Windows
-A Windows executable should be compiled from the compatible Luanti desktop engine and bundled with NOVATERRA game assets. Desktop-specific packaging scripts and installer files belong in `windows/`. The PowerShell launcher is for development only.
+NOVATERRA is an **Android-only, offline, native-engine** voxel game.
 
-## Android
-The Android client must be compiled using the compatible Luanti Android application and native Android packaging toolchain. The app must ship with touch controls, lifecycle handling, permissions, a unique package identifier, release signing and Play-compatible AAB. Platform files belong in `android/`.
+## Runtime
 
-## Shared content
-Game rules, procedural world generation, crafting, inventory and progression are shared Lua game logic in `games/novaterra/`. Both clients run the same game data.
+The Android APK embeds the Luanti 5.17.0 C++ and OpenGL ES engine plus the complete NOVATERRA Lua game, its mods and assets. The engine runs the singleplayer world locally. No external multiplayer server, user account, managed database or hosted game API is required.
 
-## Limitations
-This is a target architecture, **not** a claim that native Windows and Android binaries already exist.
+The Android game selector shows only locally saved worlds. Public server discovery, ContentDB and engine update polling are hidden/disabled in the packaged Android menu. World files, settings and inventories live in the app's private data area.
+
+The Android manifest currently retains its upstream INTERNET permission because the engine uses local network sockets internally. This does **not** mean a remote backend is required. Removing or restricting this permission must be validated against world-creation and loopback behavior on a real Android device.
+
+## Build
+
+`android/prepare-luanti.py` brands the upstream engine, bundles all 21 PNG assets and patches the engine menu into offline mode. `.github/workflows/android-game.yml` compiles arm64 APK and development AAB. `.github/workflows/android-release.yml` publishes their verified packages.
+
+## Scope
+
+Windows and iOS sources were removed. Gameplay and assets live under `games/novaterra/`. Native Android functionality and in-game UI continue to be improved in-place. Production signing, network privacy audit and physical-device QA are required before store distribution.
