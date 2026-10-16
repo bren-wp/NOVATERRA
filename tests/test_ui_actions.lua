@@ -1,6 +1,8 @@
 -- Exercise real NOVATERRA menu callbacks; no dead touch controls permitted.
 local receiver, shown, closed, openedMap, openedQuests = nil, nil, nil, false, false
-local commands, craftItems = {}, {}
+local commands, craftItems, on_join = {}, {}, nil
+local welcome_chats, delayed_popups, manual_grants = 0, 0, 0
+local has_manual = false
 local metaData = {nv_hunger_initialized=1, nv_hunger=16}
 local meta = {
   get_int = function(_, name) return metaData[name] or 0 end,
@@ -14,6 +16,19 @@ local player = {
   get_pos = function() return {x=1,y=22,z=3} end,
   get_properties = function() return {hp_max=20} end,
   get_inventory_formspec = function() return 'formspec_version[4]size[8,8]' end,
+  get_inventory = function()
+    return {
+      contains_item = function(_,list,item)
+        assert(list == 'main' and item == 'nv_ui:field_manual')
+        return has_manual
+      end,
+      add_item = function(_,list,item)
+        assert(list == 'main' and item == 'nv_ui:field_manual')
+        has_manual = true
+        manual_grants = manual_grants + 1
+      end,
+    }
+  end,
 }
 core = {
   get_modpath = function() return 'games/novaterra/mods/nv_ui' end,
@@ -21,7 +36,9 @@ core = {
   register_chatcommand = function(name, def) commands[name] = def end,
   register_craftitem = function(name, def) craftItems[name] = def end,
   register_craft = function() end,
-  register_on_joinplayer = function() end,
+  register_on_joinplayer = function(fn) on_join = fn end,
+  chat_send_player = function() welcome_chats = welcome_chats + 1 end,
+  after = function() delayed_popups = delayed_popups + 1 end,
   register_on_player_receive_fields = function(fn) receiver = fn end,
   get_player_by_name = function() return player end,
   show_formspec = function(name, formname, spec)
@@ -49,6 +66,14 @@ novaterra_rpg = {
 }
 commands.nvmap = {func = function() openedMap = true end}
 dofile('games/novaterra/mods/nv_ui/init.lua')
+assert(on_join, 'New player registration callback missing')
+on_join(player)
+assert(manual_grants == 1 and has_manual, 'First visit must grant working menu item')
+assert(not shown, 'Do not obscure gameplay with an unsolicited intro popup')
+assert(welcome_chats == 0 and delayed_popups == 0, 'Do not spam onboarding messages')
+on_join(player)
+assert(manual_grants == 1, 'Returning players must not receive duplicate manuals')
+assert(welcome_chats == 0 and delayed_popups == 0)
 assert(receiver ~= nil, 'Receive-fields callback is missing')
 local function press(form, fields) receiver(player, form, fields) end
 commands.novaterra.func('UItester')
