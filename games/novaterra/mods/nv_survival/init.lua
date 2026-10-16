@@ -3,6 +3,12 @@ local state = {}
 local MAX_HUNGER = 20
 local TICK_SECONDS = 30
 local HUNGER_TICKS = 4 -- one hunger point every two minutes
+-- Normalized safe margins leave room for display cutouts, edge gestures and
+-- both phone/tablet landscape UI; do not place heart icons at the screen edge.
+local HUD_LEFT = 0.035
+local HUD_TOP = 0.065
+local HUD_ROW_GAP = 0.065
+local HUD_RIGHT = 0.965
 local function clamp(value)
   return math.max(0, math.min(MAX_HUNGER, math.floor(value)))
 end
@@ -67,18 +73,18 @@ core.register_on_joinplayer(function(player)
   local hunger = meta:get_int('nv_hunger_initialized') == 1 and meta:get_int('nv_hunger') or MAX_HUNGER
   local data = {hunger=clamp(hunger), elapsed=0, ticks=0, hud_visible=meta:get_int('nv_hide_hud') ~= 1, coordinates_visible=meta:get_int('nv_show_coordinates') == 1}
   data.hud_health = player:hud_add({
-    hud_elem_type='statbar', position={x=0.02,y=0.025}, offset={x=0,y=0},
+    hud_elem_type='statbar', position={x=HUD_LEFT,y=HUD_TOP}, offset={x=0,y=0},
     text='nv_health_full.png', text2='nv_health_empty.png',
     number=0, item=20, direction=0, size={x=24,y=24},
     alignment={x=1,y=1},
   })
   data.hud_hunger = player:hud_add({
-    hud_elem_type='statbar', position={x=0.02,y=0.075}, offset={x=0,y=0},
+    hud_elem_type='statbar', position={x=HUD_LEFT,y=HUD_TOP+HUD_ROW_GAP}, offset={x=0,y=0},
     text='nv_hunger_full.png', text2='nv_hunger_empty.png',
     number=0, item=20, direction=0, size={x=24,y=24},
     alignment={x=1,y=1},
   })
-  data.hud_coordinates = player:hud_add({hud_elem_type='text', position={x=0.98,y=0.04}, offset={x=0,y=0}, text='', number=0xE7DBBD, alignment={x=-1,y=0}, scale={x=100,y=20}})
+  data.hud_coordinates = player:hud_add({hud_elem_type='text', position={x=HUD_RIGHT,y=HUD_TOP}, offset={x=0,y=0}, text='', number=0xE7DBBD, alignment={x=-1,y=0}, scale={x=100,y=20}})
   state[player:get_player_name()] = data
   save(player, data)
   update_hud(player, data)
