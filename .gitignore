@@ -6,7 +6,3 @@ build/
 dist/
 *.apk
 *.aab
-*.xcuserstate
-DerivedData/
-*.ipa
-*.xcarchive
