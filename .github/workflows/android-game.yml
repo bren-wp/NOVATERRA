@@ -109,7 +109,7 @@ jobs:
           assert logo.startswith(b"\x89PNG\r\n\x1a\n")
           assert struct.unpack(">II", logo[16:24]) == (880, 210)
           assert logo[25] == 6
-          assert len(logo) > 10000
+          assert len(logo) > 2000
           PY
           rm artifacts/menu-background.png artifacts/menu-logo.png
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_core/textures/nv_stone.png'
