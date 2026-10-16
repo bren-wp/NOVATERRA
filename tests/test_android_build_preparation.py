@@ -134,7 +134,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertNotIn("tv_main:add(tabs.about)", menu)
         self.assertIn("world_create", local)
         self.assertIn("world_delete", local)
-        self.assertIn("style[play;bgcolor=#418F4D", local)
+        self.assertIn("style[play;bgcolor=#398E45", local)
         self.assertIn("IGRAJ / NASTAVI", local)
         self.assertIn("NOVI SVIJET", local)
         self.assertNotIn('caption = fgettext("Start Game")', local)
