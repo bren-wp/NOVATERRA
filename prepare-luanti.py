@@ -90,7 +90,7 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     # Install the branded Android shell as real resources. Keep the engine's
     # MainActivity and progress callbacks intact so asset extraction remains safe.
     res_folder = engine / "android/app/src/main/res"
-    branding_folder = project / "android/res"
+    branding_folder = project / "res"
     resources = {
         "drawable/novaterra_mark.xml": "drawable/novaterra_mark.xml",
         "drawable/novaterra_splash_background.xml": "drawable/novaterra_splash_background.xml",
