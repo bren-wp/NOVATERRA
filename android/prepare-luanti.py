@@ -7,6 +7,8 @@ import os
 import pathlib
 import shutil
 
+from offline_mainmenu import patch_offline_mainmenu
+
 APP_ID = "com.brendigo.novaterra"
 VERSION_NAME = "1.2.0-dev"
 # Each GitHub Actions build gets a unique development versionCode, even if the
@@ -38,6 +40,8 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     if destination.exists():
         shutil.rmtree(destination)
     shutil.copytree(source, destination)
+
+    patch_offline_mainmenu(engine)
 
     gradle_path = engine / "android/app/build.gradle"
     gradle = gradle_path.read_text(encoding="utf-8")
@@ -78,7 +82,7 @@ def prepare(engine: pathlib.Path, project: pathlib.Path) -> None:
     # Android-specific default settings are bundled with the game's asset archive.
     # They preserve the upstream native engine and its touch implementation.
     # Users can override these in their own settings after first launch.
-    mobile_settings = "\n".join(['# NOVATERRA mobile defaults','touchscreen_threshold = 10','touch_sensitivity = 0.22','hud_scaling = 0.9','gui_scaling = 0.95','enable_shaders = true','fps_max = 60','viewing_range = 100', 'menu_last_game = novaterra']) + "\n"
+    mobile_settings = "\n".join(['# NOVATERRA mobile defaults','touchscreen_threshold = 10','touch_sensitivity = 0.22','hud_scaling = 0.9','gui_scaling = 0.95','enable_shaders = true','fps_max = 60','viewing_range = 100', 'menu_last_game = novaterra', 'enable_server = false', 'server_announce = false', 'serverlist_url = ', 'contentdb_enable_updates_indicator = false']) + "\n"
     mobile_settings_path = engine / "android" / "novaterra-mobile.conf"
     mobile_settings_path.write_text(mobile_settings, encoding="utf-8")
     gradle_path.write_text(gradle, encoding="utf-8")
