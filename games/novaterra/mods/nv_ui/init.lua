@@ -13,13 +13,13 @@ local function hub()
     'label[0.8,0.85;NOVATERRA]',
     'label[0.8,1.45;BUILD  /  EXPLORE  /  SURVIVE  /  THRIVE]',
     'button[0.8,2.15;4.4,0.85;resume;NASTAVI]',
-    'button[0.8,3.15;4.4,0.85;inventory;INVENTORY]',
+    'button[0.8,3.15;4.4,0.85;inventory;INVENTAR]',
     'button[0.8,4.15;4.4,0.85;guide;VODIC ZA PREZIVLJAVANJE]',
-    'button[0.8,5.15;4.4,0.85;map;MAP / WAYPOINT]',
+    'button[0.8,5.15;4.4,0.85;map;KARTA / LOKACIJE]',
     'button[0.8,6.15;2.1,0.75;controls;KONTROLE]',
     'button[3.0,6.15;2.2,0.75;settings;POSTAVKE]',
     'button[5.8,6.15;4.35,0.75;quests;ZADACI I POSTIGNUCA]',
-    'label[5.8,2.4;NOVATERRA / SURVIVAL WORLD]',
+    'label[5.8,2.4;NOVATERRA / TVOJ SVIJET]',
     'textarea[5.8,3;4.3,2.8;;;' .. esc('Svjetovi i postavke dostupni su iz pocetnog izbornika. NOVATERRA se igra bez vanjskih servera.') .. ']',
     'button_exit[3.8,7.1;3.4,0.8;close;POVRATAK U IGRU]',
   })
@@ -29,16 +29,16 @@ local function guide()
     'formspec_version[4]size[10.5,8.4]',
     'bgcolor[#09161DF5;true]',
     'box[0.25,0.25;10,7.9;#15262DEE]',
-    'label[0.7,0.65;NOVATERRA  /  SURVIVAL GUIDE]',
-    'label[0.7,1.5;1. Gather wood and stone by mining blocks.]',
-    'label[0.7,2.2;2. Open inventory and craft your first tools.]',
-    'label[0.7,2.9;3. Build a shelter before exploring caves.]',
-    'label[0.7,3.6;4. Craft trail rations to restore hunger.]',
-    'label[0.7,4.3;5. Place torches to illuminate dark areas.]',
-    'label[0.7,5.35;ANDROID: use the Luanti touch controls.]',
+    'label[0.7,0.65;NOVATERRA / VODIC]',
+    'label[0.7,1.5;1. SAKUPI DRVO I KAMEN.]',
+    'label[0.7,2.2;2. OTVORI INVENTAR I IZGRADI PRVE ALATE.]',
+    'label[0.7,2.9;3. IZGRADI SKLONISTE PRIJE ISTRAZIVANJA SPILJA.]',
+    'label[0.7,3.6;4. PRIPREMI HRANU KAKO BI VRATIO GLAD.]',
+    'label[0.7,4.3;5. POSTAVI BAKLJE ZA OSVJETLJAVANJE.]',
+    'label[0.7,5.35;KRECI SE I ISTRAZUJ POMOCU DODIRNIH KONTROLA.]',
     'label[0.7,5.9;Igra radi bez interneta i udaljenih servera.]',
-    'button[0.8,7;3,0.8;back;BACK TO MENU]',
-    'button_exit[6.2,7;3.2,0.8;close;CLOSE]',
+    'button[0.8,7;3,0.8;back;NATRAG]',
+    'button_exit[6.2,7;3.2,0.8;close;ZATVORI]',
   })
 end
 local function controls()
@@ -46,10 +46,10 @@ local function controls()
     'formspec_version[4]size[10,6]',
     'bgcolor[#09161DF5;true]',
     'box[0.2,0.2;9.6,5.6;#15262DEE]',
-    'label[0.6,0.8;NOVATERRA  /  CONTROLS]',
-    'textarea[0.6,1.4;8.8,2.9;;;ANDROID: use touch controls to move, look and mine.\nHold to mine and tap to place.\nInventory: touch the inventory button.]',
-    'button[0.6,4.6;3.2,0.8;back;BACK TO MENU]',
-    'button_exit[6,4.6;3.2,0.8;close;CLOSE]',
+    'label[0.6,0.8;NOVATERRA / KONTROLE]',
+    'textarea[0.6,1.4;8.8,2.9;;;KRECI SE POMOCU ANALOGNOG KRUGA.\nPOVUCI ZA POGLED, ZADRZI ZA RUDARENJE.\nDODIRNI INVENTAR ZA OPREMU I IZRADU.]',
+    'button[0.6,4.6;3.2,0.8;back;NATRAG]',
+    'button_exit[6,4.6;3.2,0.8;close;ZATVORI]',
   })
 end
 local function settings(player)
@@ -61,7 +61,7 @@ local function settings(player)
     'box[0.25,0.25;8.5,5.8;#12252BEF]',
     'box[0.25,0.25;8.5,0.12;#C99B51]',
     'label[0.7,0.85;NOVATERRA / POSTAVKE]',
-    'label[0.7,1.7;SURVIVAL HUD]',
+    'label[0.7,1.7;PRIKAZ ZDRAVLJA I GLADI]',
     'checkbox[0.8,2.45;hud_visible;Prikazi zdravlje i glad;', hidden and 'false' or 'true', ']',
     'checkbox[0.8,3.3;coordinates_visible;Prikazi koordinate;', coords and 'true' or 'false', ']',
     'label[0.7,4.0;Promjene se spremaju za ovog igraca.]',
@@ -171,7 +171,7 @@ end)
 -- A useable inventory tool is a reliable touch-screen entry point.
 -- Unlike a decorative HUD image, tapping this item really opens the menu.
 core.register_craftitem('nv_ui:field_manual', {
-  description = 'NOVATERRA / Main Menu',
+  description = 'NOVATERRA / IZBORNIK',
   inventory_image = 'nv_glass.png^[colorize:#59C7AE:140',
   stack_max = 1,
   on_use = function(itemstack, user)
@@ -183,7 +183,6 @@ core.register_craft({output = 'nv_ui:field_manual',
   recipe = {{'nv_core:glass', 'nv_core:wood'}}})
 core.register_on_joinplayer(function(player)
   local name = player:get_player_name()
-  core.chat_send_player(name, 'NOVATERRA: tap the Main Menu item or type /novaterra to open the game menu.')
   local meta = player:get_meta()
   if meta:get_int('nv_mobile_intro_shown') == 0 then
     meta:set_int('nv_mobile_intro_shown', 1)
@@ -191,11 +190,8 @@ core.register_on_joinplayer(function(player)
     if not inventory:contains_item('main', 'nv_ui:field_manual') then
       inventory:add_item('main', 'nv_ui:field_manual')
     end
-    -- Delay until other modules have finished their join callbacks.
-    core.after(0.7, function()
-      local current = core.get_player_by_name(name)
-      if current and current:is_player() then show_hub(current) end
-    end)
+    -- Avoid showing a blocking menu over the first playable world frame.
+    -- The granted craftable manual stays available as an explicit entry point.
   end
 end)
 

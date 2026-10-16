@@ -14,8 +14,8 @@ APP_ID = "com.brendigo.novaterra"
 # Public game release numbering begins at 0.0.4. Android's versionCode is
 # separate from the visible version and must NOT decrease relative to earlier
 # internal 1.2.0-dev builds, or upgrades could strand on-device saves.
-VERSION_NAME = "0.0.7"
-VERSION_CODE = 20007
+VERSION_NAME = "0.0.8"
+VERSION_CODE = 20008
 PNG_COUNT = 21
 
 

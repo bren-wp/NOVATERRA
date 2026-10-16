@@ -89,9 +89,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.7")
-        self.assertEqual(self.preparer.VERSION_CODE, 20007)
-        self.assertIn('versionName "0.0.7"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.8")
+        self.assertEqual(self.preparer.VERSION_CODE, 20008)
+        self.assertIn('versionName "0.0.8"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
         self.assertEqual(len(list(game.rglob("*.png"))), 23)
