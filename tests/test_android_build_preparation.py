@@ -66,6 +66,7 @@ class AndroidPrepTest(unittest.TestCase):
         java = main / "java/net/minetest/minetest/GameActivity.java"
         java.parent.mkdir(parents=True)
         java.write_text('"net.minetest.minetest.fileprovider" setSmallIcon(R.mipmap.ic_launcher)', encoding="utf-8")
+        (main / "res/values").mkdir(parents=True, exist_ok=True)
         styles = main / "res/values/styles.xml"
         styles.write_text('<item name="android:windowBackground">@drawable/bg</item>', encoding="utf-8")
         strings = main / "res/values/strings.xml"
