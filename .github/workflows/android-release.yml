@@ -40,7 +40,7 @@ jobs:
             echo "Refusing release: source validation did not succeed for commit $SOURCE_SHA" >&2
             exit 1
           fi
-          printf 'RUN_ID=%s\nSOURCE_SHA=%s\nTAG=v0.0.1\n' "$RUN_ID" "$SOURCE_SHA" "${SOURCE_SHA:0:8}" >> "$GITHUB_ENV"
+          printf 'RUN_ID=%s\nSOURCE_SHA=%s\nTAG=v0.0.1\n' "$RUN_ID" "$SOURCE_SHA" >> "$GITHUB_ENV"
       - name: Download and verify APK and AAB
         shell: bash
         run: |
