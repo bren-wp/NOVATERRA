@@ -12,12 +12,12 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingLeft="22dp"
-        android:paddingRight="22dp">
+        android:paddingLeft="28dp"
+        android:paddingRight="28dp">
 
         <ImageView
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="108dp"
+            android:layout_height="108dp"
             android:contentDescription="@string/label"
             android:src="@drawable/novaterra_mark" />
 
@@ -28,7 +28,7 @@
             android:fontFamily="serif"
             android:text="NOVATERRA"
             android:textColor="#EBC58A"
-            android:textSize="38sp"
+            android:textSize="42sp"
             android:textStyle="bold"
             android:letterSpacing="0.08" />
 
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="5dp"
-            android:text="BUILD  ·  EXPLORE  ·  SURVIVE  ·  THRIVE"
+            android:text="EXPLORE  ·  BUILD  ·  SURVIVE"
             android:textColor="#BDD1C9"
             android:textSize="12sp"
             android:letterSpacing="0.07" />
@@ -46,14 +46,13 @@
             android:id="@+id/progressBar"
             style="@style/CustomProgressBar"
             android:layout_width="match_parent"
-            android:layout_height="12dp"
-            android:layout_marginTop="22dp"
+            android:layout_height="7dp"
+            android:layout_marginTop="30dp"
             android:indeterminate="false"
             android:max="100"
             android:progressTint="#80CE72"
             android:progressBackgroundTint="#263B43"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/textView"
