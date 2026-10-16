@@ -20,6 +20,8 @@ class AndroidPackagingAudit(unittest.TestCase):
         self.assertIn("games/novaterra/mods/nv_rpg/init.lua", content)
         self.assertIn("games/novaterra/mods/nv_core/textures/nv_stone.png", content)
         self.assertIn("IMAGE_COUNT", content)
+        self.assertEqual(content.count("IMAGE_COUNT=$("), 1)
+        self.assertEqual(content.count("      - uses: actions/upload-artifact@v4"), 1)
         self.assertIn("sha256sum ./*.apk ./*.aab > SHA256SUMS.txt", content)
 
 
