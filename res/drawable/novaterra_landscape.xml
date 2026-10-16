@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="540dp" android:height="960dp"
+    android:viewportWidth="1080" android:viewportHeight="1920">
+    <!-- Original layered NOVATERRA Android landscape; no third-party assets. -->
+    <path android:fillColor="#8FC3DD" android:pathData="M0,0 H1080 V1920 H0 Z"/>
+    <path android:fillColor="#F1BF81" android:pathData="M750,340 A165,165 0,1 1,1080 340 A165,165 0,1 1,750 340 Z"/>
+    <path android:fillColor="#FFE1A4" android:pathData="M808,340 A107,107 0,1 1,1022 340 A107,107 0,1 1,808 340 Z"/>
+    <path android:fillColor="#D9EDE8" android:pathData="M0,540 Q150,490 310,533 Q410,494 521,535 Q715,486 910,530 L1080,510 V580 H0 Z"/>
+    <path android:fillColor="#6E91A2" android:pathData="M0,1110 V765 L90,652 166,748 265,544 435,780 561,664 667,791 786,496 960,790 1080,648 V1160 Z"/>
+    <path android:fillColor="#E7ECE7" android:pathData="M157,695 L265,544 362,692 296,666 270,625 231,669 Z M689,677 L786,496 900,686 831,647 797,584 755,639 Z"/>
+    <path android:fillColor="#426777" android:pathData="M0,1170 L108,837 253,1042 365,800 486,953 610,803 802,1004 916,778 1080,934 V1310 H0 Z"/>
+    <path android:fillColor="#355B56" android:pathData="M0,1300 V1000 L144,1061 272,926 381,1069 469,1041 577,1139 693,1031 833,1141 956,1004 1080,1077 V1410 Z"/>
+    <!-- Original hilltop village silhouettes. -->
+    <path android:fillColor="#C9AC7F" android:pathData="M699,1091 H883 V1209 H699 Z"/>
+    <path android:fillColor="#70574C" android:pathData="M684,1046 H724 V1214 H684 Z M862,1010 H908 V1214 H862 Z"/>
+    <path android:fillColor="#D8C18C" android:pathData="M680,1023 H726 V1054 H680 Z M858,986 H912 V1017 H858 Z"/>
+    <path android:fillColor="#59463D" android:pathData="M687,1000 L703,972 719,1000 Z M867,970 L885,937 901,970 Z M761,1092 L790,1046 820,1092 Z"/>
+    <path android:fillColor="#263D3A" android:pathData="M779,1132 H804 V1214 H779 Z M694,1058 H710 V1092 H694 Z M875,1030 H890 V1070 H875 Z"/>
+    <!-- Winding river, shores and green foreground. -->
+    <path android:fillColor="#417F4C" android:pathData="M0,1230 Q260,1131 492,1246 Q384,1482 468,1580 L229,1920 H0 Z M686,1199 Q922,1092 1080,1260 V1920 H795 Q963,1656 740,1477 Z"/>
+    <path android:fillColor="#2F85A4" android:pathData="M494,1161 Q689,1216 672,1344 Q649,1470 821,1532 Q955,1650 748,1920 H230 Q458,1721 491,1598 Q533,1443 432,1359 Q357,1279 494,1161 Z"/>
+    <path android:fillColor="#84C7B7" android:pathData="M498,1210 Q631,1267 596,1354 Q539,1472 732,1540 Q818,1657 661,1881 L588,1920 Q718,1655 664,1590 Q473,1471 533,1351 Q572,1262 479,1231 Z"/>
+    <path android:fillColor="#81A951" android:pathData="M0,1390 Q209,1288 430,1372 L388,1550 180,1840 H0 Z M804,1335 Q992,1296 1080,1393 V1920 H959 Q1060,1592 803,1478 Z"/>
+    <!-- Voxel-like pines and framing boughs. -->
+    <path android:fillColor="#264936" android:pathData="M0,0 H259 L216,63 337,101 219,151 307,220 181,264 223,340 0,300 Z M1080,0 H851 L847,70 771,118 902,169 781,238 922,292 878,367 1080,313 Z"/>
+    <path android:fillColor="#3D7C3B" android:pathData="M0,0 H148 L224,57 169,119 258,159 131,220 180,301 0,239 Z M1080,0 H952 L852,58 940,114 835,181 943,248 895,307 1080,252 Z"/>
+    <path android:fillColor="#3C623D" android:pathData="M41,1273 L98,1092 155,1273 Z M139,1369 L197,1151 258,1369 Z M848,1290 L910,1076 969,1290 Z M930,1450 L1005,1190 1071,1450 Z"/>
+    <path android:fillColor="#1A3D32" android:pathData="M83,1252 H113 V1350 H83 Z M184,1356 H210 V1432 H184 Z M897,1282 H928 V1375 H897 Z M991,1430 H1018 V1510 H991 Z"/>
+    <path android:fillColor="#B9AC7B" android:pathData="M0,1671 L97,1614 186,1667 130,1744 0,1755 Z M918,1693 L1007,1650 1080,1698 V1776 H958 Z"/>
+    <path android:fillColor="#F2D681" android:pathData="M55,1803 h13 v13 H55 Z M177,1864 h15 v15 H177 Z M328,1668 h13 v13 H328 Z M921,1598 h14 v14 H921 Z M1027,1852 h15 v15 H1027 Z"/>
+</vector>
