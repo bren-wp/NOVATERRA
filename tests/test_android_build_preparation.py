@@ -70,7 +70,7 @@ class AndroidPrepTest(unittest.TestCase):
         styles = main / "res/values/styles.xml"
         styles.write_text('<item name="android:windowBackground">@drawable/bg</item>', encoding="utf-8")
         strings = main / "res/values/strings.xml"
-        strings.parent.mkdir(parents=True)
+        strings.parent.mkdir(parents=True, exist_ok=True)
         strings.write_text('<string name="label">Luanti</string>', encoding="utf-8")
 
     def test_embedded_game_and_android_brand(self):
