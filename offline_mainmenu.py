@@ -29,6 +29,8 @@ def patch_offline_mainmenu(engine: Path) -> None:
                         "\t-- NOVATERRA offline: online servers are unavailable.\n", "init.lua")
     main = replace_once(main, "\ttv_main:add(tabs.content)\n",
                         "\t-- NOVATERRA offline: no content downloads.\n", "init.lua")
+    main = replace_once(main, "\ttv_main:add(tabs.about)\n",
+                        "\t-- NOVATERRA-only menu: hide the generic engine About tab.\n", "init.lua")
     main = replace_once(main, "\tcheck_new_version()\n",
                         "\t-- NOVATERRA offline: update polling disabled.\n", "init.lua")
     main = replace_once(main, '\tlocal last_tab = core.settings:get("maintab_LAST")',
@@ -60,14 +62,44 @@ def patch_offline_mainmenu(engine: Path) -> None:
         local,
         '\tlocal retval = ""',
         '''\tlocal retval = table.concat({
-        "box[0.0,0.0;15.5,7.1;#0C1923E9]",
+        -- Real Luanti world operations are retained by their original field names.
+        "box[0.00,0.00;15.5,7.1;#09151EEB]",
+        "box[0.18,0.18;4.68,6.65;#10252FE6]",
+        "box[5.06,0.18;10.22,6.65;#142830EC]",
         "box[0.18,0.18;15.1,0.11;#C9A060]",
-        "style_type[button;bgcolor=#1D3C34;bgcolor_hovered=#316A48;bgcolor_pressed=#123526;textcolor=#FFFFFF;border=false]",
-        "style[play;bgcolor=#418F4D;bgcolor_hovered=#52A861;textcolor=#FFFFFF]",
-        "label[0.4,6.33;NOVATERRA / OFFLINE ADVENTURE]",
+        "box[0.42,0.61;0.11,0.76;#65C970]",
+        "style_type[button;bgcolor=#1D3540;bgcolor_hovered=#2E5660;bgcolor_pressed=#123526;textcolor=#FFFFFF;border=false]",
+        "style[play;bgcolor=#398E45;bgcolor_hovered=#51AE5E;bgcolor_pressed=#216A32;textcolor=#FFFFFF]",
+        "style[world_create;bgcolor=#328549;bgcolor_hovered=#4BA55D;textcolor=#FFFFFF]",
+        "style[world_delete;bgcolor=#493235;bgcolor_hovered=#6B383D;textcolor=#FFF1E7]",
+        "style[world_configure;bgcolor=#2A444A;bgcolor_hovered=#365D65;textcolor=#FFFFFF]",
+        "label[0.68,0.73;NOVATERRA]",
+        "label[0.55,1.53;BUILD / EXPLORE]",
+        "label[0.55,1.92;SURVIVE / THRIVE]",
+        "box[0.54,2.44;3.88,0.02;#A98853]",
+        "label[0.55,2.65;TVOJ SVIJET.]",
+        "label[0.55,3.10;BEZ GRANICA.]",
+        "label[0.55,3.58;SOLO / OFFLINE / ANDROID]",
+        "label[5.47,0.44;ODABIR SVIJETA]",
+        "label[0.52,6.44;NOVATERRA / OFFLINE ADVENTURE]",
     })''',
         "tab_local.lua",
     )
+    # Keep both the built-in world list and its destructive confirmation dialog.
+    # Move existing survival options below the branding rather than covering them.
+    local = replace_once(
+        local,
+        '"container[0.375,0.375]" ..\n\t\t\tcreative ..',
+        '"container[0.375,4.10]" ..\n\t\t\tcreative ..',
+        "tab_local.lua",
+    )
+    for old, new in (
+        ('fgettext("Delete")', '"OBRISI SVIJET"'),
+        ('fgettext("Select Mods")', '"POSTAVKE SVIJETA"'),
+        ('fgettext("Creative Mode")', '"KREATIVNI MOD"'),
+        ('fgettext("Enable Damage")', '"SURVIVAL MOD"'),
+    ):
+        local = replace_once(local, old, new, "tab_local.lua")
     local = replace_once(local, 'caption = fgettext("Start Game")',
                          'caption = "NOVATERRA"', "tab_local.lua")
     local = replace_once(local, 'fgettext("Play Game")',
