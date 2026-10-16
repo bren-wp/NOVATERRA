@@ -106,7 +106,7 @@ jobs:
           assert struct.unpack(">II", data[16:24]) == (1440, 810)
           assert len(data) > 15000
           logo = Path("artifacts/menu-logo.png").read_bytes()
-          assert logo.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+          assert logo.startswith(b"\x89PNG\r\n\x1a\n")
           assert struct.unpack(">II", logo[16:24]) == (880, 210)
           assert logo[25] == 6
           assert len(logo) > 10000
