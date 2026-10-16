@@ -25,10 +25,11 @@ local function notify(player, message)
 end
 local function award(player, id, amount)
   local def = quests[id]
-  if not def or not player or not player:is_player() then return false end
-  if type(amount) ~= "number" or amount < 1 or amount > 100 then return false end
+  if not endless.definitions[id] or not player or not player:is_player() then return false end
+  if type(amount) ~= "number" or amount ~= amount or amount < 1 or amount > 100
+      or amount ~= math.floor(amount) then return false end
   local meta = player:get_meta()
-  local previous = progress(player, id)
+  local previous = def and progress(player, id) or 0
   local repeat_xp = endless.record(player, id, amount)
   if repeat_xp > 0 then
     local old_level = level(player)
@@ -36,7 +37,8 @@ local function award(player, id, amount)
     notify(player, "Endless " .. endless.definitions[id].title .. " complete! +" .. repeat_xp .. " XP")
     if level(player) > old_level then notify(player, "LEVEL UP! " .. level(player)) end
   end
-  if previous >= def.goal then return true end
+  -- Endless-only objectives have no introductory quest to complete.
+  if not def or previous >= def.goal then return true end
   local current = math.min(def.goal, previous + math.floor(amount))
   meta:set_int(key(id), current)
   if current >= def.goal then
@@ -72,6 +74,16 @@ core.register_on_dignode(function(pos, oldnode, digger)
   elseif oldnode.name == "nv_world:coal_ore" or oldnode.name == "nv_world:iron_ore" then
     award(digger, "ore", 1)
   end
+end)
+-- Award builder progress only for player-placed, registered, solid NOVATERRA blocks.
+-- World generation, non-solid torches and foreign nodes never generate XP.
+core.register_on_placenode(function(pos, newnode, placer)
+  if not placer or not placer:is_player() or not newnode
+      or type(newnode.name) ~= "string" then return end
+  if not (newnode.name:match("^nv_core:") or newnode.name:match("^nv_world:")) then return end
+  local definition = core.registered_nodes and core.registered_nodes[newnode.name]
+  if not definition or definition.walkable == false then return end
+  award(placer, "builder", 1)
 end)
 core.register_on_craft(function(itemstack, player)
   if player and player:is_player() and itemstack:get_name() == "nv_world:furnace" then
@@ -116,10 +128,10 @@ local function show_endless(player)
   }
   for i, id in ipairs(endless.order) do
     local state = endless.state(player, id)
-    local y = 1.85 + (i - 1) * 1.15
-    parts[#parts + 1] = string.format("box[0.65,%.2f;9.7,1.0;#1B3541BB]", y)
-    parts[#parts + 1] = string.format("label[0.95,%.2f;%s / TIER %d]", y + 0.15, state.title, state.tier)
-    parts[#parts + 1] = string.format("label[0.95,%.2f;%d / %d]", y + 0.55, state.progress, state.goal)
+    local y = 1.75 + (i - 1) * 1.03
+    parts[#parts + 1] = string.format("box[0.65,%.2f;9.7,0.93;#1B3541BB]", y)
+    parts[#parts + 1] = string.format("label[0.95,%.2f;%s / TIER %d]", y + 0.13, core.formspec_escape(state.title), state.tier)
+    parts[#parts + 1] = string.format("label[0.95,%.2f;%d / %d]", y + 0.51, state.progress, state.goal)
   end
   parts[#parts + 1] = "button[0.8,8.35;3,0.7;back;QUESTS]"
   parts[#parts + 1] = "button_exit[7.2,8.35;3,0.7;close;CLOSE]"

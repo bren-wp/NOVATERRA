@@ -104,7 +104,7 @@ jobs:
           for icon in nv_health_full.png nv_health_empty.png nv_hunger_full.png nv_hunger_empty.png; do
             unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx "games/novaterra/mods/nv_survival/textures/$icon"
           done
-          IMAGE_COUNT=$(unzip -Z1 artifacts/novaterra-game-assets.zip | grep -c 'textures/.*[.]png')
+          IMAGE_COUNT=$(unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Ec '^games/novaterra/mods/[^/]+/textures/[^/]+[.]png$')
           if [[ "$IMAGE_COUNT" -ne 21 ]]; then
             echo "Expected 21 NOVATERRA PNG assets; found $IMAGE_COUNT" >&2
             exit 1
