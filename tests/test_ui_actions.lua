@@ -33,8 +33,14 @@ core = {
 }
 core.chatcommands = commands
 novaterra_survival = {
-  set_hud_visible = function() return true end,
-  set_coordinates_visible = function() return true end,
+  set_hud_visible = function(_, visible)
+    metaData.nv_hide_hud = visible and 0 or 1
+    return true
+  end,
+  set_coordinates_visible = function(_, visible)
+    metaData.nv_show_coordinates = visible and 1 or 0
+    return true
+  end,
 }
 novaterra_rpg = {
   get_level = function() return 2 end,
