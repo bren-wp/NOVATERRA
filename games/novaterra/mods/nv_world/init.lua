@@ -58,6 +58,10 @@ core.register_decoration({
   decoration='nv_world:tall_grass',
 })
 
+-- Extend the original five biomes with fifteen distinctive, engine-native climates.
+-- Existing terrain and saves are left untouched; changes appear in new chunks.
+dofile(core.get_modpath("nv_world") .. "/landscapes.lua")
+
 -- Smelting station
 dofile(core.get_modpath("nv_world") .. "/furnace.lua")
 
