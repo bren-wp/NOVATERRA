@@ -32,7 +32,9 @@ do not manufacture loading text for subsequent warm starts.
 
 1. **Splash:** Screenshot with background, correct logo scale, real loading
    indicator, no window flash or clipping in landscape on phone and tablet.
-2. **Main menu:** Compare original 3D voxel background and positions of every
+2. **Main menu:** Compare the separate start screen and original 3D voxel
+   background requirement, including the functionality of Continue/New/Worlds/
+   Settings/Exit, and positions of every
    real working button against the matching reference. No multiplayer,
    servers or store/account placeholders.
 3. **Worlds:** Test native local create/play/configure/delete (including
