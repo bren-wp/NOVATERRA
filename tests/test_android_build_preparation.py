@@ -39,6 +39,7 @@ class AndroidPrepTest(unittest.TestCase):
         )
         (mainmenu / "tab_local.lua").write_text(
             '\tbtnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))\n'
+            'local function get_formspec(tabview, name, tabdata)\n'
             '\tlocal retval = ""\n'
             '\t\t\t"container[0.375,0.375]" ..\n\t\t\tcreative ..\n'
             'fgettext("Delete") fgettext("Select Mods") fgettext("Creative Mode") fgettext("Enable Damage")\n'
@@ -48,7 +49,8 @@ class AndroidPrepTest(unittest.TestCase):
             '\t"button[6.65,0;3.225,0.8;world_create;" .. fgettext("New") .. "]"\n'
             '\treturn retval\n'
             'end\n\n'
-            'local function main_button_handler(this, fields, name, tabdata)\n'
+            'local function main_button_handler(this, fields, name, tabdata)\n'            '\tassert(name == "local")\n'
+
             '\tif fields["world_create"] ~= nil then\n'
             '\t\treturn true\n'
             '\tend\n'
@@ -87,9 +89,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.6")
-        self.assertEqual(self.preparer.VERSION_CODE, 20006)
-        self.assertIn('versionName "0.0.6"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.7")
+        self.assertEqual(self.preparer.VERSION_CODE, 20007)
+        self.assertIn('versionName "0.0.7"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
         self.assertEqual(len(list(game.rglob("*.png"))), 22)
@@ -153,6 +155,15 @@ class AndroidPrepTest(unittest.TestCase):
         details = (self.engine / "builtin/mainmenu/novaterra_world_details.lua").read_text(encoding="utf-8")
         self.assertIn("novaterra_world_details = dofile(", menu)
         self.assertIn("nv_world_info", local)
+        self.assertIn("novaterra_home = dofile(", menu)
+        self.assertIn("nv_view", local)
+        self.assertIn("novaterra_home.formspec()", local)
+        self.assertIn("novaterra_home.resume()", local)
+        self.assertIn("nv_back_home", local)
+        self.assertIn("fields[\"nv_worlds\"]", local)
+        self.assertIn("fields[\"nv_new\"]", local)
+        self.assertIn("fields[\"nv_continue\"]", local)
+        self.assertTrue((self.engine / "builtin/mainmenu/novaterra_home.lua").is_file())
         self.assertIn("novaterra_world_details.create_dialog(world)", local)
         self.assertIn("fixed_map_seed", details)
         self.assertIn("mg_name", details)
