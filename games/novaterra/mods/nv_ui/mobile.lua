@@ -1,5 +1,5 @@
 -- NOVATERRA touch-first formspec layouts. All controls are bound to server-side actions.
--- Uses the exact same commands, state and gameplay logic on Android and Windows.
+-- Designed exclusively for the bundled Android offline game.
 local M = {}
 local function escape(text) return core.formspec_escape(tostring(text)) end
 local function frame(title)
@@ -35,7 +35,7 @@ function M.hub(player)
   p[#p + 1] = "box[5.76,1.54;5.11,6.31;#101E29DA]"
   p[#p + 1] = "label[6.05,1.83;TVOJ SVIJET. BEZ GRANICA.]"
   p[#p + 1] = "label[6.05,2.43;ISTRAZI / RUDARI / GRADI]"
-  p[#p + 1] = "label[6.05,2.82;PREZIVI / IGRAJ S PRIJATELJIMA]"
+  p[#p + 1] = "label[6.05,2.82;PREZIVI / IGRAJ BEZ INTERNETA]"
   local hp = player:get_hp()
   local props = player:get_properties() or {}
   local maxhp = math.max(1, props.hp_max or 20)
@@ -82,14 +82,14 @@ function M.guide()
 end
 
 function M.controls()
-  local p = frame("KONTROLE / ANDROID I WINDOWS")
+  local p = frame("KONTROLE / ANDROID")
   p[#p + 1] = "box[0.58,1.73;10.2,5.61;#10242DCF]"
   p[#p + 1] = "label[0.95,2.05;ANDROID]"
   p[#p + 1] = "label[0.95,2.55;Lijevi analogni krug za kretanje, povuci po zaslonu za pogled.]"
   p[#p + 1] = "label[0.95,3.05;Dodirni i zadrzi blok za rudarenje. Koristi dodirne kontrole igre.]"
-  p[#p + 1] = "label[0.95,4.10;WINDOWS]"
-  p[#p + 1] = "label[0.95,4.60;WASD za kretanje, mis za pogled, lijevi klik rudari.]"
-  p[#p + 1] = "label[0.95,5.10;Desni klik postavlja blok, Esc otvara pauzu.]"
+  p[#p + 1] = "label[0.95,4.10;IZRADA I ISTRAZIVANJE]"
+  p[#p + 1] = "label[0.95,4.60;Otvori inventar za izradu predmeta, alate i blokove.]"
+  p[#p + 1] = "label[0.95,5.10;Odaberi blok na traci i dodirni mjesto za postavljanje.]"
   p[#p + 1] = "label[0.95,6.21;NOVATERRA izbornik: /novaterra ili knjiga u inventaru.]"
   p[#p + 1] = "button[0.7,7.4;3.55,0.63;back;NATRAG]"
   p[#p + 1] = "button_exit[7.2,7.4;3.52,0.63;close;NASTAVI IGRU]"
