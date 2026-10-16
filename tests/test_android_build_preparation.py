@@ -92,7 +92,10 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn('versionName "0.0.6"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
-        self.assertEqual(len(list(game.rglob("*.png"))), 22)\n        background = (game / "menu/background.png").read_bytes()\n        self.assertEqual(background[:8], b"\\x89PNG\\r\\n\\x1a\\n")\n        self.assertEqual(__import__("struct").unpack(">II", background[16:24]), (1440, 810))
+        self.assertEqual(len(list(game.rglob("*.png"))), 22)
+        background = (game / "menu/background.png").read_bytes()
+        self.assertEqual(background[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(__import__("struct").unpack(">II", background[16:24]), (1440, 810))
         for mod in ("nv_core", "nv_world", "nv_survival", "nv_ui", "nv_mobs", "nv_rpg"):
             with self.subTest(mod=mod):
                 self.assertTrue((game / "mods" / mod / "init.lua").is_file())
@@ -140,7 +143,13 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn('core.settings:set("serverlist_url", "")', menu)
         self.assertIn("core.get_http_api = nil", menu)
         self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
-        self.assertIn("GRADI SVOJU PRICU", local)\n        self.assertNotIn("SOLO / OFFLINE / ANDROID", local)\n        self.assertNotIn("OFFLINE ADVENTURE", local)\n        self.assertIn(";nv_settings;POSTAVKE", local)\n        self.assertIn(";nv_exit;IZLAZ", local)\n        self.assertIn("create_settings_dlg()", local)\n        self.assertIn("core.close()", local)
+        self.assertIn("GRADI SVOJU PRICU", local)
+        self.assertNotIn("SOLO / OFFLINE / ANDROID", local)
+        self.assertNotIn("OFFLINE ADVENTURE", local)
+        self.assertIn(";nv_settings;POSTAVKE", local)
+        self.assertIn(";nv_exit;IZLAZ", local)
+        self.assertIn("create_settings_dlg()", local)
+        self.assertIn("core.close()", local)
         details = (self.engine / "builtin/mainmenu/novaterra_world_details.lua").read_text(encoding="utf-8")
         self.assertIn("novaterra_world_details = dofile(", menu)
         self.assertIn("nv_world_info", local)
