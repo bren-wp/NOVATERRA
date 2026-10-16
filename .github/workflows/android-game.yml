@@ -81,9 +81,9 @@ jobs:
           AAPT=$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)
           test -x "$AAPT"
           "$AAPT" dump badging "$APK" > artifacts/android-badging.txt
-          EXPECTED_VERSION_CODE=20002
+          EXPECTED_VERSION_CODE=20003
           grep -q "package: name='com.brendigo.novaterra' versionCode='$EXPECTED_VERSION_CODE'" artifacts/android-badging.txt
-          grep -q "versionName='0.0.2'" artifacts/android-badging.txt
+          grep -q "versionName='0.0.3'" artifacts/android-badging.txt
           grep -q "application-label:'NOVATERRA'" artifacts/android-badging.txt
           unzip -p "$APK" assets/assets.zip > artifacts/novaterra-game-assets.zip
           unzip -t artifacts/novaterra-game-assets.zip >/dev/null
@@ -115,16 +115,16 @@ jobs:
             echo "Unexpected non-arm64 library" >&2
             exit 1
           fi
-          cp "$APK" artifacts/NOVATERRA-Android-arm64-v0.0.2-debug.apk
+          cp "$APK" artifacts/NOVATERRA-Android-arm64-v0.0.3-debug.apk
           AAB=$(find build/luanti/android/app/build/outputs/bundle -type f -name '*debug.aab' | head -1)
           test -n "$AAB"
           unzip -t "$AAB" >/dev/null
-          cp "$AAB" artifacts/NOVATERRA-Android-v0.0.2-debug.aab
+          cp "$AAB" artifacts/NOVATERRA-Android-v0.0.3-debug.aab
           rm artifacts/novaterra-game-assets.zip
           (cd artifacts && sha256sum ./*.apk ./*.aab > SHA256SUMS.txt)
       - uses: actions/upload-artifact@v4
         with:
-          name: NOVATERRA-Android-arm64-v0.0.2-debug
+          name: NOVATERRA-Android-arm64-v0.0.3-debug
           path: artifacts/
           if-no-files-found: error
           retention-days: 30
