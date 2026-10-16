@@ -42,7 +42,8 @@ def render_menu_background(destination: Path) -> Path:
             span(yy,x,x+width,color)
 
     def polygon(points: list[tuple[int,int]], color: tuple[int,int,int]) -> None:
-        lo, hi = max(0,min(p[1] for p in points)), min(h,max(p[1] for p in points)+1)
+        lo = max(0, int(min(p[1] for p in points)))
+        hi = min(h, int(max(p[1] for p in points)) + 1)
         for yy in range(lo,hi):
             xs = []
             for (ax,ay),(bx,by) in zip(points,points[1:]+points[:1]):
