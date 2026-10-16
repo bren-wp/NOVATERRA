@@ -69,15 +69,31 @@ def patch_offline_mainmenu(engine: Path) -> None:
         'local menupath = core.get_mainmenu_path()',
         "init.lua",
     )
+    # Engine debugging remains available in logs; suppress only the stock
+    # red main-menu overlay that is not part of NOVATERRA's player UI.
+    debug_block = (
+        '\t-- Permanent warning if on an unoptimized debug build\n'
+        '\tif core.is_debug_build() then\n'
+        '\t\tlocal set_topleft_text = core.set_topleft_text\n'
+        '\t\tcore.set_topleft_text = function(s)\n'
+        '\t\t\ts = (s or "") .. "\\n"\n'
+        '\t\t\ts = s .. core.colorize("#f22", core.gettext("Debug build, expect worse performance"))\n'
+        '\t\t\tset_topleft_text(s)\n'
+        '\t\tend\n'
+        '\tend\n\n'
+    )
+    if debug_block in main:
+        main = replace_once(main, debug_block, "", "init.lua")
+
     # Branded, touch-friendly singleplayer menu styling; no fake controls.
     local = replace_once(
         local,
         '\tlocal retval = ""',
         '''\tlocal retval = table.concat({
         -- Real Luanti world operations are retained by their original field names.
-        "box[0.00,0.00;15.5,7.1;#09151EEB]",
-        "box[0.18,0.18;4.68,6.65;#10252FE6]",
-        "box[5.06,0.18;10.22,6.65;#142830EC]",
+        "box[0.00,0.00;15.5,7.1;#09151E60]",
+        "box[0.18,0.18;4.68,6.65;#10252FB8]",
+        "box[5.06,0.18;10.22,6.65;#142830BD]",
         "box[0.18,0.18;15.1,0.11;#C9A060]",
         "box[0.42,0.61;0.11,0.76;#65C970]",
         "style_type[button;bgcolor=#1D3540;bgcolor_hovered=#2E5660;bgcolor_pressed=#123526;textcolor=#FFFFFF;border=false]",
@@ -91,9 +107,9 @@ def patch_offline_mainmenu(engine: Path) -> None:
         "box[0.54,2.44;3.88,0.02;#A98853]",
         "label[0.55,2.65;TVOJ SVIJET.]",
         "label[0.55,3.10;BEZ GRANICA.]",
-        "label[0.55,3.58;SOLO / OFFLINE / ANDROID]",
+        "label[0.55,3.58;GRADI SVOJU PRICU]",
         "label[5.47,0.44;ODABIR SVIJETA]",
-        "label[0.52,6.44;NOVATERRA / OFFLINE ADVENTURE]",
+        "box[0.54,3.89;3.88,0.02;#A98853]",
     })''',
         "tab_local.lua",
     )
