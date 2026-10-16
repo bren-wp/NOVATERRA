@@ -32,6 +32,7 @@ class AndroidPrepTest(unittest.TestCase):
             '\ttv_main:add(tabs.local_game)\n'
             '\ttv_main:add(tabs.play_online)\n'
             '\ttv_main:add(tabs.content)\n'
+            '\ttv_main:add(tabs.about)\n'
             '\tlocal last_tab = core.settings:get("maintab_LAST")\n'
             '\tcheck_new_version()\n',
             encoding="utf-8",
@@ -39,6 +40,8 @@ class AndroidPrepTest(unittest.TestCase):
         (mainmenu / "tab_local.lua").write_text(
             '\tbtnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))\n'
             '\tlocal retval = ""\n'
+            '\t\t\t"container[0.375,0.375]" ..\n\t\t\tcreative ..\n'
+            'fgettext("Delete") fgettext("Select Mods") fgettext("Creative Mode") fgettext("Enable Damage")\n'
             '\tcaption = fgettext("Start Game"),\n'
             '\tlabel[0,0.2; .. fgettext("Select World:") .. ]\n'
             '\tbutton[play; .. fgettext("Play Game") .. ]\n'
@@ -74,9 +77,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.1")
-        self.assertEqual(self.preparer.VERSION_CODE, 20001)
-        self.assertIn('versionName "0.0.1"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.2")
+        self.assertEqual(self.preparer.VERSION_CODE, 20002)
+        self.assertIn('versionName "0.0.2"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
         self.assertEqual(len(list(game.rglob("*.png"))), 21)
@@ -120,6 +123,17 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("core.get_http_api = nil", menu)
         self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
         self.assertIn("NOVATERRA / OFFLINE ADVENTURE", local)
+        self.assertIn("TVOJ SVIJET.", local)
+        self.assertIn("BEZ GRANICA.", local)
+        self.assertIn("ODABIR SVIJETA", local)
+        self.assertIn("style[world_create;", local)
+        self.assertIn("style[world_delete;", local)
+        self.assertIn("POSTAVKE SVIJETA", local)
+        self.assertIn("OBRISI SVIJET", local)
+        self.assertIn('"container[0.375,4.10]"', local)
+        self.assertNotIn("tv_main:add(tabs.about)", menu)
+        self.assertIn("world_create", local)
+        self.assertIn("world_delete", local)
         self.assertIn("style[play;bgcolor=#418F4D", local)
         self.assertIn("IGRAJ / NASTAVI", local)
         self.assertIn("NOVI SVIJET", local)
