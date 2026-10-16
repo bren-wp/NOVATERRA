@@ -3,20 +3,17 @@
 from __future__ import annotations
 
 import argparse
-import os
 import pathlib
 import shutil
 
 from offline_mainmenu import patch_offline_mainmenu
 
 APP_ID = "com.brendigo.novaterra"
-VERSION_NAME = "1.2.0-dev"
-# Each GitHub Actions build gets a unique development versionCode, even if the
-# human-readable version name stays on the same development train.
-BUILD_NUMBER = int(os.environ.get("GITHUB_RUN_NUMBER", "1"))
-if BUILD_NUMBER < 1 or BUILD_NUMBER > 1000000:
-    raise SystemExit("Invalid Android build number")
-VERSION_CODE = 12000 + BUILD_NUMBER
+# Public game release numbering begins at 0.0.1. Android's versionCode is
+# separate from the visible version and must NOT decrease relative to earlier
+# internal 1.2.0-dev builds, or upgrades could strand on-device saves.
+VERSION_NAME = "0.0.1"
+VERSION_CODE = 20001
 PNG_COUNT = 21
 
 
