@@ -1,0 +1,94 @@
+name: NOVATERRA Android development release
+on:
+  workflow_run:
+    workflows: ["Android NOVATERRA game build"]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: novaterra-android-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Resolve a successful Android game build
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            RUN_ID="${{ github.event.workflow_run.id }}"
+            SOURCE_SHA="${{ github.event.workflow_run.head_sha }}"
+          else
+            RUN_ID=$(gh run list --workflow android-game.yml --branch main --status success --limit 50 --json databaseId --jq '.[0].databaseId')
+            test -n "$RUN_ID" && test "$RUN_ID" != "null"
+            SOURCE_SHA=$(gh run view "$RUN_ID" --json headSha --jq '.headSha')
+          fi
+          test "$(gh run view "$RUN_ID" --json conclusion --jq '.conclusion')" = "success"
+          printf 'RUN_ID=%s\nSOURCE_SHA=%s\nTAG=v1.2.0-android.%s\n' "$RUN_ID" "$SOURCE_SHA" "${SOURCE_SHA:0:8}" >> "$GITHUB_ENV"
+      - name: Download and verify APK and AAB
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          gh run download "$RUN_ID" -n NOVATERRA-Android-arm64-v1.2.0-dev-debug -D release
+          (cd release && sha256sum --check SHA256SUMS.txt)
+          test -s release/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk
+          test -s release/NOVATERRA-Android-v1.2.0-dev-debug.aab
+          unzip -t release/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk >/dev/null
+          unzip -t release/NOVATERRA-Android-v1.2.0-dev-debug.aab >/dev/null
+          echo "Verified both Android binaries from $SOURCE_SHA"
+      - name: Publish Android-only prerelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > release-notes.md <<EOF
+          # NOVATERRA Android $TAG
+
+          A fully bundled offline NOVATERRA game development preview.
+
+          - Android arm64 development APK for direct installation and testing.
+          - Android debug AAB (not an upload-key-signed Play Store production bundle).
+          - Integrated singleplayer engine; local worlds, save data and touch controls.
+          - In-game HUD, inventory, mining, crafting, map, survival, quests and creatures.
+          - Native Android splash and application identity. No external game server is required.
+
+          Built from commit: $SOURCE_SHA
+
+          **Development build.** In-hand Android device testing and pixel-perfect 1:1 parity with the provided reference images are not yet certified. See issue #1.
+          EOF
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            assets=$(gh release view "$TAG" --json assets --jq '.assets | length')
+            if [[ "$assets" -ge 3 ]]; then
+              echo "Android release $TAG already has complete artifacts"
+              exit 0
+            fi
+          fi
+          for attempt in 1 2 3 4 5; do
+            if ! gh release view "$TAG" >/dev/null 2>&1; then
+              gh release create "$TAG" --target "$SOURCE_SHA" --title "NOVATERRA Android $TAG" --notes-file release-notes.md --prerelease || true
+            fi
+            if gh release view "$TAG" >/dev/null 2>&1 &&
+               gh release upload "$TAG" release/NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk release/NOVATERRA-Android-v1.2.0-dev-debug.aab release/SHA256SUMS.txt --clobber; then
+              break
+            fi
+            echo "GitHub release upload failed (attempt $attempt/5)"
+            sleep 15
+          done
+          names=$(gh release view "$TAG" --json assets --jq '.assets[].name')
+          for expected in NOVATERRA-Android-arm64-v1.2.0-dev-debug.apk NOVATERRA-Android-v1.2.0-dev-debug.aab SHA256SUMS.txt; do
+            printf '%s\n' "$names" | grep -Fx "$expected"
+          done
+          echo "Published Android-only release $TAG"
+          # The former multi-platform development release was an empty shell.
+          legacy=$(gh release view v1.2.0-dev --json assets --jq '.assets | length' 2>/dev/null || echo unknown)
+          if [[ "$legacy" == "0" ]]; then
+            gh release delete v1.2.0-dev --cleanup-tag --yes || true
+          fi
