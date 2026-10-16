@@ -10,6 +10,8 @@ local function frame(title)
     "box[0.18,0.18;11.04,0.13;#CEA35F]",
     "style_type[button;bgcolor=#233640;bgcolor_hovered=#355561;bgcolor_pressed=#CBA05C;textcolor=#FFFFFF;border=false]",
     "style_type[button_exit;bgcolor=#32434B;bgcolor_hovered=#57646A;textcolor=#FFFFFF;border=false]",
+    "style[resume;bgcolor=#388B48;bgcolor_hovered=#54AA60;bgcolor_pressed=#236D34;textcolor=#FFFFFF]",
+    "box[0.43,0.48;0.10,0.49;#67D270]",
     "label[0.55,0.44;NOVATERRA]",
     "label[0.55,0.98;" .. escape(title) .. "]",
     "box[0.55,1.39;10.35,0.02;#B18B56]",
@@ -34,6 +36,7 @@ function M.hub(player)
   end
   p[#p + 1] = "box[5.76,1.54;5.11,6.31;#101E29DA]"
   p[#p + 1] = "label[6.05,1.83;TVOJ SVIJET. BEZ GRANICA.]"
+  p[#p + 1] = "box[6.05,2.22;4.35,0.02;#B48B55]"
   p[#p + 1] = "label[6.05,2.43;ISTRAZI / RUDARI / GRADI]"
   p[#p + 1] = "label[6.05,2.82;PREZIVI / IGRAJ BEZ INTERNETA]"
   local hp = player:get_hp()
