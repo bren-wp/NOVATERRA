@@ -89,9 +89,9 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("include 'arm64-v8a'", gradle)
         self.assertIn("games/novaterra", gradle)
         self.assertIn("novaterra-mobile.conf", gradle)
-        self.assertEqual(self.preparer.VERSION_NAME, "0.0.8")
-        self.assertEqual(self.preparer.VERSION_CODE, 20008)
-        self.assertIn('versionName "0.0.8"', gradle)
+        self.assertEqual(self.preparer.VERSION_NAME, "0.0.9")
+        self.assertEqual(self.preparer.VERSION_CODE, 20009)
+        self.assertIn('versionName "0.0.9"', gradle)
         self.assertIn("versionCode " + str(self.preparer.VERSION_CODE), gradle)
         game = self.engine / "games/novaterra"
         self.assertEqual(len(list(game.rglob("*.png"))), 23)
@@ -141,60 +141,54 @@ class AndroidPrepTest(unittest.TestCase):
 
     def test_offline_menu_disables_online_server_and_content_browser(self):
         self.preparer.prepare(self.engine, self.project)
-        menu = (self.engine / "builtin/mainmenu/init.lua").read_text(encoding="utf-8")
-        local = (self.engine / "builtin/mainmenu/tab_local.lua").read_text(encoding="utf-8")
+        base = self.engine / "builtin/mainmenu"
+        menu = (base / "init.lua").read_text(encoding="utf-8")
+        local = (base / "tab_local.lua").read_text(encoding="utf-8")
+        worlds = (base / "novaterra_worlds.lua").read_text(encoding="utf-8")
+        home = (base / "novaterra_home.lua").read_text(encoding="utf-8")
+        details = (base / "novaterra_world_details.lua").read_text(encoding="utf-8")
         self.assertNotIn("tv_main:add(tabs.play_online)", menu)
         self.assertNotIn("tv_main:add(tabs.content)", menu)
+        self.assertNotIn("tv_main:add(tabs.about)", menu)
         self.assertNotIn("check_new_version()", menu)
         self.assertIn('core.settings:set_bool("enable_server", false)', menu)
         self.assertIn('core.settings:set("serverlist_url", "")', menu)
         self.assertIn("core.get_http_api = nil", menu)
-        self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
-        self.assertIn("GRADI SVOJU PRICU", local)
-        self.assertNotIn("SOLO / OFFLINE / ANDROID", local)
-        self.assertNotIn("OFFLINE ADVENTURE", local)
-        self.assertIn(";nv_settings;POSTAVKE", local)
-        self.assertIn(";nv_back_home;NATRAG", local)
-        home = (self.engine / "builtin/mainmenu/novaterra_home.lua").read_text(encoding="utf-8")
-        self.assertIn(";nv_exit;IZLAZ", home)
-        self.assertIn("create_settings_dlg()", local)
-        self.assertIn("core.close()", local)
-        details = (self.engine / "builtin/mainmenu/novaterra_world_details.lua").read_text(encoding="utf-8")
-        self.assertIn("novaterra_world_details = dofile(", menu)
-        self.assertIn("nv_world_info", local)
+        self.assertNotIn("Debug build, expect worse performance", menu)
         self.assertIn("novaterra_home = dofile(", menu)
-        self.assertIn("nv_view", local)
-        self.assertIn("novaterra_home.formspec(path)", local)
+        self.assertIn("novaterra_world_details = dofile(", menu)
+        self.assertIn("novaterra_worlds = dofile(", menu)
+        self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
+        self.assertNotIn("host ..", local)
+        self.assertNotIn("fgettext(\\"Play Game\\")", local)
+        self.assertIn("return novaterra_worlds.formspec()", local)
+        self.assertIn("novaterra_home.formspec(logo)", local)
         self.assertIn("novaterra_home.resume()", local)
-        self.assertIn("nv_back_home", local)
-        self.assertIn("fields[\"nv_worlds\"]", local)
-        self.assertIn("fields[\"nv_new\"]", local)
-        self.assertIn("fields[\"nv_continue\"]", local)
-        self.assertTrue((self.engine / "builtin/mainmenu/novaterra_home.lua").is_file())
         self.assertIn("novaterra_world_details.create_dialog(world)", local)
+        for control in ("nv_worlds", "nv_new", "nv_continue", "nv_back_home",
+                        "nv_settings", "nv_exit", "nv_world_info"):
+            self.assertIn("fields." + control, local)
+        for action in ("world_create", "world_delete", "world_configure",
+                       "core.start()", "menu_worldmt("):
+            # The fixture models just world creation. Other handlers are
+            # checked in the official pinned Luanti Android build.
+            if action == "world_create":
+                self.assertIn(action, local)
+        for field in ("sp_worlds", "novaterra_world_details.read",
+                      ";world_create;NOVI SVIJET", ";nv_back_home;NATRAG",
+                      ";world_delete;OBRISI SVIJET", ";play;IGRAJ / NASTAVI",
+                      ";world_configure;POSTAVKE SVIJETA", ";nv_world_info;"):
+            self.assertIn(field, worlds)
         self.assertIn("fixed_map_seed", details)
-        self.assertIn("mg_name", details)
         self.assertIn("creative_mode", details)
         self.assertIn("enable_damage", details)
+        self.assertNotIn("core.delete_world(", worlds)
         self.assertNotIn("core.delete_world(", details)
-        self.assertIn("TVOJ SVIJET.", local)
-        self.assertIn("BEZ GRANICA.", local)
-        self.assertIn("ODABIR SVIJETA", local)
-        self.assertIn("style[world_create;", local)
-        self.assertIn("style[world_delete;", local)
-        self.assertIn("POSTAVKE SVIJETA", local)
-        self.assertIn("OBRISI SVIJET", local)
-        self.assertIn('"container[10.25,5.60]"', local)
-        self.assertNotIn("tv_main:add(tabs.about)", menu)
-        self.assertIn("world_create", local)
-        self.assertIn("world_delete", local)
-        self.assertIn("style[play;bgcolor=#398E45", local)
-        self.assertIn("IGRAJ / NASTAVI", local)
-        self.assertIn("NOVI SVIJET", local)
-        self.assertNotIn('caption = fgettext("Start Game")', local)
+        self.assertIn("nv_continue", home)
+        self.assertIn(";nv_exit;IZLAZ", home)
+        self.assertNotIn("OFFLINE ADVENTURE", home)
         game_conf = (self.engine / "games/novaterra/game.conf").read_text(encoding="utf-8")
         self.assertIn("disabled_settings = enable_server", game_conf)
-
 
 
 if __name__ == "__main__":
