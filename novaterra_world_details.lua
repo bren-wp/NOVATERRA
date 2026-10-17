@@ -21,13 +21,24 @@ local function yn(value)
   if value == "false" then return "NE" end
   return "NIJE ZAPISANO"
 end
-function M.formspec(world)
-  assert(world and type(world.name) == "string", "Selected world required")
+function M.read(world)
+  if not world or type(world.name) ~= "string" or world.name == "" then
+    return nil
+  end
   local cfg = local_settings(world)
-  local mg = get(cfg, "mg_name") or "NIJE ZAPISAN"
-  local seed = get(cfg, "fixed_map_seed") or "NIJE ZAPISAN"
-  local creative = yn(get(cfg, "creative_mode"))
-  local damage = yn(get(cfg, "enable_damage"))
+  return {
+    name = world.name,
+    gameid = world.gameid or "novaterra",
+    mapgen = get(cfg, "mg_name") or "NIJE ZAPISAN",
+    seed = get(cfg, "fixed_map_seed") or "NIJE ZAPISAN",
+    creative = yn(get(cfg, "creative_mode")),
+    damage = yn(get(cfg, "enable_damage")),
+  }
+end
+
+function M.formspec(world)
+  local summary = M.read(world)
+  assert(summary, "Selected world required")
   return table.concat({
     "formspec_version[4]size[10.4,7.75]",
     "bgcolor[#09161FF5;true]",
@@ -37,18 +48,18 @@ function M.formspec(world)
     "label[0.58,0.55;NOVATERRA  /  DETALJI SVIJETA]",
     "box[0.55,1.18;9.3,1.05;#1F3946D9]",
     "label[0.78,1.31;NAZIV SVIJETA]",
-    "textarea[0.73,1.66;8.65,0.48;;;" .. esc(world.name) .. "]",
+    "textarea[0.73,1.66;8.65,0.48;;;" .. esc(summary.name) .. "]",
     "label[0.78,2.55;IGRA]",
     "label[5.35,2.55;GENERATOR TERENA]",
-    "label[0.78,3.08;" .. esc(world.gameid or "novaterra") .. "]",
-    "label[5.35,3.08;" .. esc(mg) .. "]",
+    "label[0.78,3.08;" .. esc(summary.gameid) .. "]",
+    "label[5.35,3.08;" .. esc(summary.mapgen) .. "]",
     "box[0.55,3.65;9.3,0.03;#B99258]",
     "label[0.78,4.01;SJEME GENERIRANJA]",
-    "textarea[0.74,4.40;8.67,0.52;;;" .. esc(seed) .. "]",
+    "textarea[0.74,4.40;8.67,0.52;;;" .. esc(summary.seed) .. "]",
     "label[0.78,5.23;KREATIVNI MOD]",
     "label[5.35,5.23;OSTECENJA / SURVIVAL]",
-    "label[0.78,5.73;" .. esc(creative) .. "]",
-    "label[5.35,5.73;" .. esc(damage) .. "]",
+    "label[0.78,5.73;" .. esc(summary.creative) .. "]",
+    "label[5.35,5.73;" .. esc(summary.damage) .. "]",
     "label[0.78,6.37;PODACI SVIJETA OSTAJU NA TVOM UREDAJU]",
     "button_exit[3.75,6.86;2.9,0.54;nv_details_back;NATRAG]",
   })
