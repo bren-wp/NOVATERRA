@@ -1,6 +1,6 @@
 # NOVATERRA — Android offline game
 
-**Current Android development version: 0.0.8** · [Releases](https://github.com/bren-wp/NOVATERRA/releases)
+**Current Android development version: 0.0.9** · [Releases](https://github.com/bren-wp/NOVATERRA/releases)
 
 NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 native C++/OpenGL ES engine. The game includes all Lua gameplay mods, 21 base textures plus tint-based biome materials, offline world generation and on-device saves. External game servers, accounts and hosted databases are not required.
 
@@ -8,11 +8,30 @@ NOVATERRA is an Android-only voxel survival game powered by the Luanti 5.17.0 na
 
 The `prepare-luanti.py` script packages the game and branded Android resources. The `offline_mainmenu.py` patch disables online server browsing, ContentDB access and engine update polling. The initial game is NOVATERRA and hosting controls are hidden.
 
-The Android workflow builds a debug-signed arm64 APK and development AAB with `versionName 0.0.8` and `versionCode 20008`. The higher Android code is deliberate: older internal test builds used greater version codes than 1, and Android never allows an in-place versionCode downgrade. For each later public version, increase both the displayed version and Android versionCode monotonically.
+The Android workflow builds a debug-signed arm64 APK and development AAB with `versionName 0.0.9` and `versionCode 20009`. The higher Android code is deliberate: older internal test builds used greater version codes than 1, and Android never allows an in-place versionCode downgrade. For each later public version, increase both the displayed version and Android versionCode monotonically.
 
-Only a successful build with validated assets and SHA-256 sums is eligible for the **v0.0.8** GitHub prerelease. APK and AAB are development builds, not Google Play production-signed bundles. **An online upgrade of the app is not required for gameplay.**
+Only a successful build with validated assets and SHA-256 sums is eligible for the **v0.0.9** GitHub prerelease. APK and AAB are development builds, not Google Play production-signed bundles. **An online upgrade of the app is not required for gameplay.**
 
 The engine's integrated local game service may use loopback sockets. The existing Android INTERNET permission is retained until the engine's local networking has been validated without it. NOVATERRA does not depend on an external server for offline gameplay.
+
+## Native local-world management UI (v0.0.9)
+
+The worlds screen is no longer a stock Luanti formspec with manually shifted
+buttons. `novaterra_worlds.lua` renders a NOVATERRA-specific two-panel
+touch layout: a real, selected native world list on the left and genuine
+`world.mt` metadata (name, saved seed and map generator) on the right.
+World creation, Play, world settings and **deletion confirmation** still
+dispatch to the pinned engine's original callbacks. Creative/damage toggles
+use engine-backed settings instead of disconnected graphical switches.
+If no world is selected, destructive and Play actions are **not rendered**.
+All user data displayed in labels/textareas is formspec-escaped; missing
+metadata is shown as unknown. The inspector does not modify a save.
+
+This release also replaces fragile line-by-line coordinate patching with an
+explicit branded worlds formspec, removes unreachable old menu markup and
+keeps the Home/Worlds navigation separate. The UI remains **unverified
+against real-device 1:1 screenshots**, and doesn't contain fabricated world
+thumbnails or timestamps.
 
 ## Offline world selection
 
