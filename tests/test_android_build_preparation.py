@@ -160,7 +160,7 @@ class AndroidPrepTest(unittest.TestCase):
         self.assertIn("novaterra_worlds = dofile(", menu)
         self.assertNotIn('btnbar:add_button("game_open_cdb"', local)
         self.assertNotIn("host ..", local)
-        self.assertNotIn("fgettext(\\"Play Game\\")", local)
+        self.assertNotIn('fgettext("Play Game")', local)
         self.assertIn("return novaterra_worlds.formspec()", local)
         self.assertIn("novaterra_home.formspec(logo)", local)
         self.assertIn("novaterra_home.resume()", local)
@@ -168,12 +168,7 @@ class AndroidPrepTest(unittest.TestCase):
         for control in ("nv_worlds", "nv_new", "nv_continue", "nv_back_home",
                         "nv_settings", "nv_exit", "nv_world_info"):
             self.assertIn("fields." + control, local)
-        for action in ("world_create", "world_delete", "world_configure",
-                       "core.start()", "menu_worldmt("):
-            # The fixture models just world creation. Other handlers are
-            # checked in the official pinned Luanti Android build.
-            if action == "world_create":
-                self.assertIn(action, local)
+        self.assertIn("fields.world_create = true", local)
         for field in ("sp_worlds", "novaterra_world_details.read",
                       ";world_create;NOVI SVIJET", ";nv_back_home;NATRAG",
                       ";world_delete;OBRISI SVIJET", ";play;IGRAJ / NASTAVI",
