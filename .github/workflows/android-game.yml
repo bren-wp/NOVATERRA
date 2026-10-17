@@ -4,6 +4,9 @@ on:
     paths:
       - 'prepare-luanti.py'
       - 'offline_mainmenu.py'
+      - 'novaterra_home.lua'
+      - 'novaterra_world_details.lua'
+      - 'novaterra_worlds.lua'
       - 'assets/branding/generate_menu_landscape.py'
       - 'res/**'
       - 'games/novaterra/**'
@@ -57,14 +60,15 @@ jobs:
           MENU="build/luanti/builtin/mainmenu/init.lua"
           LOCAL="build/luanti/builtin/mainmenu/tab_local.lua"
           test -s "$MENU" && test -s "$LOCAL"
-          grep -Fq -- "NOVATERRA offline: online servers are unavailable" "$MENU"
-          grep -Fq -- "NOVATERRA offline: no content downloads" "$MENU"
+          grep -Fq -- "NOVATERRA offline: play_online tab unavailable." "$MENU"
+          grep -Fq -- "NOVATERRA offline: content tab unavailable." "$MENU"
           ! grep -Fq -- 'tv_main:add(tabs.play_online)' "$MENU"
           ! grep -Fq -- 'tv_main:add(tabs.content)' "$MENU"
           ! grep -Fq -- 'check_new_version()' "$MENU"
           ! grep -Fq -- 'Debug build, expect worse performance' "$MENU"
           ! grep -Fq -- 'OFFLINE ADVENTURE' "$LOCAL"
-          grep -Fq -- 'GRADI SVOJU PRICU' "$LOCAL"
+          grep -Fq -- 'return novaterra_worlds.formspec()' "$LOCAL"
+          grep -Fq -- 'novaterra_world_details.create_dialog(world)' "$LOCAL"
           grep -Fq -- 'nv_settings' "$LOCAL"
           grep -Fq -- 'nv_exit' "$LOCAL"
           ! grep -Fq -- 'btnbar:add_button("game_open_cdb"' "$LOCAL"
@@ -87,9 +91,9 @@ jobs:
           AAPT=$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)
           test -x "$AAPT"
           "$AAPT" dump badging "$APK" > artifacts/android-badging.txt
-          EXPECTED_VERSION_CODE=20008
+          EXPECTED_VERSION_CODE=20009
           grep -q "package: name='com.brendigo.novaterra' versionCode='$EXPECTED_VERSION_CODE'" artifacts/android-badging.txt
-          grep -q "versionName='0.0.8'" artifacts/android-badging.txt
+          grep -q "versionName='0.0.9'" artifacts/android-badging.txt
           grep -q "application-label:'NOVATERRA'" artifacts/android-badging.txt
           unzip -p "$APK" assets/assets.zip > artifacts/novaterra-game-assets.zip
           unzip -t artifacts/novaterra-game-assets.zip >/dev/null
@@ -119,13 +123,15 @@ jobs:
           unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'menu_last_game = novaterra'
           unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'enable_server = false'
           unzip -p artifacts/novaterra-game-assets.zip minetest.conf | grep -Fx 'serverlist_url = '
-          unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/init.lua | grep -Fq -- 'NOVATERRA offline: online servers are unavailable'
+          unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/init.lua | grep -Fq -- 'NOVATERRA offline: play_online tab unavailable.'
           if unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/init.lua | grep -Fq -- 'tv_main:add(tabs.play_online)'; then
             echo "Public server button leaked into packaged APK" >&2
             exit 1
           fi
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'games/novaterra/mods/nv_mobs/init.lua'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'builtin/mainmenu/novaterra_world_details.lua'
+          unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'builtin/mainmenu/novaterra_worlds.lua'
+          unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/novaterra_worlds.lua | grep -Fq -- ';world_delete;OBRISI SVIJET'
           unzip -Z1 artifacts/novaterra-game-assets.zip | grep -Fx 'builtin/mainmenu/novaterra_home.lua'
           unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/novaterra_home.lua | grep -Fq -- 'nv_continue'
           unzip -p artifacts/novaterra-game-assets.zip builtin/mainmenu/novaterra_world_details.lua | grep -Fq -- 'PODACI SVIJETA OSTAJU NA TVOM UREDAJU'
@@ -143,16 +149,16 @@ jobs:
             echo "Unexpected non-arm64 library" >&2
             exit 1
           fi
-          cp "$APK" artifacts/NOVATERRA-Android-arm64-v0.0.8-debug.apk
+          cp "$APK" artifacts/NOVATERRA-Android-arm64-v0.0.9-debug.apk
           AAB=$(find build/luanti/android/app/build/outputs/bundle -type f -name '*debug.aab' | head -1)
           test -n "$AAB"
           unzip -t "$AAB" >/dev/null
-          cp "$AAB" artifacts/NOVATERRA-Android-v0.0.8-debug.aab
+          cp "$AAB" artifacts/NOVATERRA-Android-v0.0.9-debug.aab
           rm artifacts/novaterra-game-assets.zip
           (cd artifacts && sha256sum ./*.apk ./*.aab > SHA256SUMS.txt)
       - uses: actions/upload-artifact@v4
         with:
-          name: NOVATERRA-Android-arm64-v0.0.8-debug
+          name: NOVATERRA-Android-arm64-v0.0.9-debug
           path: artifacts/
           if-no-files-found: error
           retention-days: 30
