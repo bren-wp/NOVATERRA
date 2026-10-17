@@ -43,7 +43,6 @@ class AndroidPrepTest(unittest.TestCase):
             '\tlocal retval = ""\n'
             '\t\t\t"container[0.375,0.375]" ..\n\t\t\tcreative ..\n'
             'fgettext("Delete") fgettext("Select Mods") fgettext("Creative Mode") fgettext("Enable Damage")\n'
-            '\tcaption = fgettext("Start Game"),\n'
             '\tlabel[0,0.2; .. fgettext("Select World:") .. ]\n'
             '\t"button[10.1875,5.925;4.9375,0.8;play;" .. fgettext("Play Game") .. "]"\n'
             '\t"button[6.65,0;3.225,0.8;world_create;" .. fgettext("New") .. "]"\n'
@@ -54,7 +53,8 @@ class AndroidPrepTest(unittest.TestCase):
             '\tif fields["world_create"] ~= nil then\n'
             '\t\treturn true\n'
             '\tend\n'
-            'end\n',
+            'end\n'
+            '\tcaption = fgettext("Start Game"),\n',
             encoding="utf-8",
         )
         gradle = self.engine / "android/app/build.gradle"
