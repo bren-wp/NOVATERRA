@@ -29,6 +29,14 @@ local world = {
   name = "World];button[0,0;1,1;bad;WRONG",
   gameid = "novaterra", path = "/local-world",
 }
+local summary = info.read(world)
+assert(summary.name == world.name)
+assert(summary.gameid == "novaterra")
+assert(summary.mapgen == "v7")
+assert(summary.seed == "123456")
+assert(summary.creative == "NE")
+assert(summary.damage == "DA")
+assert(info.read(nil) == nil)
 local f = info.formspec(world)
 for _, value in ipairs({"NOVATERRA", "DETALJI SVIJETA", "v7", "123456",
                          "KREATIVNI MOD", "SURVIVAL", "NATRAG", "PODACI SVIJETA OSTAJU NA TVOM UREDAJU"}) do

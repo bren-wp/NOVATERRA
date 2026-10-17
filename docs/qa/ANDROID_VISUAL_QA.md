@@ -37,7 +37,11 @@ do not manufacture loading text for subsequent warm starts.
    Settings/Exit, and positions of every
    real working button against the matching reference. No multiplayer,
    servers or store/account placeholders.
-3. **Worlds:** Test native local create/play/configure/delete (including
+3. **Worlds:** Verify that the new two-panel list reads real local `world.mt`
+   metadata; no thumbnail, creation date or seed is invented. Test the
+   actual native create/play/configure/delete callbacks and cancellation
+   of the deletion confirmation. The static tests do not certify UI parity.
+   Test native local create/play/configure/delete (including
    confirmation and cancellation). Capture the selected-world details modal;
    verify name, seed, map generator and creative/damage mode against world.mt.
    Never invent creation/last-played dates or preview screenshots.
@@ -57,7 +61,7 @@ do not manufacture loading text for subsequent warm starts.
 | --- | --- | --- |
 | Responsive splash and genuine native progress | XML and Android build | **PENDING** |
 | Main menu with **3D** preview matching reference | Offline patch tests | **PENDING** |
-| Local worlds and safe deletion | Luanti callback + metadata tests | **PENDING** |
+| Local worlds and safe deletion | Luanti callback + real world list/metadata tests | **PENDING** |
 | HUD, touch, hotbar, minimap, safe areas | Gameplay code tests | **PENDING** |
 | Inventory, crafting, furnace, RPG, map, settings | Lua tests | **PENDING** |
 | Android phone + tablet 1:1 screenshot pairs | No substitute | **PENDING** |
